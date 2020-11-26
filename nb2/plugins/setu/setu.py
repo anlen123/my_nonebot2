@@ -1,0 +1,137 @@
+from nonebot import on_command
+from nonebot.rule import to_me
+from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
+import os
+import random as rd
+import uuid
+import re
+import requests
+
+setu = on_command(cmd="cu", aliases={"st", "色图", "涩图"})
+
+
+# 识别参数 并且给state 赋值
+@setu.handle()
+async def setu_rev(bot: Bot, event: Event, state: dict):
+    path_prefix = "/root/NextCloud/img/"
+    img_list = await get_img_list(path_prefix)
+    if not img_list:
+        await setu.finish("色图库已经空了")
+    else:
+        path = rd.choice(img_list)
+        print(await get_img_url(path_prefix + path))
+        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
+
+
+del_img = on_command(cmd="rm")
+
+
+@del_img.handle()
+async def del_img_handle(bot: Bot, event: Event, state: dict):
+    msg = str(event.message).strip().split(" ")
+    path_prefix = "/root/NextCloud/img/"
+    path_yulu_prefix = "/root/NextCloud/yulu/"
+    if len(msg) == 1:
+        if msg[0].endswith("png") or msg[0].endswith("jpg") or msg[0].endswith("jpeg"):
+            print(f"rm {path_prefix}{msg[0]}")
+            os.system(f"rm {path_prefix}{msg[0]}")
+            os.system(f"rm {path_yulu_prefix}{msg[0]}")
+            # os.system("~/NextCloud/nextcloud_update.sh")
+            await del_img.finish("成功删除")
+    else:
+        await del_img.finish('错误参数,例子: rm 1.jpg')
+
+
+async def get_img_url(path: str) -> str:
+    return "file:///" + path
+
+
+async def get_img_list(path):
+    return os.listdir(f"{path}")
+
+
+update_file = on_command(cmd="更新图库", aliases={"更新语录", "更新色图"}, rule=to_me())
+
+
+@update_file.handle()
+async def update_file_handle(bot: Bot, event: Event, state: dict):
+    os.system("~/NextCloud/nextcloud_update.sh")
+    await update_file.finish("图库更新完成")
+
+
+save = on_command(cmd="上传色图")
+
+
+@save.handle()
+async def save_handle(bot: Bot, event: Event, state: dict):
+    msg = event.message
+    if msg:
+        await save.finish("后面不加参数,直接at我后,输入\"上传色图\"即可.")
+
+
+@save.got(key="url", prompt="请输入图片")
+async def save_got(bot: Bot, event: Event, state: dict):
+    msg = str(event.message)
+    # print(msg)
+    url = re.findall("\[CQ:image,file=.*?,url=(.*?)\]", msg)
+    if url:
+        state['url'] = url[0]
+        # print(url[0])
+        r = requests.get(url[0])
+        with open(f"/root/NextCloud/img/{uuid.uuid4()}.png", mode="wb") as f:
+            f.write(r.content)
+        await save.finish("上传成功!!!")
+    else:
+        await save.finish("好像出错了!!!")
+
+
+bugouse = on_command(cmd="不够色", aliases={"不够涩"})
+
+
+@bugouse.handle()
+async def bugouse_handle(bot: Bot, event: Event, state: dict):
+    print(event.raw_message)
+    await bugouse.finish("反正我比另一个机器人涩!!!")
+
+
+yulu = on_command(cmd="语录", aliases={"yulu", "yl","来点语录"})
+
+
+# 识别参数 并且给state 赋值
+@yulu.handle()
+async def yulu_rev(bot: Bot, event: Event, state: dict):
+    path_prefix = "/root/NextCloud/yulu/"
+    img_list = await get_img_list(path_prefix)
+    if not img_list:
+        await yulu.finish("语录库已经空了")
+    else:
+        path = rd.choice(img_list)
+        print(path)
+        print(await get_img_url(path_prefix + path))
+        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
+
+
+yulu_save = on_command(cmd="上传语录")
+
+
+@yulu_save.handle()
+async def yulu_save_handle(bot: Bot, event: Event, state: dict):
+    msg = event.message
+    if msg:
+        await yulu_save.finish("后面不加参数,直接at我后,输入\"上传语录\"即可.")
+
+
+@yulu_save.got(key="url", prompt="请输入图片")
+async def yulu_save_got(bot: Bot, event: Event, state: dict):
+    msg = str(event.message)
+    # print(msg)
+    url = re.findall("\[CQ:image,file=.*?,url=(.*?)\]", msg)
+    if url:
+        state['url'] = url[0]
+        # print(url[0])
+        r = requests.get(url[0])
+        with open(f"/root/NextCloud/yulu/{uuid.uuid4()}.png", mode="wb") as f:
+            f.write(r.content)
+        await yulu_save.finish("上传成功!!!")
+    else:
+        await yulu_save.finish("好像出错了!!!")
