@@ -11,6 +11,9 @@ cmd = on_command(cmd="cmd")
 async def cmd_rev(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip()
     user_id = event.user_id
+    if user_id==1793268622:
+        await bot.send(event=event,message="机器人你别命令我")
+        return 
     if user_id == 1761512493 or user_id == 2822103204:
         if "exit" in msg or "shutdown" in msg:
             await bot.send(event=event, message="别想着干坏事")
