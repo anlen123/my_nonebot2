@@ -1,28 +1,9 @@
-import aiohttp 
-from nonebot import on_command,on_startswith
-from nonebot.rule import to_me
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
-
-sx = on_command(cmd="sx")
+import aiohttp
+from nonebot import on_command
+from nonebot.adapters.cqhttp import Bot, Event
 
 
-# 识别参数 并且给state 赋值
-
-
-@sx.handle()
-async def sx_rev(bot: Bot, event: Event, state: dict):
-    msg = str(event.message).strip()
-    date = await main(msg)
-    date=eval(date)
-    name= date[0]['name']
-    print(name)
-    content = date[0]['trans']
-    print(content)
-    await bot.send(event=event,message=name+"\n"+str(content))
-
-
-
-async def main(word):
+async def get_sx(word):
     url = "https://lab.magiconch.com/api/nbnhhsh/guess"
 
     headers = {
@@ -33,8 +14,27 @@ async def main(word):
     data = {
         "text": f"{word}"
     }
-    msg = "没有查询到信息"
     async with aiohttp.ClientSession() as session:
-        date = await session.post(url=url, headers=headers, data=data)
-        msg = (await date.content.read()).decode()
-    return msg
+        async with session.post(url=url, headers=headers, data=data) as resp:
+            msg = await resp.json()
+            return msg if msg else []
+
+
+sx = on_command(cmd="sx", aliases={"缩写"})
+
+
+# 识别参数 并且给state 赋值
+
+@sx.handle()
+async def sx_rev(bot: Bot, event: Event, state: dict):
+    msg = str(event.message).strip()
+    date = await get_sx(msg)
+    try:
+        name = date[0]['name']
+        print(name)
+        content = date[0]['trans']
+        print(content)
+        await bot.send(event=event, message=name + "\n" + str(content))
+    except :
+        await bot.send(event=event, message="没有找到缩写")
+
