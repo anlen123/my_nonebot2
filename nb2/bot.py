@@ -1,8 +1,11 @@
 #!/root/yes/envs/qqbot/bin/python
 # -*- coding: utf-8 -*-
 import nonebot
+from nonebot.adapters.cqhttp import Bot as CQHTTPBot 
 nonebot.init()
 app = nonebot.get_asgi()
+driver = nonebot.get_driver()
+driver.register_adapter("cqhttp",CQHTTPBot)
 # nonebot.load_plugins("plugins/zhuanfa")
 nonebot.load_plugins("plugins/love")
 nonebot.load_plugins("plugins/null")

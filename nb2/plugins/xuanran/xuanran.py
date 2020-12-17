@@ -9,10 +9,10 @@ xr=on_command(cmd="xr")
 @xr.handle()
 async def xr_rev(bot: Bot, event: Event, state: dict):
     msg=str(event.message).strip()
+    s = time.time()
+    img=main(msg)
+    print(img)
     try:
-        s = time.time()
-        img=main(msg)
-        print(img)
         await bot.send(event=event,message=MessageSegment.image("file:///"+"/root/NextCloud/xr/"+img)+f"耗时:{time.time()-s}")
     except:
         await bot.send(event=event,message="错误")
@@ -37,3 +37,4 @@ def main(url):
     os.system(f"mv {picture_time}.png /root/NextCloud/xr")
     # os.system("./NextCloud/nextcloud_update.sh")
     return picture_time+".png"
+
