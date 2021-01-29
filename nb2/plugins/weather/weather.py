@@ -12,20 +12,24 @@ async def get_weather(cityName):
     async with aiohttp.ClientSession() as session:
         async with session.post(url=url, headers=headers) as resp:
             msg = await resp.json()
-            return msg['data'][0]
+            return msg
 
 
-sx = on_command(cmd="天气", aliases={"缩写"})
+weather= on_command(cmd="天气")
 
 
 # 识别参数 并且给state 赋值
 
-@sx.handle()
+@weather.handle()
 async def sx_rev(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip()
-    date = await get_weather(msg)
     try:
-        await bot.send(event=event, message=date)
+        date = await get_weather(msg)
+        msgs =str(date['city']+"\n")
+        date=date['data'][0]['hours']
+        for x in date:
+            msgs+=(x['day']+"->"+x['wea']+"->"+x['tem']+"\n")
+        await bot.send(event=event, message=msgs)
     except :
         await bot.send(event=event, message="没有找到城市天气")
 
