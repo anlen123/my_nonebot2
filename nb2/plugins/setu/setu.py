@@ -55,7 +55,7 @@ update_file = on_command(cmd="更新图库", aliases={"更新语录", "更新色
 
 @update_file.handle()
 async def update_file_handle(bot: Bot, event: Event, state: dict):
-    os.system("~/NextCloud/nextcloud_update.sh")
+    os.system("/root/NextCloud/nextcloud_update.sh")
     await update_file.finish("图库更新完成")
 
 

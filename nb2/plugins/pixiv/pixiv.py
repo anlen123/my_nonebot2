@@ -27,12 +27,11 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
 }
 
-
+proxy = "http://127.0.0.1:1081"
 
 async def fetch(session, url, name):
     print("发送请求：", url)
-    # async with session.get(url=url, verify_ssl=False, headers=headers) as response:
-    async with session.get(url=url, headers=headers) as response:
+    async with session.get(url=url, headers=headers,proxy=proxy) as response:
         content = await response.content.read()
         with open("/root/NextCloud/pixiv/"+name, mode='wb') as f:
             f.write(content)
@@ -40,7 +39,7 @@ async def fetch(session, url, name):
 async def main(PID):
     url = f"https://www.pixiv.net/artworks/{PID}"
     async with aiohttp.ClientSession() as session:
-        x = await session.get(url=url, headers=headers)
+        x = await session.get(url=url, headers=headers,proxy=proxy)
         content = await x.content.read()
         down_url = re.findall('"original":"(.*?)\.(png|jpg|jepg)"', content.decode())
         if not down_url:

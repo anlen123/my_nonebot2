@@ -6,7 +6,6 @@ nonebot.init()
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter("cqhttp",CQHTTPBot)
-# nonebot.load_plugins("plugins/zhuanfa")
 nonebot.load_plugins("plugins/love")
 nonebot.load_plugins("plugins/null")
 nonebot.load_plugins("plugins/setu")
@@ -19,7 +18,6 @@ nonebot.load_plugins("plugins/weather")
 # nonebot.load_plugins("plugins/lanzouyun")
 # nonebot.load_plugins("plugins/zhuanfa")
 # nonebot.load_plugins("plugins/test")
-# nonebot.load_plugins("plugins/weather")
 
 # Modify some config / config depends on loaded configs
 # 

@@ -2,3 +2,6 @@
 *.image
 *.cache
 gocp/data/
+
+nb2/2020-12-17-03_29_56.png
+gocp/config.hjson
