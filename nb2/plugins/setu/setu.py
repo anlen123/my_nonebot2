@@ -31,11 +31,13 @@ async def del_img_handle(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip().split(" ")
     path_prefix = "/root/NextCloud/img/"
     path_yulu_prefix = "/root/NextCloud/yulu/"
+    path_threeciyuan_prefix = "/root/NextCloud/3c/"
     if len(msg) == 1:
         if msg[0].endswith("png") or msg[0].endswith("jpg") or msg[0].endswith("jpeg"):
             print(f"rm {path_prefix}{msg[0]}")
             os.system(f"rm {path_prefix}{msg[0]}")
             os.system(f"rm {path_yulu_prefix}{msg[0]}")
+            os.system(f"rm {path_threeciyuan_prefix}{msg[0]}")
             # os.system("~/NextCloud/nextcloud_update.sh")
             await del_img.finish("成功删除")
     else:
@@ -131,6 +133,46 @@ async def yulu_save_got(bot: Bot, event: Event, state: dict):
         # print(url[0])
         r = requests.get(url[0])
         with open(f"/root/NextCloud/yulu/{uuid.uuid4()}.png", mode="wb") as f:
+            f.write(r.content)
+        await yulu_save.finish("上传成功!!!")
+    else:
+        await yulu_save.finish("好像出错了!!!")
+
+threeciyuan = on_command(cmd="3c", aliases={"3次元"})
+
+
+# 识别参数 并且给state 赋值
+@threeciyuan.handle()
+async def threeciyuan_rep(bot: Bot, event: Event, state: dict):
+    path_prefix = "/root/NextCloud/3c/"
+    img_list = await get_img_list(path_prefix)
+    if not img_list:
+        await yulu.finish("3次元库已经空了")
+    else:
+        path = rd.choice(img_list)
+        print(path)
+        print(await get_img_url(path_prefix + path))
+        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
+threeciyuan_save = on_command(cmd="上传真人")
+
+
+@threeciyuan_save.handle()
+async def yulu_save_handle(bot: Bot, event: Event, state: dict):
+    msg = event.message
+    if msg:
+        await yulu_save.finish("后面不加参数,直接at我后,输入\"上传真人\"即可.")
+
+
+@threeciyuan_save.got(key="url", prompt="请输入图片")
+async def yulu_save_got(bot: Bot, event: Event, state: dict):
+    msg = str(event.message)
+    # print(msg)
+    url = re.findall("\[CQ:image,file=.*?,url=(.*?)\]", msg)
+    if url:
+        state['url'] = url[0]
+        # print(url[0])
+        r = requests.get(url[0])
+        with open(f"/root/NextCloud/3c/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
     else:

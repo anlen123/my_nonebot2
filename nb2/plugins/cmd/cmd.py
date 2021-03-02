@@ -22,7 +22,10 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
                                 encoding="utf-8")
         out, err = subp.communicate()
         if out + err != "":
-            await bot.send(event=event, message=out + err)
+            msgg = out+err 
+            if len(msgg)>=7000:
+                msgg = msgg[:7000]
+            await bot.send(event=event, message=msgg)
         else:
             await bot.send(event=event, message="您的指令是没有返回值的")
     else:
@@ -34,6 +37,9 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
                                 encoding="utf-8")
         out, err = subp.communicate()
         if out + err != "":
-            await bot.send(event=event, message=out + err)
+            msgg = out+err 
+            if len(msgg)>=7000:
+                msgg = msgg[:7000]
+            await bot.send(event=event, message=msgg)
         else:
             await bot.send(event=event, message="您的指令是没有返回值的")
