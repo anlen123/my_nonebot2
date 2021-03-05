@@ -17,6 +17,10 @@ from nonebot import require
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
 # @scheduler.scheduled_job("cron", minute="*/1", id="baoshi")
-@scheduler.scheduled_job("cron", hour="*/1", id="baoshi",minute="0")
+@scheduler.scheduled_job("cron",  id="baoshi",hour="*/1",minute="0")
 async def run_every_2_hour():
-    await nonebot.get_bots()['1928994748'].send_msg(message_type="group",message=f"整点报时: {datetime.now().hour}",group_id=68724983)
+    hour = datetime.now().hour
+    if hour>12:
+        hour-=12
+    print(hour)
+    await nonebot.get_bots()['1928994748'].send_msg(message_type="group",message=MessageSegment.image(f"file:////root/NextCloud/baoshi/{hour}.png"),group_id=68724983)
