@@ -1,6 +1,7 @@
 import aiohttp
 from nonebot import on_command
 from nonebot.adapters.cqhttp import Bot, Event
+from nonebot.plugin import on_regex
 
 
 async def get_weather(cityName):
@@ -15,20 +16,21 @@ async def get_weather(cityName):
             return msg
 
 
-weather= on_command(cmd="天气")
+weather= on_regex(pattern="^天气\ ")
 
 
 # 识别参数 并且给state 赋值
 
 @weather.handle()
 async def sx_rev(bot: Bot, event: Event, state: dict):
-    msg = str(event.message).strip()
+    msg = str(event.get_message()).strip()[3:].strip()
+    print(msg)
     try:
         date = await get_weather(msg)
         msgs =str(date['city']+"\n")
         date=date['data'][0]['hours']
         for x in date:
-            msgs+=(x['day']+"->"+x['wea']+"->"+x['tem']+"\n")
+            msgs+=(x['hours']+"->"+x['wea']+"->"+x['tem']+"摄氏度\n")
         await bot.send(event=event, message=msgs)
     except :
         await bot.send(event=event, message="没有找到城市天气")

@@ -18,8 +18,7 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
         if "exit" in msg or "shutdown" in msg:
             await bot.send(event=event, message="别想着干坏事")
             return
-        subp = subprocess.Popen("cd;" + msg + " &", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                encoding="utf-8")
+        subp = subprocess.Popen("cd;" + msg + " &", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,encoding="utf-8")
         out, err = subp.communicate()
         if out + err != "":
             msgg = out+err 

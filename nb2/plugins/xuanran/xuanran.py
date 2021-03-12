@@ -1,14 +1,15 @@
 from nonebot import on_command,on_startswith
+from nonebot.plugin import on_regex
 from selenium import webdriver
 from nonebot.rule import to_me
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 import time
-xr=on_command(cmd="xr")
+xr=on_regex(pattern="^xr\ ")
 
 # 识别参数 并且给state 赋值
 @xr.handle()
 async def xr_rev(bot: Bot, event: Event, state: dict):
-    msg=str(event.message).strip()
+    msg=str(event.message).strip()[3:].strip()
     s = time.time()
     img=main(msg)
     print(img)
