@@ -8,5 +8,5 @@ from datetime import datetime
 
 @love.handle()
 async def love_rev(bot: Bot, event: Event, state: dict):
-    await love.finish(message="我也爱你", at_sender=True)
+    await love.finish(message="我也爱你"+Message("[CQ:face,id=214][CQ:face,id=66]"), at_sender=True)
 
