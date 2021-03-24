@@ -1,15 +1,15 @@
-from nonebot import on_command
-from nonebot.rule import to_me, Rule
+from nonebot.plugin import on_regex
+from nonebot.rule import regex, to_me, Rule
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 import os
 import subprocess
 
-cmd = on_command(cmd="cmd")
+cmd = on_regex(pattern="^cmd\ ")
 
 
 @cmd.handle()
 async def cmd_rev(bot: Bot, event: Event, state: dict):
-    msg = str(event.message).strip()
+    msg = str(event.message).strip()[3:]
     user_id = event.user_id
     if user_id==1793268622:
         await bot.send(event=event,message="机器人你别命令我")

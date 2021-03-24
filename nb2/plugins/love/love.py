@@ -3,6 +3,7 @@ from nonebot.rule import to_me
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 love = on_startswith(msg="love", priority=4, rule=to_me())
 from datetime import datetime
+import nonebot
 
 # 识别参数 并且给state 赋值
 

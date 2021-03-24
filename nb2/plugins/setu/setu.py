@@ -1,4 +1,5 @@
 from nonebot import on_command
+from nonebot.plugin import on_regex
 from nonebot.rule import to_me
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 import os
@@ -6,7 +7,10 @@ import random as rd
 import uuid
 import re
 import requests
-
+import time
+import nonebot
+export = nonebot.require("nonebot_plugin_navicat")
+clien = export.redis_client # redis的
 setu = on_command(cmd="cu", aliases={"st", "色图", "涩图"})
 
 
@@ -18,8 +22,8 @@ async def setu_rev(bot: Bot, event: Event, state: dict):
     if not img_list:
         await setu.finish("色图库已经空了")
     else:
-        path = rd.choice(img_list)
-        print(await get_img_url(path_prefix + path))
+        rd.seed(time.time())
+        path = img_list[rd.randint(0, len(img_list)-1)]
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
 
@@ -96,8 +100,7 @@ async def bugouse_handle(bot: Bot, event: Event, state: dict):
     await bugouse.finish("反正我比另一个机器人涩!!!")
 
 
-yulu = on_command(cmd="语录", aliases={"yulu", "yl","来点语录"})
-
+yulu = on_command(cmd="语录", aliases={"yulu", "yl", "来点语录"})
 
 # 识别参数 并且给state 赋值
 @yulu.handle()
@@ -107,9 +110,9 @@ async def yulu_rev(bot: Bot, event: Event, state: dict):
     if not img_list:
         await yulu.finish("语录库已经空了")
     else:
-        path = rd.choice(img_list)
-        print(path)
-        print(await get_img_url(path_prefix + path))
+        rd.seed(time.time())
+        path = img_list[rd.randint(0, len(img_list)-1)]
+        clien.hincrby("yulu",path,1)
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
 
