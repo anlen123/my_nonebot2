@@ -1,6 +1,7 @@
 import aiohttp
 from nonebot import on_command
 from nonebot.adapters.cqhttp import Bot, Event
+from nonebot.plugin import on_keyword, on_regex, on_startswith
 
 
 async def get_sx(word):
@@ -20,14 +21,14 @@ async def get_sx(word):
             return msg if msg else []
 
 
-sx = on_command(cmd="sx", aliases={"缩写"})
+sx = on_regex("^sx\ |^缩写\ ")
 
 
 # 识别参数 并且给state 赋值
 
 @sx.handle()
 async def sx_rev(bot: Bot, event: Event, state: dict):
-    msg = str(event.message).strip()
+    msg = str(event.message)[2:].strip()
     date = await get_sx(msg)
     try:
         name = date[0]['name']

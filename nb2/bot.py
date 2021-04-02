@@ -6,7 +6,7 @@ app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter("cqhttp",CQHTTPBot)
 nonebot.load_plugins("plugins/love")
-nonebot.load_plugins("plugins/null")
+# nonebot.load_plugins("plugins/null")
 nonebot.load_plugins("plugins/setu")
 nonebot.load_plugins("plugins/super")
 nonebot.load_plugins("plugins/cmd")
@@ -16,19 +16,17 @@ nonebot.load_plugins("plugins/weather")
 nonebot.load_plugins("plugins/suoxie")
 nonebot.load_plugins("plugins/weiboHot")
 nonebot.load_plugins("plugins/baoshi")
+
 nonebot.load_plugin("nonebot_plugin_status")
 nonebot.load_plugin('nonebot_plugin_navicat')
 nonebot.load_plugin('nonebot_plugin_apscheduler')
 nonebot.load_plugin('nonebot_plugin_biliav')
+
 # nonebot.load_plugin('nonebot_plugin_picsearcher')
 # nonebot.load_plugins("plugins/lanzouyun")
 # nonebot.load_plugins("plugins/zhuanfa")
 # nonebot.load_plugins("plugins/test")
 
-# Modify some config / config depends on loaded configs
-# 
-# config = nonebot.get_driver().config
-# do something...
 if __name__ == "__main__":
     try:
         nonebot.run(app="bot:app")

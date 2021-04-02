@@ -1,5 +1,5 @@
 from nonebot import on_command
-from nonebot.plugin import on_regex
+from nonebot.plugin import on_regex, on_shell_command, on_startswith,on_keyword
 from nonebot.rule import to_me
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 import os
@@ -9,11 +9,11 @@ import re
 import requests
 import time
 import nonebot
+
 export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client # redis的
-setu = on_command(cmd="cu", aliases={"st", "色图", "涩图"})
-
-
+# setu = on_command(cmd="cu", aliases={"st", "色图", "涩图"})
+setu = on_regex("^st$|^cu$|^涩图$|^来站涩图$")
 # 识别参数 并且给state 赋值
 @setu.handle()
 async def setu_rev(bot: Bot, event: Event, state: dict):
@@ -27,12 +27,12 @@ async def setu_rev(bot: Bot, event: Event, state: dict):
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
 
-del_img = on_command(cmd="rm")
+del_img = on_startswith(msg="rm")
 
 
 @del_img.handle()
 async def del_img_handle(bot: Bot, event: Event, state: dict):
-    msg = str(event.message).strip().split(" ")
+    msg = str(event.message).strip().split(" ")[1:]
     path_prefix = "/root/NextCloud/img/"
     path_yulu_prefix = "/root/NextCloud/yulu/"
     path_threeciyuan_prefix = "/root/NextCloud/3c/"
@@ -56,7 +56,8 @@ async def get_img_list(path):
     return os.listdir(f"{path}")
 
 
-update_file = on_command(cmd="更新图库", aliases={"更新语录", "更新色图"}, rule=to_me())
+# update_file = on_command(cmd="更新图库", aliases={"更新语录", "更新色图"}, rule=to_me())
+update_file = on_keyword(set(["更新图库","更新语录","更新色图"]),rule=to_me())
 
 
 @update_file.handle()
@@ -65,7 +66,7 @@ async def update_file_handle(bot: Bot, event: Event, state: dict):
     await update_file.finish("图库更新完成")
 
 
-save = on_command(cmd="上传色图")
+save = on_keyword(set(["上传色图"]))
 
 
 @save.handle()
@@ -91,7 +92,7 @@ async def save_got(bot: Bot, event: Event, state: dict):
         await save.finish("好像出错了!!!")
 
 
-bugouse = on_command(cmd="不够色", aliases={"不够涩"})
+bugouse = on_keyword(set(["不够色", "不够涩"]))
 
 
 @bugouse.handle()
@@ -100,7 +101,7 @@ async def bugouse_handle(bot: Bot, event: Event, state: dict):
     await bugouse.finish("反正我比另一个机器人涩!!!")
 
 
-yulu = on_command(cmd="语录", aliases={"yulu", "yl", "来点语录"})
+yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")
 
 # 识别参数 并且给state 赋值
 @yulu.handle()
@@ -112,11 +113,15 @@ async def yulu_rev(bot: Bot, event: Event, state: dict):
     else:
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list)-1)]
+
+        # r = redis.StrictRedis(host='localhost', port=6379, db=0,password="lhq1761512493")
         clien.hincrby("yulu",path,1)
+        # clien.hincrby("yulu",path,1)
+
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
 
-yulu_save = on_command(cmd="上传语录")
+yulu_save = on_keyword(set(["上传语录"]))
 
 
 @yulu_save.handle()
@@ -141,7 +146,7 @@ async def yulu_save_got(bot: Bot, event: Event, state: dict):
     else:
         await yulu_save.finish("好像出错了!!!")
 
-threeciyuan = on_command(cmd="3c", aliases={"3次元"})
+threeciyuan = on_regex("^3c$|^3次元$")
 
 
 # 识别参数 并且给state 赋值
@@ -156,7 +161,7 @@ async def threeciyuan_rep(bot: Bot, event: Event, state: dict):
         print(path)
         print(await get_img_url(path_prefix + path))
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
-threeciyuan_save = on_command(cmd="上传真人")
+threeciyuan_save = on_keyword(set(["上传真人"]))
 
 
 @threeciyuan_save.handle()

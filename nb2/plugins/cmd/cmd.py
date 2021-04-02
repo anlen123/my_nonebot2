@@ -1,7 +1,6 @@
 from nonebot.plugin import on_regex
 from nonebot.rule import regex, to_me, Rule
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
-import os
 import subprocess
 
 cmd = on_regex(pattern="^cmd\ ")
