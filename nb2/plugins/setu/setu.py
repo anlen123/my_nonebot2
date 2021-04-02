@@ -12,9 +12,9 @@ import nonebot
 
 export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client # redis的
-# setu = on_command(cmd="cu", aliases={"st", "色图", "涩图"})
+
 setu = on_regex("^st$|^cu$|^涩图$|^来站涩图$")
-# 识别参数 并且给state 赋值
+
 @setu.handle()
 async def setu_rev(bot: Bot, event: Event, state: dict):
     path_prefix = "/root/NextCloud/img/"
@@ -29,7 +29,6 @@ async def setu_rev(bot: Bot, event: Event, state: dict):
 
 del_img = on_startswith(msg="rm")
 
-
 @del_img.handle()
 async def del_img_handle(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip().split(" ")[1:]
@@ -42,7 +41,6 @@ async def del_img_handle(bot: Bot, event: Event, state: dict):
             os.system(f"rm {path_prefix}{msg[0]}")
             os.system(f"rm {path_yulu_prefix}{msg[0]}")
             os.system(f"rm {path_threeciyuan_prefix}{msg[0]}")
-            # os.system("~/NextCloud/nextcloud_update.sh")
             await del_img.finish("成功删除")
     else:
         await del_img.finish('错误参数,例子: rm 1.jpg')
@@ -56,7 +54,6 @@ async def get_img_list(path):
     return os.listdir(f"{path}")
 
 
-# update_file = on_command(cmd="更新图库", aliases={"更新语录", "更新色图"}, rule=to_me())
 update_file = on_keyword(set(["更新图库","更新语录","更新色图"]),rule=to_me())
 
 
@@ -66,25 +63,22 @@ async def update_file_handle(bot: Bot, event: Event, state: dict):
     await update_file.finish("图库更新完成")
 
 
-save = on_keyword(set(["上传色图"]))
+save = on_regex(pattern="^上传色图$")
 
 
 @save.handle()
 async def save_handle(bot: Bot, event: Event, state: dict):
     msg = event.message
-    if msg:
+    if str(msg)!="上传色图":
         await save.finish("后面不加参数,直接at我后,输入\"上传色图\"即可.")
 
 
 @save.got(key="url", prompt="请输入图片")
 async def save_got(bot: Bot, event: Event, state: dict):
-    msg = str(event.message)
-    # print(msg)
-    url = re.findall("\[CQ:image,file=.*?,url=(.*?)\]", msg)
+    msg = event.message
+    url = msg[0].data['url']
     if url:
-        state['url'] = url[0]
-        # print(url[0])
-        r = requests.get(url[0])
+        r = requests.get(url)
         with open(f"/root/NextCloud/img/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await save.finish("上传成功!!!")
@@ -97,7 +91,6 @@ bugouse = on_keyword(set(["不够色", "不够涩"]))
 
 @bugouse.handle()
 async def bugouse_handle(bot: Bot, event: Event, state: dict):
-    print(event.raw_message)
     await bugouse.finish("反正我比另一个机器人涩!!!")
 
 
@@ -121,25 +114,22 @@ async def yulu_rev(bot: Bot, event: Event, state: dict):
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
 
-yulu_save = on_keyword(set(["上传语录"]))
+yulu_save = on_regex("^上传语录$")
 
 
 @yulu_save.handle()
 async def yulu_save_handle(bot: Bot, event: Event, state: dict):
     msg = event.message
-    if msg:
+    if str(msg)!="上传语录":
         await yulu_save.finish("后面不加参数,直接at我后,输入\"上传语录\"即可.")
 
 
 @yulu_save.got(key="url", prompt="请输入图片")
 async def yulu_save_got(bot: Bot, event: Event, state: dict):
-    msg = str(event.message)
-    # print(msg)
-    url = re.findall("\[CQ:image,file=.*?,url=(.*?)\]", msg)
+    msg = event.message
+    url = msg[0].data['url']
     if url:
-        state['url'] = url[0]
-        # print(url[0])
-        r = requests.get(url[0])
+        r = requests.get(url)
         with open(f"/root/NextCloud/yulu/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
@@ -158,8 +148,6 @@ async def threeciyuan_rep(bot: Bot, event: Event, state: dict):
         await yulu.finish("3次元库已经空了")
     else:
         path = rd.choice(img_list)
-        print(path)
-        print(await get_img_url(path_prefix + path))
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 threeciyuan_save = on_keyword(set(["上传真人"]))
 
