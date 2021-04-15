@@ -1,8 +1,10 @@
-from nonebot.plugin import on_notice
+from nonebot.plugin import on_message, on_notice
 from nonebot.rule import Rule
 from nonebot.adapters.cqhttp import Bot, Event,  Message, message
 from nonebot.typing import T_State
-import datetime,time
+import datetime
+import time
+import re
 def bool_recall() ->Rule:
     async def bool_chehui_(bot: "Bot",event: "Event",state: T_State) -> bool:
         if event.get_type() != "notice":
@@ -28,3 +30,4 @@ async def chehui_test(bot: Bot, event: Event,state: dict):
     timeArray = time.localtime(msg['time'])
     time_now = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
     await bot.send(event,message=Message(msg['raw_message'])+"\n发送时间: "+time_now+"\n发送人: "+ str(msg['sender']['nickname']))
+

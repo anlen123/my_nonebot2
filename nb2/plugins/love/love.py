@@ -11,10 +11,10 @@ from nonebot.typing import T_State
 #     return Rule(bool_img_)
 # 识别参数 并且给state 赋值
 
-love = on_startswith(msg="love", priority=4, rule=to_me())
 # love = on_regex(pattern="^love$",rule=to_me())
 # love = on_message(rule=bool_img())
 
+love = on_startswith(msg="love", rule=to_me())
 
 @love.handle()
 async def love_rev(bot: Bot, event: Event, state: dict):

@@ -22,7 +22,7 @@ async def pixiv_rev(bot: Bot, event: Event, state: dict):
     else:
         msg = ""
         for name in names:
-            msg+=f"[CQ:image,file=file:////root/nextcloud/pixiv/{name}]"
+            msg+=f"[CQ:image,file=file:////root/NextCloud/pixiv/{name}]"
         await bot.send(event=event,message=Message(msg))
 
 headers = {
