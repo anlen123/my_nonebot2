@@ -9,7 +9,12 @@ import re
 import requests
 import time
 import nonebot
-
+def pingbi(event:Event)->bool:
+    goup_id = event.dict().get('group_id')
+    if goup_id:
+        if str(goup_id) in ['389410891']:
+            return True
+    return False
 export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client # redis的
 
@@ -17,6 +22,8 @@ setu = on_regex("^st$|^cu$|^涩图$|^来站涩图$")
 
 @setu.handle()
 async def setu_rev(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     path_prefix = "/root/NextCloud/img/"
     img_list = await get_img_list(path_prefix)
     if not img_list:
@@ -59,6 +66,8 @@ update_file = on_keyword(set(["更新图库","更新语录","更新色图"]),rul
 
 @update_file.handle()
 async def update_file_handle(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     os.system("/root/NextCloud/nextcloud_update.sh")
     await update_file.finish("图库更新完成")
 
@@ -68,6 +77,8 @@ save = on_regex(pattern="^上传色图$")
 
 @save.handle()
 async def save_handle(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     msg = event.message
     if str(msg)!="上传色图":
         await save.finish("后面不加参数,直接at我后,输入\"上传色图\"即可.")
@@ -99,6 +110,8 @@ yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")
 # 识别参数 并且给state 赋值
 @yulu.handle()
 async def yulu_rev(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     path_prefix = "/root/NextCloud/yulu/"
     img_list = await get_img_list(path_prefix)
     if not img_list:
@@ -119,6 +132,8 @@ yulu_save = on_regex("^上传语录$")
 
 @yulu_save.handle()
 async def yulu_save_handle(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     msg = event.message
     if str(msg)!="上传语录":
         await yulu_save.finish("后面不加参数,直接at我后,输入\"上传语录\"即可.")
@@ -142,6 +157,8 @@ threeciyuan = on_regex("^3c$|^3次元$")
 # 识别参数 并且给state 赋值
 @threeciyuan.handle()
 async def threeciyuan_rep(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     path_prefix = "/root/NextCloud/3c/"
     img_list = await get_img_list(path_prefix)
     if not img_list:
@@ -154,6 +171,8 @@ threeciyuan_save = on_keyword(set(["上传真人"]))
 
 @threeciyuan_save.handle()
 async def yulu_save_handle(bot: Bot, event: Event, state: dict):
+    if pingbi(event):
+        return 
     msg = event.message
     if msg:
         await yulu_save.finish("后面不加参数,直接at我后,输入\"上传真人\"即可.")

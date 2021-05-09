@@ -19,7 +19,7 @@ async def run_every_2_hour():
     #    await bot.send_msg(message_type="group",message=MessageSegment.image(f"file:////root/NextCloud/baoshi/{hour}.png"),group_id=68724983)
        await bot.send_msg(message=MessageSegment.image(f"file:////root/NextCloud/baoshi/{hour}.png"),user_id="1761512493")
     #    await bot.call_api("send_msg",message=MessageSegment.image(f"file:////root/NextCloud/baoshi/{hour}.png"),user_id="1761512493")
-@scheduler.scheduled_job("cron",  id="xiaban",hour="17",minute="30")
+@scheduler.scheduled_job("cron",  id="xiaban",hour="20",minute="00")
 async def workTMD():
    bot = nonebot.get_bots()
    if bot :

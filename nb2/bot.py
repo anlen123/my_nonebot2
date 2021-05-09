@@ -19,6 +19,7 @@ nonebot.load_plugins("plugins/weiboHot")
 nonebot.load_plugins("plugins/baoshi")
 # nonebot.load_plugins("plugins/banrecall")
 nonebot.load_plugins("plugins/rep_recall")
+nonebot.load_plugins("plugins/ygo")
 
 nonebot.load_plugin("nonebot_plugin_status")
 # nonebot.load_plugin('nonebot_plugin_navicat')
