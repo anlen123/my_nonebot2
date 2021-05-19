@@ -1,6 +1,7 @@
 *.log
 *.image
 *.cache
+log
 gocp/data/
-
 gocp/config.hjson
+gocp/session.token
