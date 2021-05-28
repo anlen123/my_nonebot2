@@ -24,7 +24,7 @@ setu = on_regex("^st$|^cu$|^涩图$|^来站涩图$")
 async def setu_rev(bot: Bot, event: Event, state: dict):
     if pingbi(event):
         return 
-    path_prefix = "/root/NextCloud/img/"
+    path_prefix = "/root/QQbotFiles/img/"
     img_list = await get_img_list(path_prefix)
     if not img_list:
         await setu.finish("色图库已经空了")
@@ -39,9 +39,9 @@ del_img = on_startswith(msg="rm")
 @del_img.handle()
 async def del_img_handle(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip().split(" ")[1:]
-    path_prefix = "/root/NextCloud/img/"
-    path_yulu_prefix = "/root/NextCloud/yulu/"
-    path_threeciyuan_prefix = "/root/NextCloud/3c/"
+    path_prefix = "/root/QQbotFiles/img/"
+    path_yulu_prefix = "/root/QQbotFiles/yulu/"
+    path_threeciyuan_prefix = "/root/QQbotFiles/3c/"
     if len(msg) == 1:
         if msg[0].endswith("png") or msg[0].endswith("jpg") or msg[0].endswith("jpeg"):
             print(f"rm {path_prefix}{msg[0]}")
@@ -68,7 +68,7 @@ update_file = on_keyword(set(["更新图库","更新语录","更新色图"]),rul
 async def update_file_handle(bot: Bot, event: Event, state: dict):
     if pingbi(event):
         return 
-    os.system("/root/NextCloud/nextcloud_update.sh")
+    os.system("/root/QQbotFiles/QQbotFiles_update.sh")
     await update_file.finish("图库更新完成")
 
 
@@ -90,7 +90,7 @@ async def save_got(bot: Bot, event: Event, state: dict):
     url = msg[0].data['url']
     if url:
         r = requests.get(url)
-        with open(f"/root/NextCloud/img/{uuid.uuid4()}.png", mode="wb") as f:
+        with open(f"/root/QQbotFiles/img/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await save.finish("上传成功!!!")
     else:
@@ -112,7 +112,7 @@ yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")
 async def yulu_rev(bot: Bot, event: Event, state: dict):
     if pingbi(event):
         return 
-    path_prefix = "/root/NextCloud/yulu/"
+    path_prefix = "/root/QQbotFiles/yulu/"
     img_list = await get_img_list(path_prefix)
     if not img_list:
         await yulu.finish("语录库已经空了")
@@ -145,7 +145,7 @@ async def yulu_save_got(bot: Bot, event: Event, state: dict):
     url = msg[0].data['url']
     if url:
         r = requests.get(url)
-        with open(f"/root/NextCloud/yulu/{uuid.uuid4()}.png", mode="wb") as f:
+        with open(f"/root/QQbotFiles/yulu/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
     else:
@@ -159,7 +159,7 @@ threeciyuan = on_regex("^3c$|^3次元$")
 async def threeciyuan_rep(bot: Bot, event: Event, state: dict):
     if pingbi(event):
         return 
-    path_prefix = "/root/NextCloud/3c/"
+    path_prefix = "/root/QQbotFiles/3c/"
     img_list = await get_img_list(path_prefix)
     if not img_list:
         await yulu.finish("3次元库已经空了")
@@ -187,7 +187,7 @@ async def yulu_save_got(bot: Bot, event: Event, state: dict):
         state['url'] = url[0]
         # print(url[0])
         r = requests.get(url[0])
-        with open(f"/root/NextCloud/3c/{uuid.uuid4()}.png", mode="wb") as f:
+        with open(f"/root/QQbotFiles/3c/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
     else:

@@ -31,7 +31,7 @@ async def ygo_rev(bot: Bot, event: Event, state: dict):
             list_pic = re.findall('\<a href\=\"(.*?)\" target\=\"_blank\"\>', txt)
             list_pic = [x for x in list_pic if str(x).endswith(".jpg")]
 
-    pic_all = os.listdir("/root/NextCloud/ygo")
+    pic_all = os.listdir("/root/QQbotFiles/ygo")
 
     send_msg=""
     
@@ -41,7 +41,7 @@ async def ygo_rev(bot: Bot, event: Event, state: dict):
             if x not in pic_all:
                 await down_img(x)
             name = x[x.rfind("/")+1:]
-            send_msg+=f'[CQ:image,file=file:////root/NextCloud/ygo/{name}]'
+            send_msg+=f'[CQ:image,file=file:////root/QQbotFiles/ygo/{name}]'
 
     if send_msg!="":
         await bot.send(event=event,message=Message(send_msg))
@@ -52,7 +52,7 @@ async def down_img(url):
     async with aiohttp.ClientSession() as session: 
         async with session.get(url=url, headers=headers) as response:
             content = await response.content.read()   
-            with open(f"/root/NextCloud/ygo/{url[url.rfind('/')+1:]}",mode= "wb") as f:
+            with open(f"/root/QQbotFiles/ygo/{url[url.rfind('/')+1:]}",mode= "wb") as f:
                 f.write(content)
 
 
@@ -61,5 +61,5 @@ suiji = on_regex(pattern="^随机一卡$")
 
 @suiji.handle()
 async def ygo_rev(bot: Bot, event: Event, state: dict):
-    pic_all = os.listdir("/root/NextCloud/ygo")
-    await bot.send(event=event,message=MessageSegment.image(file=f"file:////root/NextCloud/ygo/{random.choice(pic_all)}"))
+    pic_all = os.listdir("/root/QQbotFiles/ygo")
+    await bot.send(event=event,message=MessageSegment.image(file=f"file:////root/QQbotFiles/ygo/{random.choice(pic_all)}"))

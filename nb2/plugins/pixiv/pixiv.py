@@ -22,7 +22,7 @@ async def pixiv_rev(bot: Bot, event: Event, state: dict):
     else:
         msg = ""
         for name in names:
-            msg+=f"[CQ:image,file=file:////root/NextCloud/pixiv/{name}]"
+            msg+=f"[CQ:image,file=file:////root/QQbotFiles/pixiv/{name}]"
         await bot.send(event=event,message=Message(msg))
 
 headers = {
@@ -39,7 +39,7 @@ async def fetch(session, url, name):
         code = response.status
         if code ==200:
             content = await response.content.read()
-            with open("/root/NextCloud/pixiv/"+name, mode='wb') as f:
+            with open("/root/QQbotFiles/pixiv/"+name, mode='wb') as f:
                 f.write(content)
             return True
         return False
@@ -57,9 +57,9 @@ async def main(PID):
         name = url[url.rfind("/")+1:]
         num= 1
         names = []
-        if os.path.exists("/root/NextCloud/pixiv/"+name):
+        if os.path.exists("/root/QQbotFiles/pixiv/"+name):
             hou = down_url[0][1]
-            while os.path.exists("/root/NextCloud/pixiv/"+name) and num<=6:
+            while os.path.exists("/root/QQbotFiles/pixiv/"+name) and num<=6:
                 names.append(name)
                 newstr = f"_p{num}.{hou}"
                 num+=1

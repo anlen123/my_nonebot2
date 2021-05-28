@@ -5,7 +5,6 @@ from selenium import webdriver
 from nonebot.rule import to_me
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 import time
-from playwright.async_api import async_playwright
 xr = on_regex(pattern="^xr\ ")
 # 识别参数 并且给state 赋值
 
@@ -15,27 +14,12 @@ async def xr_rev(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip()[3:].strip()
     s = time.time()
     img = main(msg)
-    # img=await main_async(msg)
     try:
-        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/NextCloud/xr/"+img)+f"耗时:{time.time()-s}")
+        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
     except:
         await bot.send(event=event, message="错误")
 
 
-async def main_async(url):
-    async with async_playwright() as p:
-        for browser_type in [p.chromium]:
-            browser = await browser_type.launch()
-            page = await browser.new_page()
-            await page.goto(url)
-            picture_time = time.strftime(
-                "%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
-            path = f'{picture_time}.png'
-            await page.screenshot(path=path)
-            await browser.close()
-            img_name = os.path.abspath(picture_time+".png")
-            os.system(f"mv {img_name} /root/NextCloud/xr")
-            return path
 
 
 def main(url):
@@ -57,6 +41,6 @@ def main(url):
     picture_url = driver.get_screenshot_as_file(f'{picture_time}.png')
     print("%s：截图成功！！！" % picture_url)
     driver.quit()
-    os.system(f"mv {picture_time}.png /root/NextCloud/xr")
-    # os.system("./NextCloud/nextcloud_update.sh")
+    os.system(f"mv {picture_time}.png /root/QQbotFiles/xr")
+    # os.system("./QQbotFiles/QQbotFiles_update.sh")
     return picture_time+".png"
