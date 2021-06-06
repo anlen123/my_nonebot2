@@ -1,3 +1,4 @@
+#!/root/miniconda3/bin/python
 # -*- coding: utf-8 -*-
 import nonebot
 from nonebot.adapters.cqhttp import Bot as CQHTTPBot 
