@@ -22,7 +22,13 @@ async def pixiv_rev(bot: Bot, event: Event, state: dict):
     else:
         msg = ""
         for name in names:
-            msg+=f"[CQ:image,file=file:////root/QQbotFiles/pixiv/{name}]"
+            size = os.path.getsize(f"/root/QQbotFiles/pixiv/{name}")
+            print(f"{size//1024//1024>=10}M")
+            if size//1024//1024>=10:
+                msg+="文件大于10M，不能发出来"
+                os.remove(f"/root/QQbotFiles/pixiv/{name}")
+            else:
+                msg+=f"[CQ:image,file=file:////root/QQbotFiles/pixiv/{name}]"
         await bot.send(event=event,message=Message(msg))
 
 headers = {

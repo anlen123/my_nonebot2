@@ -2,7 +2,7 @@ from nonebot.plugin import on_regex
 from nonebot.rule import regex, to_me, Rule
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 import subprocess
-
+import asyncio
 cmd = on_regex(pattern="^cmd\ ")
 
 
@@ -17,10 +17,8 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
         if "exit" in msg or "shutdown" in msg:
             await bot.send(event=event, message="别想着干坏事")
             return
-        subp = subprocess.Popen("cd;" + msg + " &", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,encoding="utf-8")
-        out, err = subp.communicate()
-        if out + err != "":
-            msgg = out+err 
+        msgg = await run(f"cd ;{msg}")
+        if msgg!= "":
             if len(msgg)>=7000:
                 msgg = msgg[:7000]
             await bot.send(event=event, message=Message(msgg))
@@ -31,13 +29,18 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
             await bot.send(event=event, message="别的干坏事")
             return
         msg = f"runuser -l dmf -c \"cd ;{msg}\""
-        subp = subprocess.Popen("cd;" + msg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                encoding="utf-8")
-        out, err = subp.communicate()
-        if out + err != "":
-            msgg = out+err 
+        msgg = await run(f"cd ;{msg}")
+        if msgg!="":
             if len(msgg)>=7000:
                 msgg = msgg[:7000]
             await bot.send(event=event, message=Message(msgg))
         else:
             await bot.send(event=event, message="您的指令是没有返回值的")
+async def run(cmd):
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+    return (stdout+stderr).decode()
