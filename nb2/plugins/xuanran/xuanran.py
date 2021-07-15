@@ -13,6 +13,8 @@ xr = on_regex(pattern="^xr\ ")
 async def xr_rev(bot: Bot, event: Event, state: dict):
     msg = str(event.message).strip()[3:].strip()
     s = time.time()
+    if not (msg.startswith("http://") or msg.startswith("https://")):
+        msg = f"http://{msg}"
     img = await run(f"/root/miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))

@@ -120,9 +120,7 @@ async def yulu_rev(bot: Bot, event: Event, state: dict):
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list)-1)]
 
-        # r = redis.StrictRedis(host='localhost', port=6379, db=0,password="lhq1761512493")
         clien.hincrby("yulu",path,1)
-        # clien.hincrby("yulu",path,1)
 
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
