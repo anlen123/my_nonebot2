@@ -1,8 +1,8 @@
 # go-cqhttp 默认配置文件
 
 account: # 账号相关
-  uin: 1233456 # QQ账号
-  password: '' # 密码为空时使用扫码登录
+  uin: 1928994748 # QQ账号
+  password: 'lhq1761512493' # 密码为空时使用扫码登录
   encrypt: false  # 是否开启密码加密
   status: 0      # 在线状态 请参考 https://docs.go-cqhttp.org/guide/config.html#在线状态
   relogin: # 重连设置
@@ -24,11 +24,11 @@ message:
   # 可选: string,array
   post-format: string
   # 是否忽略无效的CQ码, 如果为假将原样发送
-  ignore-invalid-cqcode: false
+  ignore-invalid-cqcode: true
   # 是否强制分片发送消息
   # 分片发送将会带来更快的速度
   # 但是兼容性会有些问题
-  force-fragment: false
+  force-fragment: true
   # 是否将url分片发送
   fix-url: false
   # 下载图片等请求网络代理
