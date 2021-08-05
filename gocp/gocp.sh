@@ -1,2 +1,2 @@
 cd /root/my_nonebot2/gocp 
-./go
+./go > ../gocp.log

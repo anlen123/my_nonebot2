@@ -29,6 +29,7 @@ nonebot.load_plugin('nonebot_plugin_biliav')
 nonebot.load_plugin('nonebot_plugin_test')
 
 nonebot.load_plugin("nonebot_plugin_docs")
+# nonebot.load_plugin("nonebot_plugin_gamedraw")
 if __name__ == "__main__":
     try:
         nonebot.run(app="bot:app")

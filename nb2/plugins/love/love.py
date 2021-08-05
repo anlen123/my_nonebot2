@@ -11,15 +11,12 @@ from nonebot.typing import T_State
 #     return Rule(bool_img_)
 # 识别参数 并且给state 赋值
 
-# love = on_regex(pattern="^love$",rule=to_me())
 # love = on_message(rule=bool_img())
 
 love = on_startswith(msg="love", rule=to_me())
 
+# love = on_regex(pattern="为什么$",rule=to_me())
 @love.handle()
 async def love_rev(bot: Bot, event: Event, state: dict):
     print(event.get_message())
     await love.finish(message="我也爱你"+Message("[CQ:face,id=214][CQ:face,id=66]"), at_sender=True)
-    # await love.finish(message="我也爱你"+Message("[CQ:face,id=214]"), at_sender=True)
-    # await love.finish(message="我也爱你"+MessageSegment.face(214),at_sender=True)
-    # await bot.send(message="我也爱你"+Message("[CQ:face,id=214]"),at_sender=True)

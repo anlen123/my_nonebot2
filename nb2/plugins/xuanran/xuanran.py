@@ -36,3 +36,43 @@ async def run(cmd):
 
     stdout, stderr = await proc.communicate()
     return (stdout+stderr).decode()
+
+
+
+why = on_regex(pattern="是什么$")
+
+@why.handle()
+async def why_rev(bot: Bot, event: Event, state: dict):
+    msg = event.get_plaintext()
+    msg = "https://zh.wikipedia.org/wiki/"+msg[:-3]
+    s = time.time()
+    img = await run(f"/root/miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    print(img)
+    print(img.endswith(".png\n"))
+    print(img.startswith("True：截图成功！！！"))
+    if img and img.endswith(".png\n") and img.startswith("True：截图成功！！！"):
+        img = img.split("\n")[1]
+        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
+    else:
+        await bot.send(event=event, message="错误")
+
+    
+
+mengniang = on_regex(pattern="是什么萌娘$")
+
+@mengniang.handle()
+async def mengniang_rev(bot: Bot, event: Event, state: dict):
+    msg = event.get_plaintext()
+    msg = "https://zh.moegirl.org.cn/"+msg[:-5]
+    s = time.time()
+    img = await run(f"/root/miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    print(img)
+    print(img.endswith(".png\n"))
+    print(img.startswith("True：截图成功！！！"))
+    if img and img.endswith(".png\n") and img.startswith("True：截图成功！！！"):
+        img = img.split("\n")[1]
+        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
+    else:
+        await bot.send(event=event, message="错误")
+
+    
