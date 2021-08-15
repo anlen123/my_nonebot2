@@ -4,6 +4,11 @@ from datetime import datetime
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
+from .config import Config
+
+global_config = nonebot.get_driver().config
+imgRoot=global_config.dict()['imgroot']
+
 @scheduler.scheduled_job("cron",  id="baoshi",hour="*/1",minute="0")
 async def run_every_2_hour():
    hour = datetime.now().hour
@@ -16,12 +21,10 @@ async def run_every_2_hour():
    bot = nonebot.get_bots()
    if bot :
        bot = bot['1928994748']
-    #    await bot.send_msg(message_type="group",message=MessageSegment.image(f"file:////root/QQbotFiles/baoshi/{hour}.png"),group_id=68724983)
-       await bot.send_msg(message=MessageSegment.image(f"file:////root/QQbotFiles/baoshi/{hour}.png"),user_id="1761512493")
-    #    await bot.call_api("send_msg",message=MessageSegment.image(f"file:////root/QQbotFiles/baoshi/{hour}.png"),user_id="1761512493")
+       await bot.send_msg(message=MessageSegment.image(f"file:///{imgRoot}QQbotFiles/baoshi/{hour}.png"),user_id="1761512493")
 @scheduler.scheduled_job("cron",  id="xiaban",hour="20",minute="00")
 async def workTMD():
    bot = nonebot.get_bots()
    if bot :
        bot = bot['1928994748']
-       await bot.send_msg(message=MessageSegment.image(f"file:////root/QQbotFiles/baoshi/workTMD.png"),user_id="1761512493")
+       await bot.send_msg(message=MessageSegment.image(f"file:///{imgRoot}/QQbotFiles/baoshi/workTMD.png"),user_id="1761512493")

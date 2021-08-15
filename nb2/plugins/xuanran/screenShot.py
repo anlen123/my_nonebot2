@@ -21,7 +21,7 @@ def main(url):
     picture_url = driver.get_screenshot_as_file(f'{picture_time}.png')
     print("%s：截图成功！！！" % picture_url)
     driver.quit()
-    os.system(f"mv {picture_time}.png /root/QQbotFiles/xr")
+    os.system(f"mv {picture_time}.png /home/lhq/QQbotFiles/xr")
     # os.system("./QQbotFiles/QQbotFiles_update.sh")
     return picture_time+".png"
 

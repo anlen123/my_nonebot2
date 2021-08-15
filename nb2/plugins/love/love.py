@@ -13,10 +13,16 @@ from nonebot.typing import T_State
 
 # love = on_message(rule=bool_img())
 
+import nonebot
+from .config import Config
+
+global_config = nonebot.get_driver().config
+imgRoot=global_config.dict()['imgroot']
 love = on_startswith(msg="love", rule=to_me())
 
 # love = on_regex(pattern="为什么$",rule=to_me())
 @love.handle()
 async def love_rev(bot: Bot, event: Event, state: dict):
+    print(imgRoot)
     print(event.get_message())
     await love.finish(message="我也爱你"+Message("[CQ:face,id=214][CQ:face,id=66]"), at_sender=True)

@@ -5,10 +5,15 @@ from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message, event, 
 from nonebot.typing import T_State
 import os 
 sendImg = on_regex(pattern="^send\ ")
+import nonebot
+from .config import Config
+
+global_config = nonebot.get_driver().config
+imgRoot=global_config.dict()['imgroot']
 
 @sendImg.handle()
 async def love_rev(bot: Bot, event: Event, state: dict):
-    msg="/root/"+str(event.get_message())[5:]
+    msg=f"{imgRoot}"+str(event.get_message())[5:]
     print(msg)
     if os.path.exists(msg):
         await bot.send(event=event,message=MessageSegment.image(f"file:///{msg}"))

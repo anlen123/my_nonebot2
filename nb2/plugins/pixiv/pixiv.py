@@ -8,6 +8,10 @@ import aiohttp
 import re
 import os
 import random
+from .config import Config
+
+global_config = nonebot.get_driver().config
+imgRoot=global_config.dict()['imgroot']
 def isPixivURL() -> Rule:
     async def isPixivURL_(bot: "Bot", event: "Event", state: T_State) -> bool:
         if event.get_type() != "message":
@@ -45,16 +49,16 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
 }
 
-proxy = "http://127.0.0.1:1081"
+# proxy= "http://127.0.0.1:1081"
 
 async def fetch(session, url, name):
     print("发送请求：", url)
-    async with session.get(url=url, headers=headers,proxy=proxy) as response:
+    async with session.get(url=url, headers=headers) as response:
     # async with session.get(url=url, headers=headers) as response:
         code = response.status
         if code ==200:
             content = await response.content.read()
-            with open("/root/QQbotFiles/pixiv/"+name, mode='wb') as f:
+            with open(f"{imgRoot}QQbotFiles/pixiv/"+name, mode='wb') as f:
                 f.write(content)
             return True
         return False
@@ -62,7 +66,7 @@ async def fetch(session, url, name):
 async def main(PID):
     url = f"https://www.pixiv.net/artworks/{PID}"
     async with aiohttp.ClientSession() as session:
-        x = await session.get(url=url, headers=headers,proxy=proxy)
+        x = await session.get(url=url, headers=headers)
         # x = await session.get(url=url, headers=headers)
         content = await x.content.read()
         down_url = re.findall('"original":"(.*?)\.(png|jpg|jepg)"', content.decode())
@@ -72,9 +76,9 @@ async def main(PID):
         name = url[url.rfind("/")+1:]
         num= 1
         names = []
-        if os.path.exists("/root/QQbotFiles/pixiv/"+name):
+        if os.path.exists(f"{imgRoot}QQbotFiles/pixiv/"+name):
             hou = down_url[0][1]
-            while os.path.exists("/root/QQbotFiles/pixiv/"+name) and num<=6:
+            while os.path.exists(f"{imgRoot}QQbotFiles/pixiv/"+name) and num<=6:
                 names.append(name)
                 newstr = f"_p{num}.{hou}"
                 num+=1
@@ -96,7 +100,7 @@ async def getImgsByDay(url):
             url = 'https://www.pixiv.net/ranking.php'
         else:
             url = f'https://www.pixiv.net/ranking.php?mode={url}'
-        response = await session.get(url=url,headers=headers,proxy=proxy)
+        response = await session.get(url=url,headers=headers)
         text = (await response.content.read()).decode()
         imgs = set(re.findall('\<a href\=\"\/artworks\/(.*?)\"', text))
         return list(imgs)
@@ -123,13 +127,13 @@ async def pixiv_rev(bot: Bot, event: Event, state: dict):
             for name in names:
                 if name:
                     for t in name:
-                        size = os.path.getsize(f"/root/QQbotFiles/pixiv/{t}")
+                        size = os.path.getsize(f"{imgRoot}QQbotFiles/pixiv/{t}")
                         # print(f"{size//1024//1024>=10}M")
                         if size//1024//1024>=10:
                             msg+="文件大于10M，不能发出来"
-                            os.remove(f"/root/QQbotFiles/pixiv/{t}")
+                            os.remove(f"{imgRoot}QQbotFiles/pixiv/{t}")
                         else:
-                            msg+=f"[CQ:image,file=file:////root/QQbotFiles/pixiv/{t}]"
+                            msg+=f"[CQ:image,file=file:////home/lhq/QQbotFiles/pixiv/{t}]"
             await bot.send(event=event,message=Message(msg))
     else:
         await bot.send(event=event,message=Message("参数错误\n样例: 'pixivRank 1' , 1:day,7:weekly,30:monthly"))    
@@ -142,11 +146,11 @@ async def send(pid:str,event:Event,bot:Bot):
     else:
         msg = ""
         for name in names:
-            size = os.path.getsize(f"/root/QQbotFiles/pixiv/{name}")
+            size = os.path.getsize(f"{imgRoot}QQbotFiles/pixiv/{name}")
             # print(f"{size//1024//1024>=10}M")
             if size//1024//1024>=10:
                 msg+="文件大于10M，不能发出来"
-                os.remove(f"/root/QQbotFiles/pixiv/{name}")
+                os.remove(f"{imgRoot}QQbotFiles/pixiv/{name}")
             else:
-                msg+=f"[CQ:image,file=file:////root/QQbotFiles/pixiv/{name}]"
+                msg+=f"[CQ:image,file=file:////home/lhq/QQbotFiles/pixiv/{name}]"
         await bot.send(event=event,message=Message(msg))

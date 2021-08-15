@@ -8,6 +8,12 @@ import asyncio
 xr = on_regex(pattern="^xr\ ")
 # 识别参数 并且给state 赋值
 
+import nonebot
+from .config import Config
+
+global_config = nonebot.get_driver().config
+imgRoot=global_config.dict()['imgroot']
+
 
 @xr.handle()
 async def xr_rev(bot: Bot, event: Event, state: dict):
@@ -15,13 +21,13 @@ async def xr_rev(bot: Bot, event: Event, state: dict):
     s = time.time()
     if not (msg.startswith("http://") or msg.startswith("https://")):
         msg = f"http://{msg}"
-    img = await run(f"/root/miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{imgRoot}miniconda3/bin/python /home/lhq/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
     if img and img.endswith(".png\n") and img.startswith("True：截图成功！！！"):
         img = img.split("\n")[1]
-        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
+        await bot.send(event=event, message=MessageSegment.image("file:///"+f"{imgRoot}QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
     else:
         await bot.send(event=event, message="错误")
 
@@ -46,13 +52,13 @@ async def why_rev(bot: Bot, event: Event, state: dict):
     msg = event.get_plaintext()
     msg = "https://zh.wikipedia.org/wiki/"+msg[:-3]
     s = time.time()
-    img = await run(f"/root/miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{imgRoot}miniconda3/bin/python /home/lhq/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
     if img and img.endswith(".png\n") and img.startswith("True：截图成功！！！"):
         img = img.split("\n")[1]
-        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
+        await bot.send(event=event, message=MessageSegment.image("file:///"+f"{imgRoot}QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
     else:
         await bot.send(event=event, message="错误")
 
@@ -65,13 +71,13 @@ async def mengniang_rev(bot: Bot, event: Event, state: dict):
     msg = event.get_plaintext()
     msg = "https://zh.moegirl.org.cn/"+msg[:-5]
     s = time.time()
-    img = await run(f"/root/miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{imgRoot}miniconda3/bin/python /home/lhq/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
     if img and img.endswith(".png\n") and img.startswith("True：截图成功！！！"):
         img = img.split("\n")[1]
-        await bot.send(event=event, message=MessageSegment.image("file:///"+"/root/QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
+        await bot.send(event=event, message=MessageSegment.image("file:///"+f"{imgRoot}QQbotFiles/xr/"+img)+f"耗时:{time.time()-s}")
     else:
         await bot.send(event=event, message="错误")
 
