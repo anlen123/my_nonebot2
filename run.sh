@@ -19,7 +19,8 @@ tmux kill-pane -t gocp
 tmux new -s nb2 -d 
 tmux new -s gocp  -d 
 
-tmux send -t "nb2" "export ALL_PROXY=http://127.0.0.1:1081;cd /root/my_nonebot2/nb2/; python bot.py >> ../nb2.log" Enter
-tmux send -t "gocp" "cd /root/my_nonebot2/gocp/ ; ./go >> ../goqp.log" Enter
+#tmux send -t "nb2" "export ALL_PROXY=http://127.0.0.1:1081;cd /root/my_nonebot2/nb2/; python bot.py >> ../nb2.log" Enter
+#tmux send -t "gocp" "cd /root/my_nonebot2/gocp/ ; ./go >> ../goqp.log" Enter
 
-
+tmux send -t "nb2" "cd /home/lhq/my_nonebot2/nb2/; python bot.py > /home/lhq/nb2.log" Enter
+tmux send -t "gocp" "cd /home/lhq/my_nonebot2/gocp/ ; ./go" Enter

@@ -9,6 +9,7 @@ import re
 import requests
 import time
 import nonebot
+import time 
 from .config import Config
 
 global_config = nonebot.get_driver().config
@@ -124,9 +125,8 @@ async def yulu_rev(bot: Bot, event: Event, state: dict):
     else:
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list)-1)]
-
-        clien.hincrby("yulu",path,1)
-
+        day = time.strftime("%m-%d")
+        clien.hincrby(f"{day}:yulu",path,1)
         await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
 
 
@@ -195,3 +195,21 @@ async def yulu_save_got(bot: Bot, event: Event, state: dict):
         await yulu_save.finish("上传成功!!!")
     else:
         await yulu_save.finish("好像出错了!!!")
+
+
+ylRank = on_regex(pattern="^ylRank$")
+
+
+@ylRank.handle()
+async def ylRank(bot: Bot, event: Event, state: dict):
+    # user = str(event.dict()['sender']['user_id'])+ ":"+str(event.dict()['sender']['nickname'])
+    # clien.hincrby("rank",user,1)
+    day = time.strftime("%m-%d")
+    yuluMsg = eval(str(clien.hgetall(f"{day}:yulu")))
+    yuluMsg = sorted(yuluMsg.items(),key=lambda k:-int(k[1]))[:3]
+    print(yuluMsg)
+    msg = "今日语录排行榜\n"
+    for index,x in enumerate(yuluMsg):
+        count = re.findall("\(b'(.*?)',\ b'(.*?)'\)",str(x))[0]
+        msg+=f"第{index+1}名: 出现次数:{count[1]} [CQ:image,file=file:///{imgRoot}QQbotFiles/yulu/{count[0]}]\n"
+    await bot.send(event=event,message=Message(msg))

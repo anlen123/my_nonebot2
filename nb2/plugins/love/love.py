@@ -3,6 +3,7 @@ from nonebot.plugin import on_notice, on_regex
 from nonebot.rule import Rule, regex, to_me
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message, message
 from nonebot.typing import T_State
+import re
 # def bool_img() -> Rule:
 #     async def bool_img_(bot: "Bot", event: "Event", state: T_State) -> bool:
 #         if event.get_type() != "message":
@@ -23,6 +24,5 @@ love = on_startswith(msg="love", rule=to_me())
 # love = on_regex(pattern="为什么$",rule=to_me())
 @love.handle()
 async def love_rev(bot: Bot, event: Event, state: dict):
-    print(imgRoot)
-    print(event.get_message())
+    # x = clien.hgetall("yulu")
     await love.finish(message="我也爱你"+Message("[CQ:face,id=214][CQ:face,id=66]"), at_sender=True)

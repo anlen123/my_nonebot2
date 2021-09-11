@@ -21,6 +21,7 @@ async def xr_rev(bot: Bot, event: Event, state: dict):
     s = time.time()
     if not (msg.startswith("http://") or msg.startswith("https://")):
         msg = f"http://{msg}"
+    msg = msg.replace("。",".")
     img = await run(f"{imgRoot}miniconda3/bin/python /home/lhq/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))

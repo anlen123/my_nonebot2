@@ -1,4 +1,5 @@
 from nonebot import on_command, on_startswith, run
+import imageio
 import nonebot
 from nonebot.rule import to_me,Rule
 from nonebot.plugin import on_message, on_regex
@@ -9,6 +10,9 @@ import re
 import os
 import random
 from .config import Config
+from PIL import Image
+import cv2
+import asyncio
 
 global_config = nonebot.get_driver().config
 imgRoot=global_config.dict()['imgroot']
@@ -29,7 +33,11 @@ async def pixivURL(bot: Bot, event: Event, state: dict):
     pid = re.findall("https://www.pixiv.net/artworks/(\d+)|illust_id=(\d+)", str(event.get_message()))
     if pid:
         pid = [x for x in pid[0] if x][0]
-        await send(pid,event,bot)
+        xx = (await checkGIF(pid))
+        if xx!="NO":
+            await GIF_send(xx,pid,event,bot)
+        else:
+            await send(pid,event,bot)
 
 
 # pixiv = on_command(cmd="pixiv")
@@ -42,7 +50,11 @@ pixiv = on_regex(pattern="^pixiv\ ")
 @pixiv.handle()
 async def pixiv_rev(bot: Bot, event: Event, state: dict):
     pid = str(event.message).strip()[6:].strip()
-    await send(pid,event,bot)
+    xx = (await checkGIF(pid))
+    if xx!="NO":
+        await GIF_send(xx,pid,event,bot)
+    else:
+        await send(pid,event,bot)
 
 headers = {
     'referer': 'https://www.pixiv.net',
@@ -128,12 +140,9 @@ async def pixiv_rev(bot: Bot, event: Event, state: dict):
                 if name:
                     for t in name:
                         size = os.path.getsize(f"{imgRoot}QQbotFiles/pixiv/{t}")
-                        # print(f"{size//1024//1024>=10}M")
                         if size//1024//1024>=10:
-                            msg+="文件大于10M，不能发出来"
-                            os.remove(f"{imgRoot}QQbotFiles/pixiv/{t}")
-                        else:
-                            msg+=f"[CQ:image,file=file:////home/lhq/QQbotFiles/pixiv/{t}]"
+                            await yasuo(f"{imgRoot}QQbotFiles/pixiv/{t}")
+                        msg+=f"[CQ:image,file=file:///{imgRoot}QQbotFiles/pixiv/{t}]"
             await bot.send(event=event,message=Message(msg))
     else:
         await bot.send(event=event,message=Message("参数错误\n样例: 'pixivRank 1' , 1:day,7:weekly,30:monthly"))    
@@ -147,10 +156,57 @@ async def send(pid:str,event:Event,bot:Bot):
         msg = ""
         for name in names:
             size = os.path.getsize(f"{imgRoot}QQbotFiles/pixiv/{name}")
-            # print(f"{size//1024//1024>=10}M")
             if size//1024//1024>=10:
-                msg+="文件大于10M，不能发出来"
-                os.remove(f"{imgRoot}QQbotFiles/pixiv/{name}")
-            else:
-                msg+=f"[CQ:image,file=file:////home/lhq/QQbotFiles/pixiv/{name}]"
+                await yasuo(f"{imgRoot}QQbotFiles/pixiv/{name}")
+            msg+=f"[CQ:image,file=file:///{imgRoot}QQbotFiles/pixiv/{name}]"
         await bot.send(event=event,message=Message(msg))
+
+async def yasuo(path):
+    while os.path.getsize(path)//1024//1024>=10:
+        image=cv2.imread(path)
+        shape= image.shape
+        res = cv2.resize(image, (shape[1]//2,shape[0]//2), interpolation=cv2.INTER_AREA)
+        cv2.imwrite(f"{path}",res)
+
+async def checkGIF(pid:str)->str:
+    url = f'https://www.pixiv.net/ajax/illust/{pid}/ugoira_meta'
+    async with aiohttp.ClientSession() as session:
+            x = await session.get(url=url, headers=headers)
+            content = await x.json()
+            if content['error']:
+                return "NO"
+            return content['body']['originalSrc']
+
+            
+async def GIF_send(url:str,pid:str,event:Event,bot:Bot):
+    p = f"{imgRoot}QQbotFiles/pixivZip/{pid}"
+    if os.path.exists(f"{p}/{pid}.gif"):
+        await bot.send(event=event,message=Message(f"[CQ:image,file=file:////{p}/{pid}.gif]"))
+        return
+    async with aiohttp.ClientSession() as session:
+        response= await session.get(url=url, headers=headers)
+        code = response.status
+        if code ==200:
+            content = await response.content.read()
+            if not os.path.exists(f"{p}.zip"):
+                with open(f"{p}.zip", mode='wb') as f:
+                    f.write(content)
+                if not os.path.exists(f"{p}"):
+                    os.mkdir(f"{p}")
+            await run(f"unzip -n {p}.zip -d {p}")
+            image_list = sorted(os.listdir(f"{p}"))
+            # image_list = [x+f"{imgRoot}QQbotFiles/pixivZip/{pid}" for x in image_list]
+            await run(f"rm -rf {p}.zip")
+            await run(f"/usr/bin/ffmpeg -r {len(image_list)} -i {p}/%06d.jpg {p}/{pid}.gif -n")
+            await bot.send(event=event,message=Message(f"[CQ:image,file=file:////{p}/{pid}.gif]"))
+            # await run(f"rm -rf {p}")
+
+async def run(cmd):
+    print(cmd)
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+    return (stdout+stderr).decode()
