@@ -1,0 +1,10 @@
+*.log
+*.image
+*.cache
+log
+gocq/data/
+gocq/data/
+gocq/config.hjson
+gocq/config.yml
+gocq/session.token
+gocq/logs
