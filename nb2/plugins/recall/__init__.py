@@ -1,8 +1,32 @@
-from nonebot.plugin import on_message, on_notice
+from pathlib import Path
+
+import nonebot
+from nonebot import get_driver
+
+from .config import Config
+from nonebot.plugin import on_message
 from nonebot.rule import Rule
-from nonebot.adapters.cqhttp import Bot, Event,  Message, message
+from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.typing import T_State
 import re
+
+global_config = get_driver().config
+config = Config(**global_config.dict())
+
+# Export something for other plugin
+# export = nonebot.export()
+# export.foo = "bar"
+
+# @export.xxx
+# def some_function():
+#     pass
+
+_sub_plugins = set()
+_sub_plugins |= nonebot.load_plugins(
+    str((Path(__file__).parent / "plugins").
+    resolve()))
+
+
 def test() -> Rule:
     async def bool_recall_rep(bot: "Bot", event: "Event", state: T_State) -> bool:
         if not event.is_tome():

@@ -38,6 +38,9 @@ nonebot.load_plugin("plugins.setu")
 nonebot.load_plugin("plugins.pixiv")
 nonebot.load_plugin("plugins.xuanran")
 nonebot.load_plugin("plugins.sendimg")
+nonebot.load_plugin("plugins.recall")
+# nonebot.load_plugin("plugins.ban_recall")
+
 # nonebot.load_plugin('nonebot_plugin_test')
 # nonebot.load_plugin("nonebot_plugin_docs")
 
