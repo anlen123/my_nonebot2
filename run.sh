@@ -10,7 +10,7 @@
 #screen -dmS gocq /bin/bash
 #screen -x -S gocq -p 0 -X stuff "cd /root/my_nonebot2/gocq/\n"
 #screen -x -S gocq -p 0 -X stuff "./go\n" 
-
+docker start redis
 
 
 tmux kill-pane -t nb2 

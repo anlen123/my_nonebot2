@@ -11,7 +11,6 @@ import requests
 import time
 import nonebot
 import time 
-from .config import Config
 
 _sub_plugins = set()
 _sub_plugins |= nonebot.load_plugins(

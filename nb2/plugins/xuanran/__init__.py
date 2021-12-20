@@ -16,6 +16,11 @@ _sub_plugins |= nonebot.load_plugins(
 
 global_config = nonebot.get_driver().config
 imgRoot=global_config.dict()['imgroot']
+if "cmd_pre" not in global_config.dict():
+    cmd_pre=""
+else:
+    cmd_pre=global_config.dict()['cmd_pre']
+
 
 
 @xr.handle()
@@ -25,7 +30,7 @@ async def xr_rev(bot: Bot, event: Event, state: dict):
     if not (msg.startswith("http://") or msg.startswith("https://")):
         msg = f"http://{msg}"
     msg = msg.replace("。",".")
-    img = await run(f"export ALL_PROXY=http://127.0.0.1:1081 ; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
@@ -56,7 +61,7 @@ async def why_rev(bot: Bot, event: Event, state: dict):
     msg = event.get_plaintext()
     msg = "https://zh.wikipedia.org/wiki/"+msg[:-3]
     s = time.time()
-    img = await run(f"export ALL_PROXY=http://127.0.0.1:1081 ; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
@@ -75,7 +80,7 @@ async def mengniang_rev(bot: Bot, event: Event, state: dict):
     msg = event.get_plaintext()
     msg = "https://zh.moegirl.org.cn/"+msg[:-5]
     s = time.time()
-    img = await run(f"export ALL_PROXY=http://127.0.0.1:1081 ; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))

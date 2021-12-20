@@ -1,8 +1,6 @@
 from pathlib import Path
 
 import nonebot
-from nonebot import get_driver
-from .config import Config
 from nonebot import on_command, on_startswith, run
 import nonebot
 from nonebot.rule import to_me,Rule
@@ -13,8 +11,6 @@ import aiohttp
 import re
 import os
 import random
-from .config import Config
-from PIL import Image
 import cv2
 import asyncio
 _sub_plugins = set()
@@ -33,10 +29,11 @@ headersCook = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
     'cookie': 'first_visit_datetime_pc=2021-07-08+12%3A32%3A40; p_ab_id=3; p_ab_id_2=8; p_ab_d_id=1527268487; yuid_b=EXRwGQM; c_type=23; privacy_policy_notification=0; a_type=0; b_type=1; login_ever=yes; PHPSESSID=19602548_75E4JH7Kle7k1oqmNTCwXDhDP9MuOVLL; device_token=face3e9108c1d9b51d16b00d358b8e7b; privacy_policy_agreement=0; __cf_bm=PpZdUT5iwVzwC2RYrxepo61BIi9HhcpvWEOD39ktUH4-1631360634-0-AQsNvV6BGe75ef5McXqnVniSsUYYmyePYTKBSX01WN7YxDIg1NuIv6McJwozaxUgIiSt3+jZ+lzyuwsXvvwUZ3GxDCJN0F+qrOubgRjHvyzF; tag_view_ranking=RTJMXD26Ak~Lt-oEicbBr~LJo91uBPz4~q3eUobDMJW~XzcQ6aDGkW~azESOjmQSV~NfYuyLea11~oAnKp9i65M~dYEb6D1_Y8~b1s-xqez0Y~NBK37t_oSE~BbGzECviUP~tIqkVZurKP~_pwIgrV8TB~0xsDLqCEW6~ZBoVMjk2oM~48VzExzvzQ~TWrozby2UO~lz1iXPdNUF~CiSfl_AE0h~KN7uxuR89w~IcyY_7-nC2~rIC2oNFqzh~eVxus64GZU~z3XHr3iRiQ~0Sds1vVNKR~tgP8r-gOe_~Ie2c51_4Sp~_bee-JX46i~SPBwuNWwOW~aLBjcKpvWL~q303ip6Ui5~THiUCY76VU~l4YaV5Z-3Z~Nx1CukYg8-~1aArQHGsNB~VY4gyzQV-w~jH0uD88V6F~Bd2L9ZBE8q~eiuRRKbs6P~MMv-XHabcx~oi4JvD8eqq~92PEsIpGYI~d08C_Tv0wf~eGx71dSzsV~-5ya5WaopI~Ylputdf_Ow'
 }
-proxy= "http://127.0.0.1:1081"
 
 global_config = nonebot.get_driver().config
-imgRoot=global_config.dict()['imgroot']
+config = global_config.dict()
+imgRoot=config['imgroot'] if 'imgroot' in config else ""
+proxy = config.get('aiohttp') if config.get('aiohttp') else ""
 
 def isPixivURL() -> Rule:
     async def isPixivURL_(bot: "Bot", event: "Event", state: T_State) -> bool:

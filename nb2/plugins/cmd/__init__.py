@@ -9,7 +9,7 @@ import asyncio
 from .config import Config
 
 global_config = get_driver().config
-config = Config(**global_config.dict())
+cmd_pre = global_config.dict()['cmd_pre'] if 'cmd_pre' in global_config.dict() else ""
 
 
 _sub_plugins = set()
@@ -51,7 +51,7 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
         else:
             await bot.send(event=event, message="您的指令是没有返回值的")
 async def run(cmd):
-    cmd = "export ALL_PROXY=http://127.0.0.1:1081"+cmd
+    cmd = cmd_pre +"; "+cmd
     proc = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,

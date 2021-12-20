@@ -2,14 +2,16 @@ from pathlib import Path
 
 import nonebot
 from nonebot import get_driver
+from nonebot.plugin import on_regex
 
 from .config import Config
-from nonebot import on_command
-from nonebot.rule import to_me,Rule
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
-import os
+from nonebot.adapters.cqhttp import Bot, Event
 global_config = get_driver().config
-config = Config(**global_config.dict())
+config = global_config.dict()
+if 'cmd_pre' in config:
+    cmd_pre=config['cmd_pre']
+else:
+    cmd_pre=""
 
 # Export something for other plugin
 # export = nonebot.export()
@@ -24,8 +26,9 @@ _sub_plugins |= nonebot.load_plugins(
     str((Path(__file__).parent / "plugins").
     resolve()))
 
-testx = on_command(cmd="tt")
+testx = on_regex(pattern="tt")
 
 @testx.handle()
 async def test_rev(bot: Bot, event: Event, state: dict):
+    print(cmd_pre)
     pass
