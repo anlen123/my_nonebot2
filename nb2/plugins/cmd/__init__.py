@@ -4,7 +4,8 @@ import nonebot
 from nonebot import get_driver
 
 from nonebot.plugin import on_regex
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message
+from nonebot.params import T_State,State
 import asyncio
 from .config import Config
 
@@ -21,7 +22,8 @@ _sub_plugins |= nonebot.load_plugins(
 
 cmd = on_regex(pattern="^cmd\ ")
 @cmd.handle()
-async def cmd_rev(bot: Bot, event: Event, state: dict):
+async def cmd_rev(bot: Bot, event: Event, state: T_State=State()):
+    error_cmd = ["exit","shutdown","poweroff","init","halt"]
     msg = str(event.message).strip()[3:]
     user_id = event.user_id
     if user_id==1793268622:
@@ -39,7 +41,7 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
         else:
             await bot.send(event=event, message="您的指令是没有返回值的")
     else:
-        if "exit" in msg or "shutdown" in msg:
+        if "exit" in msg or "shutdown" in msg or "poweroff" in msg or "init" in msg or "halt" in msg:
             await bot.send(event=event, message="别的干坏事")
             return
         msg = f"runuser -l dmf -c \"cd ;{msg}\""
@@ -51,11 +53,13 @@ async def cmd_rev(bot: Bot, event: Event, state: dict):
         else:
             await bot.send(event=event, message="您的指令是没有返回值的")
 async def run(cmd):
-    cmd = cmd_pre +"; "+cmd
-    proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE)
-
-    stdout, stderr = await proc.communicate()
-    return (stdout+stderr).decode()
+    try:
+        cmd = cmd_pre +"; "+cmd
+        proc = await asyncio.create_subprocess_shell(
+            cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE)
+        stdout, stderr = await proc.communicate()
+        return (stdout+stderr).decode()
+    except:
+        return "运行错误"

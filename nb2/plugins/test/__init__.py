@@ -5,7 +5,8 @@ from nonebot import get_driver
 from nonebot.plugin import on_regex
 
 from .config import Config
-from nonebot.adapters.cqhttp import Bot, Event
+from nonebot.adapters.onebot.v11 import Bot, Event
+from nonebot.params import State,T_State
 global_config = get_driver().config
 config = global_config.dict()
 if 'cmd_pre' in config:
@@ -29,6 +30,6 @@ _sub_plugins |= nonebot.load_plugins(
 testx = on_regex(pattern="tt")
 
 @testx.handle()
-async def test_rev(bot: Bot, event: Event, state: dict):
+async def test_rev(bot: Bot, event: Event, state: T_State = State()) -> None:
     print(cmd_pre)
     pass

@@ -1,0 +1,44 @@
+account:
+  encrypt: false
+  password: null
+  relogin:
+    delay: 3
+    disabled: false
+    interval: 0
+    max-times: 0
+  uin: 1928994748
+  use-sso-address: true
+database:
+  leveldb:
+    enable: true
+default-middlewares:
+  access-token: ''
+  filter: ''
+  rate-limit:
+    bucket: 1
+    enabled: false
+    frequency: 1
+heartbeat:
+  disabled: false
+  interval: 10
+message:
+  extra-reply-data: false
+  fix-url: false
+  force-fragment: false
+  ignore-invalid-cqcode: false
+  post-format: array
+  proxy-rewrite: ''
+  remove-reply-at: false
+  report-self-message: false
+output:
+  debug: false
+  log-colorful: false
+  log-level: warn
+servers:
+- ws-reverse:
+    api: null
+    event: null
+    middlewares:
+      access-token: ''
+    reconnect-interval: 3000
+    universal: ws://127.0.0.1:8899/onebot/v11/ws

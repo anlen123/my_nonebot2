@@ -2,7 +2,8 @@ from pathlib import Path
 
 import nonebot
 from nonebot.plugin import on_notice, on_regex
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message, event, message
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, event, message
+from nonebot.params import T_State,State
 import os 
 import nonebot
 
@@ -18,7 +19,7 @@ imgRoot=global_config.dict()['imgroot']
 sendImg = on_regex(pattern="^send\ ")
 
 @sendImg.handle()
-async def love_rev(bot: Bot, event: Event, state: dict):
+async def love_rev(bot: Bot, event: Event, state: T_State=State()):
     msg=f"{imgRoot}"+str(event.get_message())[5:]
     print(msg)
     if os.path.exists(msg):

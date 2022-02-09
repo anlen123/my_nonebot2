@@ -6,8 +6,8 @@ from .config import Config
 from nonebot import on_command,on_startswith,on_keyword,on_message
 from nonebot.plugin import on_notice, on_regex
 from nonebot.rule import Rule, regex, to_me
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message, message
-from nonebot.typing import T_State
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, message
+from nonebot.params import T_State,State
 import re
 
 global_config = get_driver().config
@@ -46,6 +46,6 @@ love = on_startswith(msg="love", rule=to_me())
 
 # love = on_regex(pattern="为什么$",rule=to_me())
 @love.handle()
-async def love_rev(bot: Bot, event: Event, state: dict):
+async def love_rev(bot: Bot, event: Event, state: T_State=State()):
     # x = clien.hgetall("yulu")
     await love.finish(message="我也爱你"+Message("[CQ:face,id=214][CQ:face,id=66]"), at_sender=True)

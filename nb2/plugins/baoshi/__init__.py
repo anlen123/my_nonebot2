@@ -1,11 +1,9 @@
 from pathlib import Path
 
 import nonebot
-
-import nonebot
 from nonebot import require
 from datetime import datetime
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
 # Export something for other plugin

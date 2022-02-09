@@ -6,7 +6,8 @@ from nonebot import get_driver
 from .config import Config
 from nonebot.plugin import on_message
 from nonebot.rule import Rule
-from nonebot.adapters.cqhttp import Bot, Event
+from nonebot.adapters.onebot.v11 import Bot, Event
+from nonebot.params import T_State,State
 from nonebot.typing import T_State
 import re
 
@@ -28,7 +29,7 @@ _sub_plugins |= nonebot.load_plugins(
 
 
 def test() -> Rule:
-    async def bool_recall_rep(bot: "Bot", event: "Event", state: T_State) -> bool:
+    async def bool_recall_rep(bot: "Bot", event: "Event", state: T_State=State()) -> bool:
         if not event.is_tome():
             return False
         if event.get_type() != "message":
@@ -49,7 +50,7 @@ recall_rep = on_message(rule=test())
 
 
 @recall_rep.handle()
-async def recall_rep(bot: Bot, event: Event, state: dict):
+async def recall_rep(bot: Bot, event: Event, state: T_State=State()):
     msg_id = state['id']
     try:
         await bot.delete_msg(message_id=msg_id,self_id=bot.self_id)

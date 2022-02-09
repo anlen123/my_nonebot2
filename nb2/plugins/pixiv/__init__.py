@@ -6,7 +6,8 @@ import nonebot
 from nonebot.rule import to_me,Rule
 from nonebot.plugin import on_message, on_regex
 from nonebot.typing import T_State
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message, message
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, message
+from nonebot.params import T_State,State
 import aiohttp
 import re
 import os
@@ -36,7 +37,7 @@ imgRoot=config['imgroot'] if 'imgroot' in config else ""
 proxy = config.get('aiohttp') if config.get('aiohttp') else ""
 
 def isPixivURL() -> Rule:
-    async def isPixivURL_(bot: "Bot", event: "Event", state: T_State) -> bool:
+    async def isPixivURL_(bot: "Bot", event: "Event", state: T_State=State()) -> bool:
         if event.get_type() != "message":
             return False
         msg = str(event.get_message())
@@ -47,7 +48,7 @@ def isPixivURL() -> Rule:
 
 pixivURL= on_message(rule=isPixivURL())
 @pixivURL.handle()
-async def pixivURL(bot: Bot, event: Event, state: dict):
+async def pixivURL(bot: Bot, event: Event, state: T_State=State()):
     pid = re.findall("https://www.pixiv.net/artworks/(\d+)|illust_id=(\d+)", str(event.get_message()))
     if pid:
         pid = [x for x in pid[0] if x][0]
@@ -60,7 +61,7 @@ async def pixivURL(bot: Bot, event: Event, state: dict):
 
 pixiv = on_regex(pattern="^pixiv\ ")
 @pixiv.handle()
-async def pixiv_rev(bot: Bot, event: Event, state: dict):
+async def pixiv_rev(bot: Bot, event: Event, state: T_State=State()):
     pid = str(event.message).strip()[6:].strip()
     xx = (await checkGIF(pid))
     if xx!="NO":
@@ -128,7 +129,7 @@ async def getImgsByDay(url):
 pixivRank = on_regex(pattern="^pixivRank\ ")
 
 @pixivRank.handle()
-async def pixiv_rev(bot: Bot, event: Event, state: dict):
+async def pixiv_rev(bot: Bot, event: Event, state: T_State=State()):
     info = str(event.message).strip()[10:].strip()
     dic={
         "1":"day",

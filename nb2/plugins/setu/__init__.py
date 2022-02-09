@@ -2,13 +2,13 @@ from pathlib import Path
 from nonebot import on_command
 from nonebot.plugin import on_regex, on_shell_command, on_startswith,on_keyword
 from nonebot.rule import to_me
-from nonebot.adapters.cqhttp import Bot, Event, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message
+from nonebot.params import T_State,State
 import os
 import random as rd
 import uuid
 import re
 import requests
-import time
 import nonebot
 import time 
 
@@ -32,7 +32,7 @@ clien = export.redis_client # redis的
 setu = on_regex("^st$|^cu$|^涩图$|^来站涩图$")
 
 @setu.handle()
-async def setu_rev(bot: Bot, event: Event, state: dict):
+async def setu_rev(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     path_prefix = f"{imgRoot}QQbotFiles/img/"
@@ -48,7 +48,7 @@ async def setu_rev(bot: Bot, event: Event, state: dict):
 del_img = on_startswith(msg="rm")
 
 @del_img.handle()
-async def del_img_handle(bot: Bot, event: Event, state: dict):
+async def del_img_handle(bot: Bot, event: Event, state: T_State=State()):
     msg = str(event.message).strip().split(" ")[1:]
     path_prefix = f"{imgRoot}QQbotFiles/img/"
     path_yulu_prefix = f"{imgRoot}QQbotFiles/yulu/"
@@ -76,7 +76,7 @@ update_file = on_keyword(set(["更新图库","更新语录","更新色图"]),rul
 
 
 @update_file.handle()
-async def update_file_handle(bot: Bot, event: Event, state: dict):
+async def update_file_handle(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     os.system(f"{imgRoot}QQbotFiles/QQbotFiles_update.sh")
@@ -87,7 +87,7 @@ save = on_regex(pattern="^上传色图$")
 
 
 @save.handle()
-async def save_handle(bot: Bot, event: Event, state: dict):
+async def save_handle(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     msg = event.message
@@ -96,7 +96,7 @@ async def save_handle(bot: Bot, event: Event, state: dict):
 
 
 @save.got(key="url", prompt="请输入图片")
-async def save_got(bot: Bot, event: Event, state: dict):
+async def save_got(bot: Bot, event: Event, state: T_State=State()):
     msg = event.message
     url = msg[0].data['url']
     if url:
@@ -112,7 +112,7 @@ bugouse = on_keyword(set(["不够色", "不够涩"]))
 
 
 @bugouse.handle()
-async def bugouse_handle(bot: Bot, event: Event, state: dict):
+async def bugouse_handle(bot: Bot, event: Event, state: T_State=State()):
     await bugouse.finish("反正我比另一个机器人涩!!!")
 
 
@@ -120,7 +120,7 @@ yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")
 
 # 识别参数 并且给state 赋值
 @yulu.handle()
-async def yulu_rev(bot: Bot, event: Event, state: dict):
+async def yulu_rev(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     path_prefix = f"{imgRoot}QQbotFiles/yulu/"
@@ -139,7 +139,7 @@ yulu_save = on_regex("^上传语录$")
 
 
 @yulu_save.handle()
-async def yulu_save_handle(bot: Bot, event: Event, state: dict):
+async def yulu_save_handle(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     msg = event.message
@@ -148,7 +148,7 @@ async def yulu_save_handle(bot: Bot, event: Event, state: dict):
 
 
 @yulu_save.got(key="url", prompt="请输入图片")
-async def yulu_save_got(bot: Bot, event: Event, state: dict):
+async def yulu_save_got(bot: Bot, event: Event, state: T_State=State()):
     msg = event.message
     url = msg[0].data['url']
     if url:
@@ -164,7 +164,7 @@ threeciyuan = on_regex("^3c$|^3次元$")
 
 # 识别参数 并且给state 赋值
 @threeciyuan.handle()
-async def threeciyuan_rep(bot: Bot, event: Event, state: dict):
+async def threeciyuan_rep(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     path_prefix = f"{imgRoot}QQbotFiles/3c/"
@@ -178,7 +178,7 @@ threeciyuan_save = on_keyword(set(["上传真人"]))
 
 
 @threeciyuan_save.handle()
-async def yulu_save_handle(bot: Bot, event: Event, state: dict):
+async def yulu_save_handle(bot: Bot, event: Event, state: T_State=State()):
     if pingbi(event):
         return 
     msg = event.message
@@ -187,7 +187,7 @@ async def yulu_save_handle(bot: Bot, event: Event, state: dict):
 
 
 @threeciyuan_save.got(key="url", prompt="请输入图片")
-async def yulu_save_got(bot: Bot, event: Event, state: dict):
+async def yulu_save_got(bot: Bot, event: Event, state: T_State=State()):
     msg = str(event.message)
     # print(msg)
     url = re.findall("\[CQ:image,file=.*?,url=(.*?)\]", msg)
@@ -206,7 +206,7 @@ ylRank = on_regex(pattern="^ylRank$")
 
 
 @ylRank.handle()
-async def ylRank(bot: Bot, event: Event, state: dict):
+async def ylRank(bot: Bot, event: Event, state: T_State=State()):
     # user = str(event.dict()['sender']['user_id'])+ ":"+str(event.dict()['sender']['nickname'])
     # clien.hincrby("rank",user,1)
     day = time.strftime("%m-%d")
