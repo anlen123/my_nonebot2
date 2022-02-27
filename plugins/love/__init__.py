@@ -1,13 +1,14 @@
 from pathlib import Path
 
 import nonebot
+from typing import List
 from nonebot import get_driver
 from .config import Config
-from nonebot import on_command,on_startswith,on_keyword,on_message
+from nonebot import on_command, on_startswith, on_keyword, on_message
 from nonebot.plugin import on_notice, on_regex
 from nonebot.rule import Rule, regex, to_me
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, message
-from nonebot.params import T_State,State
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent
+from nonebot.params import T_State, State
 import re
 
 global_config = get_driver().config
@@ -24,8 +25,7 @@ config = Config(**global_config.dict())
 _sub_plugins = set()
 _sub_plugins |= nonebot.load_plugins(
     str((Path(__file__).parent / "plugins").
-    resolve()))
-
+        resolve()))
 
 # def bool_img() -> Rule:
 #     async def bool_img_(bot: "Bot", event: "Event", state: T_State) -> bool:
@@ -41,11 +41,27 @@ import nonebot
 from .config import Config
 
 global_config = nonebot.get_driver().config
-imgRoot=global_config.dict()['imgroot']
-love = on_startswith(msg="love", rule=to_me())
+imgRoot = global_config.dict()['imgroot']
 
-# love = on_regex(pattern="为什么$",rule=to_me())
+love = on_regex(pattern="^love$")
+
+
 @love.handle()
-async def love_rev(bot: Bot, event: Event, state: T_State=State()):
-    # x = clien.hgetall("yulu")
-    await love.finish(message="我也爱你"+Message("[CQ:face,id=214][CQ:face,id=66]"), at_sender=True)
+async def love_rev(bot: Bot, event: Event):
+    await bot.send(event=event, message=MessageSegment.text("我也爱你"))
+
+
+# 合并消息
+async def send_forward_msg_group(
+        bot: Bot,
+        event: GroupMessageEvent,
+        name: str,
+        msgs: List[str],
+):
+    def to_json(msg):
+        return {"type": "node", "data": {"name": name, "uin": bot.self_id, "content": msg}}
+
+    messages = [to_json(msg) for msg in msgs]
+    await bot.call_api(
+        "send_group_forward_msg", group_id=event.group_id, messages=messages
+    )

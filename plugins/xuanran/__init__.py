@@ -34,7 +34,7 @@ async def xr_rev(bot: Bot, event: Event):
     if not (msg.startswith("http://") or msg.startswith("https://")):
         msg = f"http://{msg}"
     msg = msg.replace("。",".")
-    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
@@ -66,7 +66,7 @@ async def errorRetry(bot: Bot, event: Event):
         if not (msg.startswith("http://") or msg.startswith("https://")):
             msg = f"http://{msg}"
         msg = msg.replace("。",".")
-        img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+        img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/plugins/xuanran/screenShot.py {msg}")
         print(img)
         print(img.endswith(".png\n"))
         print(img.startswith("True：截图成功！！！"))
@@ -105,7 +105,7 @@ async def why_rev(bot: Bot, event: Event, state: T_State=State()):
     msg = event.get_plaintext()
     msg = "https://zh.wikipedia.org/wiki/"+msg[:-3]
     s = time.time()
-    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))
@@ -124,7 +124,7 @@ async def mengniang_rev(bot: Bot, event: Event, state: T_State=State()):
     msg = event.get_plaintext()
     msg = "https://zh.moegirl.org.cn/"+msg[:-5]
     s = time.time()
-    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/nb2/plugins/xuanran/screenShot.py {msg}")
+    img = await run(f"{cmd_pre}; {imgRoot}miniconda3/bin/python /root/my_nonebot2/plugins/xuanran/screenShot.py {msg}")
     print(img)
     print(img.endswith(".png\n"))
     print(img.startswith("True：截图成功！！！"))

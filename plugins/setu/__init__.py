@@ -2,7 +2,7 @@ from pathlib import Path
 from nonebot import on_command
 from nonebot.plugin import on_regex, on_shell_command, on_startswith,on_keyword
 from nonebot.rule import to_me
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent
 from nonebot.params import T_State,State
 import os
 import random as rd
@@ -28,6 +28,10 @@ def pingbi(event:Event)->bool:
     return False
 export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client # redis的
+
+pathHome = imgRoot+"QQbotFiles/img" 
+if not os.path.exists(pathHome):
+    os.makedirs(pathHome)
 
 setu = on_regex("^st$|^cu$|^涩图$|^来站涩图$")
 
@@ -120,10 +124,13 @@ yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")
 
 # 识别参数 并且给state 赋值
 @yulu.handle()
-async def yulu_rev(bot: Bot, event: Event, state: T_State=State()):
+async def yulu_rev(bot: Bot, event: GroupMessageEvent, state: T_State=State()):
+    group_id = str(event.dict().get('group_id'))
     if pingbi(event):
         return 
-    path_prefix = f"{imgRoot}QQbotFiles/yulu/"
+    path_prefix = f"{imgRoot}QQbotFiles/yulu/{group_id}/"
+    if not os.path.exists(path_prefix):
+        os.makedirs(path_prefix)
     img_list = await get_img_list(path_prefix)
     if not img_list:
         await yulu.finish("语录库已经空了")
@@ -148,12 +155,16 @@ async def yulu_save_handle(bot: Bot, event: Event, state: T_State=State()):
 
 
 @yulu_save.got(key="url", prompt="请输入图片")
-async def yulu_save_got(bot: Bot, event: Event, state: T_State=State()):
+async def yulu_save_got(bot: Bot, event: GroupMessageEvent, state: T_State=State()):
     msg = event.message
     url = msg[0].data['url']
+    group_id = str(event.dict().get('group_id'))
+    path_prefix = f"{imgRoot}QQbotFiles/yulu/{group_id}/"
+    if not os.path.exists(path_prefix):
+        os.makedirs(path_prefix)
     if url:
         r = requests.get(url)
-        with open(f"{imgRoot}QQbotFiles/yulu/{uuid.uuid4()}.png", mode="wb") as f:
+        with open(f"{imgRoot}QQbotFiles/yulu/{group_id}/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
     else:
@@ -164,7 +175,7 @@ threeciyuan = on_regex("^3c$|^3次元$")
 
 # 识别参数 并且给state 赋值
 @threeciyuan.handle()
-async def threeciyuan_rep(bot: Bot, event: Event, state: T_State=State()):
+async def threeciyuan_rep(bot: Bot, event: GroupMessageEvent, state: T_State=State()):
     if pingbi(event):
         return 
     path_prefix = f"{imgRoot}QQbotFiles/3c/"
