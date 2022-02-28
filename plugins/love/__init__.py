@@ -11,21 +11,13 @@ from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, Gro
 from nonebot.params import T_State, State
 import re
 
-global_config = get_driver().config
-config = Config(**global_config.dict())
-
-# Export something for other plugin
-# export = nonebot.export()
-# export.foo = "bar"
-
-# @export.xxx
-# def some_function():
-#     pass
-
 _sub_plugins = set()
 _sub_plugins |= nonebot.load_plugins(
     str((Path(__file__).parent / "plugins").
         resolve()))
+
+global_config = nonebot.get_driver().config
+config = global_config.dict()
 
 # def bool_img() -> Rule:
 #     async def bool_img_(bot: "Bot", event: "Event", state: T_State) -> bool:
@@ -37,11 +29,8 @@ _sub_plugins |= nonebot.load_plugins(
 
 # love = on_message(rule=bool_img())
 
-import nonebot
-from .config import Config
 
-global_config = nonebot.get_driver().config
-imgRoot = global_config.dict()['imgroot']
+imgRoot = config['imgroot']
 
 love = on_regex(pattern="^love$")
 

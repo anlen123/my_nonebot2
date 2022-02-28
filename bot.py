@@ -26,23 +26,24 @@ driver.register_adapter(OneBot_V11_Adapter)
 # As an alternative, you should use command `nb` or modify `pyproject.toml` to load plugins
 nonebot.load_from_toml("pyproject.toml")
 
+nonebot.load_plugin("nonebot_plugin_gocqhttp")
 nonebot.load_plugin('nonebot_plugin_navicat')
 nonebot.load_plugin('nonebot_plugin_apscheduler')
 nonebot.load_plugin('nonebot_plugin_abbrreply')
 nonebot.load_plugin("nonebot_plugin_status")
-nonebot.load_plugin("nonebot_plugin_gocqhttp")
 nonebot.load_plugin("nonebot_plugin_pixiv")
 nonebot.load_plugin("nonebot_plugin_biliav")
+nonebot.load_plugin('nonebot_plugin_directlinker')
+nonebot.load_plugin('nonebot_plugin_repeater')
 
-nonebot.load_plugin("plugins.test")
 nonebot.load_plugin("plugins.love")
-nonebot.load_plugin("plugins.cmd")
+nonebot.load_plugin("plugins.command")
 nonebot.load_plugin("plugins.setu")
 nonebot.load_plugin("plugins.xuanran")
 nonebot.load_plugin("plugins.sendimg")
-nonebot.load_plugin("plugins.recall")
 nonebot.load_plugin("plugins.jd_test")
 nonebot.load_plugin("plugins.ygo")
+
 
 # nonebot.load_plugin("plugins.baoshi")
 # nonebot.load_plugin("plugins.ban_recall")

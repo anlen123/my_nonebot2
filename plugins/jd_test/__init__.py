@@ -95,9 +95,9 @@ async def jdd_add_wwj():
     now = datetime.now().hour
     if now >=1 and now <=10 :
         pass
-    jdd_count_wjj = clien.get("jdd_count_wwj")
-    if not jdd_count_wjj:
-        jdd_count_wjj = 0
+    jdd_count_wwj = clien.get("jdd_count_wwj")
+    if not jdd_count_wwj:
+        jdd_count_wwj = 0
         clien.set("jdd_count_wwj",0)
 
     msg = await main(url,headers)
