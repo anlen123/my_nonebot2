@@ -13,6 +13,8 @@ cmd_ban = config.get("cmd_ban", [])
 cmd_pre = config.get("cmd_pre", [])
 
 cmd = on_regex(pattern="^cmd\ ")
+
+
 @cmd.handle()
 async def cmd_rev(bot: Bot, event: Event):
     error_cmd = ["exit", "shutdown", "poweroff", "init", "halt"]

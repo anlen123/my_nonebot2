@@ -3,6 +3,7 @@
 
 import nonebot
 from nonebot.adapters.onebot.v11 import Adapter as OneBot_V11_Adapter
+
 nonebot.init()
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
@@ -35,20 +36,17 @@ nonebot.load_plugin("nonebot_plugin_pixiv")
 nonebot.load_plugin("nonebot_plugin_biliav")
 nonebot.load_plugin('nonebot_plugin_directlinker')
 nonebot.load_plugin('nonebot_plugin_repeater')
+nonebot.load_plugin('nonebot_plugin_chess')
+nonebot.load_plugin('nonebot_plugin_ygo')
 
 nonebot.load_plugin("plugins.love")
 nonebot.load_plugin("plugins.command")
 nonebot.load_plugin("plugins.setu")
 nonebot.load_plugin("plugins.xuanran")
 nonebot.load_plugin("plugins.sendimg")
+nonebot.load_plugin("plugins.yulu")
+nonebot.load_plugin("plugins.sbbot")
 nonebot.load_plugin("plugins.jd_test")
-nonebot.load_plugin("plugins.ygo")
-
-
-# nonebot.load_plugin("plugins.baoshi")
-# nonebot.load_plugin("plugins.ban_recall")
-# nonebot.load_plugin('nonebot_plugin_test')
-# nonebot.load_plugin("nonebot_plugin_docs")
 
 if __name__ == "__main__":
     nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")

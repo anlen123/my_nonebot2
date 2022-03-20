@@ -19,25 +19,35 @@ _sub_plugins |= nonebot.load_plugins(
 global_config = nonebot.get_driver().config
 config = global_config.dict()
 
-# def bool_img() -> Rule:
-#     async def bool_img_(bot: "Bot", event: "Event", state: T_State) -> bool:
-#         if event.get_type() != "message":
-#             return False
-#         return [ s.data['file'] for s in event.get_message() if s.type=="image" and "file" in s.data]
-#     return Rule(bool_img_)
+
+def bool_img() -> Rule:
+    async def bool_img_(bot: "Bot", event: "Event", state: T_State) -> bool:
+        return False
+        print("=========")
+        for x in event.get_message():
+            if x.type == 'forward':
+                print(x.data['id'])
+                print(await bot.get_msg(message_id=x.data['id']))
+                print(x.type)
+        print("=========")
+        if event.get_type() != "message":
+            return False
+        return [s.data['file'] for s in event.get_message() if s.type == "image" and "file" in s.data]
+
+    return Rule(bool_img_)
+
+
 # 识别参数 并且给state 赋值
-
-# love = on_message(rule=bool_img())
-
-
 imgRoot = config['imgroot']
 
-love = on_regex(pattern="^love$")
+# love = on_regex(pattern="^love$")
+love = on_message(rule=bool_img())
 
 
 @love.handle()
 async def love_rev(bot: Bot, event: Event):
-    await bot.send(event=event, message=MessageSegment.text("我也爱你"))
+    pass
+    # await bot.send(event=event, message=MessageSegment.text("我也爱你"))
 
 
 # 合并消息
