@@ -99,7 +99,9 @@ async def threeciyuan_rep(bot: Bot, event: GroupMessageEvent):
         await threeciyuan.finish("3次元库已经空了")
     else:
         path = rd.choice(img_list)
-        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
+        img_path = await get_img_url(path_prefix + path)
+        # await bot.send(event=event, message=MessageSegment.image(file=img_path,type_="flash"))
+        await send_forward_msg_group(bot,event,"qqbot",[MessageSegment.image(img_path)])
 
 
 async def get_Y_M_D() -> str:
@@ -107,3 +109,18 @@ async def get_Y_M_D() -> str:
     month = datetime.now().month
     day = datetime.now().day
     return f"{year}_{month}_{day}"
+
+# 合并消息
+async def send_forward_msg_group(
+        bot: Bot,
+        event: GroupMessageEvent,
+        name: str,
+        msgs: [],
+):
+    def to_json(msg):
+        return {"type": "node", "data": {"name": name, "uin": bot.self_id, "content": msg}}
+
+    messages = [to_json(msg) for msg in msgs]
+    await bot.call_api(
+        "send_group_forward_msg", group_id=event.group_id, messages=messages
+    )

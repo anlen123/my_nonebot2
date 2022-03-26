@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 import sys 
 import os 
@@ -12,7 +11,6 @@ def main(url):
         option.add_argument(o)
     driver = webdriver.Chrome(options=option)
     driver.get(url)
-    # driver.maximize_window()
     width = driver.execute_script(
         "return document.documentElement.scrollWidth")
     height = driver.execute_script(
@@ -27,7 +25,6 @@ def main(url):
     os.system(f"mv {png} /root/QQbotFiles/xr")
     # os.system("./QQbotFiles/QQbotFiles_update.sh")
     return picture_time + ".png"
-
 if __name__ == "__main__":
     for k,v in enumerate(sys.argv):
         if k == 1:
