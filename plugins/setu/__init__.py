@@ -101,7 +101,7 @@ async def threeciyuan_rep(bot: Bot, event: GroupMessageEvent):
         path = rd.choice(img_list)
         img_path = await get_img_url(path_prefix + path)
         # await bot.send(event=event, message=MessageSegment.image(file=img_path,type_="flash"))
-        await send_forward_msg_group(bot,event,"qqbot",[MessageSegment.image(img_path)])
+        await send_forward_msg_group(bot, event, "qqbot", [MessageSegment.image(img_path)])
 
 
 async def get_Y_M_D() -> str:
@@ -109,6 +109,7 @@ async def get_Y_M_D() -> str:
     month = datetime.now().month
     day = datetime.now().day
     return f"{year}_{month}_{day}"
+
 
 # 合并消息
 async def send_forward_msg_group(

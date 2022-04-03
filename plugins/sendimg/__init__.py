@@ -7,7 +7,7 @@ import os
 import nonebot
 
 global_config = nonebot.get_driver().config
-imgRoot = global_config.dict()['imgroot']
+imgRoot = global_config.dict().get('imgroot', "")
 
 sendImg = on_regex(pattern="^send\ ")
 

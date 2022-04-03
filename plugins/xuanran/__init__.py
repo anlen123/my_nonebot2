@@ -40,6 +40,8 @@ async def xr_rev(bot: Bot, event: Event):
     if not (msg.startswith("http://") or msg.startswith("https://")):
         msg = f"http://{msg}"
     msg = msg.replace("。", ".")
+    msg = msg.replace(",", ".")
+    msg = msg.replace("，", ".")
     img, endStr, includeStr = await screenshots(msg)
     if img and endStr and includeStr:
         img = img.split("\n")[1]

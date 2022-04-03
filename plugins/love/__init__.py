@@ -38,7 +38,7 @@ def bool_img() -> Rule:
 
 
 # 识别参数 并且给state 赋值
-imgRoot = config['imgroot']
+imgRoot = config.get('imgroot', "")
 
 # love = on_regex(pattern="^love$")
 love = on_message(rule=bool_img())
