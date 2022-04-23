@@ -40,14 +40,17 @@ def bool_img() -> Rule:
 # 识别参数 并且给state 赋值
 imgRoot = config.get('imgroot', "")
 
-# love = on_regex(pattern="^love$")
-love = on_message(rule=bool_img())
+love = on_regex(pattern="^love$")
+# love = on_message(rule=bool_img())
+
+import base64
 
 
 @love.handle()
 async def love_rev(bot: Bot, event: Event):
-    pass
-    # await bot.send(event=event, message=MessageSegment.text("我也爱你"))
+    await bot.send(event, message="我也爱你")
+    # with open("/root/QQbotFiles/pixivZip/97369334/97369334.gif", 'rb') as f:
+    #     await bot.send(event, MessageSegment.image('base64://' + base64.b64encode(f.read()).decode()))
 
 
 # 合并消息

@@ -1,4 +1,9 @@
 #!/bin/sh
+
+if [ $1 ];then 
+    sleep $1
+fi
+
 docker start redis
 
 
