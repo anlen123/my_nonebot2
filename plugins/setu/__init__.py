@@ -38,12 +38,14 @@ async def del_img_handle(event: GroupMessageEvent):
     path_prefix = f"{imgRoot}QQbotFiles/img/"
     path_yulu_prefix = f"{imgRoot}QQbotFiles/yulu/"
     path_threeciyuan_prefix = f"{imgRoot}QQbotFiles/3c/"
-    if len(msg) == 1:
-        if msg[0].endswith("png") or msg[0].endswith("jpg") or msg[0].endswith("jpeg"):
+    if len(msg) >= 1:
+        print("进了len(msg)==1")
+        if msg.endswith("png") or msg.endswith("jpg") or msg.endswith("jpeg"):
+            print("进了if")
             os.system(f"rm {path_prefix}{msg[0]}")
             os.system(f"rm {path_yulu_prefix}{msg[0]}")
             os.system(f"rm {path_threeciyuan_prefix}{msg[0]}")
-            await del_img.finish("成功涩图删除")
+            await del_img.finish("成功删除")
     else:
         await del_img.finish('错误参数,例子: rm 1.jpg')
 
