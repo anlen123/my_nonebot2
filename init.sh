@@ -9,7 +9,7 @@ pip install selenium
 pip install imageio
 pip install opencv-python
 
-docker run -d --name redis -p 6379:6379 redis --requirepass 123456
+docker run -d --name redis -p 6379:6379 --restart=always redis --requirepass 123456
 pip install redis
 
 mkdir -p ~/QQbotFiles/img

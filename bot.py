@@ -39,6 +39,7 @@ nonebot.load_plugin('nonebot_plugin_picsearcher')
 
 
 nonebot.load_plugin("plugins.love")
+nonebot.load_plugin("plugins.newfan")
 nonebot.load_plugin("plugins.command")
 nonebot.load_plugin('plugins.nonebot_plugin_chess')
 nonebot.load_plugin("plugins.setu")

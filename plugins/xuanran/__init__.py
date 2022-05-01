@@ -84,6 +84,6 @@ async def main(url:str):
             await page.goto(url)
             picture_time = pendulum.now().format("Y-MM-DD-HH_mm_ss")
             path = f'{imgRoot}QQbotFiles/xr/{picture_time}.png'
-            await page.screenshot(path=path)
+            await page.screenshot(path=path,full_page=True)
             await browser.close()
             return path
