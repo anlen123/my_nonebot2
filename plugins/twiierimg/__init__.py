@@ -43,11 +43,13 @@ async def get_twitter_img(id: str):
     return urls
 
 
-twitter_img = on_regex(pattern="^新番$")
+twitter_img = on_regex(pattern="^https://twitter.com/.*?/status/\d+$")
 
 
 @twitter_img.handle()
 async def twitter_img(bot: Bot, event: Event):
+    print("进来了")
+    return
     urls = await get_twitter_img("xxx")
     msgs = ""
     for url in urls:
