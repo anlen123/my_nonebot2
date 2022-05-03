@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ba26ae39-a6a1-4fec-a7e4-1016f9ef5d88" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/plugins/newfan/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/newfan/__init__.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="258fIHC4XksPvEpHiap6uEN5H3a" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ba26ae39-a6a1-4fec-a7e4-1016f9ef5d88" name="Default Changelist" comment="" />
+      <created>1644913552801</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1644913552801</updated>
+      <workItem from="1644913555565" duration="41000" />
+      <workItem from="1645613473262" duration="2059000" />
+      <workItem from="1645699498518" duration="809000" />
+      <workItem from="1645715989496" duration="2386000" />
+      <workItem from="1646017104266" duration="2361000" />
+      <workItem from="1646028107183" duration="130000" />
+      <workItem from="1646037833868" duration="4699000" />
+      <workItem from="1646101701396" duration="593000" />
+      <workItem from="1646299515274" duration="116000" />
+      <workItem from="1646299634066" duration="5707000" />
+      <workItem from="1646306834935" duration="1540000" />
+      <workItem from="1646734316259" duration="2079000" />
+      <workItem from="1646912620743" duration="486000" />
+      <workItem from="1647055042260" duration="5430000" />
+      <workItem from="1647757140530" duration="14000" />
+      <workItem from="1647760429228" duration="531000" />
+      <workItem from="1647776162769" duration="946000" />
+      <workItem from="1647859908395" duration="4000" />
+      <workItem from="1648286321634" duration="1012000" />
+      <workItem from="1648975597125" duration="1218000" />
+      <workItem from="1648978513957" duration="169000" />
+      <workItem from="1649076245995" duration="3000" />
+      <workItem from="1649078435869" duration="193000" />
+      <workItem from="1649078650104" duration="1811000" />
+      <workItem from="1649080483799" duration="11000" />
+      <workItem from="1649081053559" duration="17000" />
+      <workItem from="1649081269431" duration="4000" />
+      <workItem from="1649081956525" duration="130000" />
+      <workItem from="1651395546561" duration="595000" />
+      <workItem from="1651562421867" duration="84000" />
+      <workItem from="1651562509177" duration="1000" />
+      <workItem from="1651562604693" duration="66000" />
+      <workItem from="1651562794322" duration="109000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="526" y="229" key="#Deployment" timestamp="1648975694971">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="496" y="235" key="#Deployment/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646299648300" />
+    <state x="526" y="229" key="#Deployment/0.25.1792.1095@0.25.1792.1095" timestamp="1648975694971" />
+    <state x="528" y="249" key="#Options" timestamp="1648975618718">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="528" y="249" key="#Options/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646018258762" />
+    <state x="528" y="249" key="#Options/0.25.1792.1095@0.25.1792.1095" timestamp="1648975618718" />
+    <state x="480" y="222" key="#SSH_Configurations" timestamp="1648975687914">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="480" y="222" key="#SSH_Configurations/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646018290154" />
+    <state x="480" y="222" key="#SSH_Configurations/0.25.1792.1095@0.25.1792.1095" timestamp="1648975687914" />
+    <state x="100" y="125" width="1592" height="895" key="DiffContextDialog" timestamp="1646101783548">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="100" y="125" width="1592" height="895" key="DiffContextDialog/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646101783548" />
+    <state x="100" y="125" width="1592" height="895" key="DirDiffDialog" timestamp="1645699798143">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="100" y="125" width="1592" height="895" key="DirDiffDialog/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1645699798143" />
+    <state x="702" y="494" key="ReplaceDuplicatesPrompt" timestamp="1646040562650">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="702" y="494" key="ReplaceDuplicatesPrompt/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646040562650" />
+    <state x="405" y="208" key="SettingsEditor" timestamp="1651562650539">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="405" y="208" key="SettingsEditor/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1645699856025" />
+    <state x="405" y="208" key="SettingsEditor/0.25.1792.1095@0.25.1792.1095" timestamp="1651562650539" />
+    <state width="500" height="445" key="SwitcherDM" timestamp="1647059909625">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state width="500" height="445" key="SwitcherDM/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646308416196" />
+    <state width="500" height="445" key="SwitcherDM/0.25.1792.1095@0.25.1792.1095" timestamp="1647059909625" />
+    <state x="440" y="305" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1646028220917">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="440" y="305" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646028220917" />
+    <state x="803" y="307" width="347" height="531" key="ftp.server.browser" timestamp="1646913147539">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="803" y="307" width="389" height="531" key="ftp.server.browser/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646028144812" />
+    <state x="803" y="307" width="347" height="531" key="ftp.server.browser/0.25.1792.1095@0.25.1792.1095" timestamp="1646913147539" />
+    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup" timestamp="1646737511859">
+      <screen x="0" y="25" width="1792" height="1095" />
+    </state>
+    <state x="561" y="269" width="670" height="676" key="search.everywhere.popup/-2560.-69.2560.1415/0.25.1792.1095@0.25.1792.1095" timestamp="1646737511859" />
+  </component>
+</project>

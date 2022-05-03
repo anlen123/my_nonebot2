@@ -3,13 +3,13 @@ from nonebot import require
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
 from datetime import datetime
-import httpx,parsel,nonebot
+import httpx, parsel, nonebot
 
 global_config = nonebot.get_driver().config
 config = global_config.dict()
 
 export = nonebot.require("nonebot_plugin_navicat")
-clien = export.redis_client # redis的
+clien = export.redis_client  # redis的
 tz_shanghai = timezone('Asia/Shanghai')
 
 newfan = on_regex(pattern="^新番$")
@@ -17,15 +17,15 @@ newfan = on_regex(pattern="^新番$")
 
 @newfan.handle()
 async def xxx_Method(bot: Bot, event: Event):
-    if event.get_user_id()!="1761512493":
-        return 
+    if event.get_user_id() != "1761512493":
+        return
     fan_list = await get_now_week_fan_list()
     day2week = {0: "一", 1: "二", 2: "三", 3: "四", 4: "五", 5: "六", 6: "日"}
     now = datetime.now(tz=tz_shanghai)
-    msgs = "今天星期" + day2week.get(int(now.weekday()),"日") +"\n"
+    msgs = "今天星期" + day2week.get(int(now.weekday()), "日") + "\n"
     for fan in fan_list:
-        msgs+=(MessageSegment.image(fan.img)+"\n"+fan.title+"\n时间:"+fan.time+"\n")
-    await bot.send(event=event,message=msgs)
+        msgs += (MessageSegment.image(fan.img) + "\n" + fan.title + "\n时间:" + fan.time + "\n")
+    await bot.send(event=event, message=msgs)
 
 
 class Fan:
@@ -37,8 +37,6 @@ class Fan:
 
     def __str__(self) -> str:
         return f"img:{self.img}, title:{self.title},week:{self.week},time:{self.time}"
-
-
 
 
 async def get_fan_list():
@@ -76,7 +74,7 @@ async def get_fan_list():
         if not txt:
             resp = await client.get(f'https://acgsecrets.hk/bangumi/{year + month}/', headers=headers)
             txt = resp.text
-            clien.set(key,txt)
+            clien.set(key, txt)
         else:
             txt = bytes(txt).decode()
         par_text = parsel.Selector(txt)
@@ -102,6 +100,7 @@ async def get_now_week_fan_list():
 
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 
+
 @scheduler.scheduled_job("cron", id="xinfan", minute="*/1")
 async def xinfan():
     now = datetime.now(tz=tz_shanghai)
@@ -110,7 +109,8 @@ async def xinfan():
     # print(f"现在的时间->{hour}:{minute}")
     fan_list = await get_fan_list()
     day2week = {0: "一", 1: "二", 2: "三", 3: "四", 4: "五", 5: "六", 6: "日"}
-    fan_list = [fan for fan in fan_list if day2week.get(now.weekday(), "日") == fan.week or day2week.get(now.weekday() - 1 , "日") == fan.week]
+    fan_list = [fan for fan in fan_list if
+                day2week.get(now.weekday(), "日") == fan.week or day2week.get(now.weekday() - 1, "日") == fan.week]
     msg = ""
     for fan in fan_list:
         h = int(str(fan.time).split(":")[0])
@@ -119,11 +119,11 @@ async def xinfan():
         if h > 24:
             h = h - 25
         if int(h) == int(hour) and int(minute) == int(m):
-            msg+=(MessageSegment.image(fan.img)+"\n"+fan.title+"\n时间:"+fan.time+"\n")
+            msg += (MessageSegment.image(fan.img) + "\n" + fan.title + "\n时间:" + fan.time + "\n")
     if msg:
         bot = nonebot.get_bots()
-        if bot :
+        if bot:
             bot = bot['1928994748']
-            ding = config.get('newfan',["1761512493"])
+            ding = config.get('newfan', ["1761512493"])
             for p in ding:
-                await bot.send_msg(message="有新番更新了\n" + msg,user_id=p)
+                await bot.send_msg(message="有新番更新了\n" + msg, user_id=p)
