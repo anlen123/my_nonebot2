@@ -7,7 +7,7 @@ pip install nonebot_plugin_apscheduler
 pip install nonebot_plugin_navicat
 pip install selenium
 pip install imageio
-pip install opencv-python
+pip install opencv-python,pendulum,parsel,nonebot_plugin_picsearcher
 
 docker run -d --name redis -p 6379:6379 --restart=always redis --requirepass 123456
 pip install redis
