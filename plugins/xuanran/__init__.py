@@ -10,6 +10,7 @@ from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message
 from nonebot.params import T_State, State
 import time
+import random
 import asyncio
 import os
 
@@ -87,3 +88,18 @@ async def main(url:str):
             await page.screenshot(path=path,full_page=True)
             await browser.close()
             return path
+
+
+pokemon = on_regex(pattern="^随机宝可梦$")
+
+@pokemon.handle()
+async def pokemon_rev(bot: Bot, event: Event):
+    s = time.time()
+    pokemonId = random.randint(1,898)
+    msg = f"https://www.pokemon.cn/play/pokedex/{str(pokemonId).zfill(3)}"
+    img, endStr = await screenshots(msg)
+    if img and endStr:
+        await bot.send(event=event, message=MessageSegment.image(
+            "file:///" + img) + f"耗时:{time.time() - s}")
+    else:
+        await bot.send(event=event, message="错误")

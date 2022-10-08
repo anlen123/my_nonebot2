@@ -29,6 +29,7 @@ async def cmd_rev(bot: Bot, event: Event):
     if msgs:
         if len(msgs) >= 7000:
             msgs = msgs[:7000]
+        msgs = msgs.strip()
         await bot.send(event=event, message=Message(msgs))
     else:
         await bot.send(event=event, message="您的指令是没有返回值的")

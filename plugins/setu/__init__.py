@@ -26,7 +26,8 @@ async def setu_rev(bot: Bot, event: GroupMessageEvent):
     else:
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list) - 1)]
-        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path_prefix + path)) + f"rm {path}")
+        path_temp = path.replace(imgRoot+"QQbotFiles/img/","")
+        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
 
 
 del_img = on_regex(pattern="^rm\ ")
@@ -38,13 +39,15 @@ async def del_img_handle(event: GroupMessageEvent):
     path_prefix = f"{imgRoot}QQbotFiles/img/"
     path_yulu_prefix = f"{imgRoot}QQbotFiles/yulu/"
     path_threeciyuan_prefix = f"{imgRoot}QQbotFiles/3c/"
+    path_nsfw_prefix = f"{imgRoot}QQbotFiles/nsfw/"
     if len(msg) >= 1:
-        print("进了len(msg)==1")
         if msg.endswith("png") or msg.endswith("jpg") or msg.endswith("jpeg"):
-            print("进了if")
-            os.system(f"rm {path_prefix}{msg[0]}")
-            os.system(f"rm {path_yulu_prefix}{msg[0]}")
-            os.system(f"rm {path_threeciyuan_prefix}{msg[0]}")
+            print(msg)
+            print(f"rm {path_prefix}{msg}")
+            os.system(f"rm {path_prefix}{msg}")
+            os.system(f"rm {path_yulu_prefix}{msg}")
+            os.system(f"rm {path_threeciyuan_prefix}{msg}")
+            os.system(f"rm {path_nsfw_prefix}{msg}")
             await del_img.finish("成功删除")
     else:
         await del_img.finish('错误参数,例子: rm 1.jpg')
@@ -86,7 +89,20 @@ async def get_img_url(path: str) -> str:
 
 
 async def get_img_list(path):
-    return os.listdir(f"{path}")
+    files = []
+    folders = [f"{path}"]
+    while folders:
+        pre = folders.pop(0)
+        for path in os.listdir(pre):
+            if os.path.isdir(pre + "/" + path):
+                folders.append(pre + "/" + path)
+            else:
+                file = pre + "/"  + path
+                if file.endswith("png") or file.endswith("jpg") or file.endswith("jpeg"):
+                    files.append(file)
+                    if len(files) >= 1000:
+                        return files
+    return files
 
 
 threeciyuan = on_regex("^3c$|^3次元$")
@@ -101,8 +117,7 @@ async def threeciyuan_rep(bot: Bot, event: GroupMessageEvent):
         await threeciyuan.finish("3次元库已经空了")
     else:
         path = rd.choice(img_list)
-        img_path = await get_img_url(path_prefix + path)
-        # await bot.send(event=event, message=MessageSegment.image(file=img_path,type_="flash"))
+        img_path = await get_img_url(path)
         await send_forward_msg_group(bot, event, "qqbot", [MessageSegment.image(img_path)])
 
 
@@ -127,3 +142,20 @@ async def send_forward_msg_group(
     await bot.call_api(
         "send_group_forward_msg", group_id=event.group_id, messages=messages
     )
+
+nsfw = on_regex("^nsfw$")
+
+
+# 识别参数 并且给state 赋值
+@nsfw.handle()
+async def nsfw_rep(bot: Bot, event: GroupMessageEvent):
+    path_prefix = f"{imgRoot}QQbotFiles/nsfw/"
+    img_list = await get_img_list(path_prefix)
+    if not img_list:
+        await nsfw.finish("nsfw已经空了")
+    else:
+        path = rd.choice(img_list)
+        img_path = await get_img_url(path)
+        print(img_path)
+        await send_forward_msg_group(bot, event, "qqbot", [MessageSegment.image(img_path)])
+

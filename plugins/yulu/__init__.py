@@ -77,7 +77,7 @@ async def ylRank(bot: Bot, event: GroupMessageEvent):
     msg = "今日语录排行榜\n"
     for index, x in enumerate(yuluMsg):
         count = re.findall("\(b'(.*?)',\ b'(.*?)'\)", str(x))[0]
-        msg += f"第{index + 1}名: 出现次数:{count[1]} [CQ:image,file=file:///{imgRoot}QQbotFiles/yulu/{count[0]}]\n"
+        msg += f"第{index + 1}名: 出现次数:{count[1]} [CQ:image,file=file:///{count[0]}]\n"
     await bot.send(event=event, message=Message(msg))
 
 

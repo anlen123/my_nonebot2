@@ -1,9 +1,9 @@
 from pytz import timezone
 from nonebot import require
 from nonebot.plugin import on_regex
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, GroupMessageEvent
 from datetime import datetime
-import httpx, parsel, nonebot
+import httpx, parsel, nonebot, asyncio, feedparser ,os ,pendulum
 
 global_config = nonebot.get_driver().config
 config = global_config.dict()
@@ -17,15 +17,26 @@ newfan = on_regex(pattern="^新番$")
 
 @newfan.handle()
 async def xxx_Method(bot: Bot, event: Event):
-    if event.get_user_id() != "1761512493":
-        return
+    # if event.get_user_id() != "1761512493":
+        # return
     fan_list = await get_now_week_fan_list()
     day2week = {0: "一", 1: "二", 2: "三", 3: "四", 4: "五", 5: "六", 6: "日"}
     now = datetime.now(tz=tz_shanghai)
-    msgs = "今天星期" + day2week.get(int(now.weekday()), "日") + "\n"
-    for fan in fan_list:
-        msgs += (MessageSegment.image(fan.img) + "\n" + fan.title + "\n时间:" + fan.time + "\n")
-    await bot.send(event=event, message=msgs)
+    if isinstance(event, GroupMessageEvent):
+        msgs=None
+        for fan in fan_list:
+            msgs += MessageSegment.image(fan.img)
+            msgs += MessageSegment.text(fan.title + "\n时间:" + fan.time + "\n")
+        if msgs:
+            print(msgs)
+            msgs = MessageSegment.text("今天星期" + day2week.get(int(now.weekday()), "日")) + msgs
+            await send_forward_msg_group(bot, event, 'qqbot', msgs)
+    else:
+        msgs = "今天星期" + day2week.get(int(now.weekday()), "日") + "\n"
+        for fan in fan_list:
+            msgs += (MessageSegment.image(fan.img) + "\n" + fan.title + "\n时间:" + fan.time + "\n")
+        print(msgs)
+        await bot.send(event=event,message=msgs)
 
 
 class Fan:
@@ -112,18 +123,99 @@ async def xinfan():
     fan_list = [fan for fan in fan_list if
                 day2week.get(now.weekday(), "日") == fan.week or day2week.get(now.weekday() - 1, "日") == fan.week]
     msg = ""
+    rss_fan = []
     for fan in fan_list:
         h = int(str(fan.time).split(":")[0])
         m = int(str(fan.time).split(":")[1])
         # print(f"番剧时间->{h}:{m}")
         if h > 24:
             h = h - 25
+        # print(f"现在时间->{hour}:{minute}")
         if int(h) == int(hour) and int(minute) == int(m):
+            rss_fan.append(fan)
             msg += (MessageSegment.image(fan.img) + "\n" + fan.title + "\n时间:" + fan.time + "\n")
     if msg:
         bot = nonebot.get_bots()
         if bot:
             bot = bot['1928994748']
             ding = config.get('newfan', ["1761512493"])
+            # group_ding = config.get("newfan_group",["68724983"])
+            # print("1")
             for p in ding:
-                await bot.send_msg(message="有新番更新了\n" + msg, user_id=p)
+                await bot.send_msg(message="有新番更新了\n" + msg , user_id=p)
+            for p in group_ding:
+                await bot.send_msg(message="有新番更新了\n" + msg, group_id=p)
+
+
+async def get_rss_fan(key: str) -> list:
+    url = f"https://nyaa.si/?page=rss&q={key}"
+    down_urls = []
+    url = url.replace(" ","")
+    txt = feedparser.parse(url)
+    for _ in txt['entries'][:10]:
+        title = _['title']
+        down_url = _['nyaa_infohash']
+        down_urls.append([title, down_url])
+    return down_urls
+
+search_newfan = on_regex(pattern="^新番\ ")
+
+@search_newfan.handle()
+async def search_newfan_Method(bot: Bot, event: Event):
+    title = str(event.message).strip()[3:].strip()
+    # if event.get_user_id() != "1761512493":
+        # return
+    down_urls = await get_rss_fan(title)
+    if down_urls:
+        if isinstance(event, GroupMessageEvent):
+            msgs = None
+            for down_url in down_urls:
+                t = down_url[0]
+                u = down_url[1]
+                msgs += MessageSegment.text(f"标题：{t}")
+                msgs += MessageSegment.text(f"{u}")
+            if msgs:
+                print(msgs)
+                msgs+=MessageSegment.text("完毕!")
+                try:
+                    await send_forward_msg_group(bot, event, 'qqbot', msgs)
+                except Exception:
+                    time_name = pendulum.now().format("Y-MM-DD-HH_mm_ss")
+                    with open(f"/root/newfan_{time_name}.log","w") as f:
+                        f.write(str(msgs))
+                    with open(f"/home/dmf/newfan_{time_name}.log","w") as f:
+                        f.write(str(msgs))
+                    await bot.send(event=event,message=f"帐号可能被风控!使用\ncmd cat newfan_{time_name}.log查看日志")
+        else:
+            msgs = ""
+            for down_url in down_urls:
+                t = down_url[0]
+                u = down_url[1]
+                msgs += f"标题：{t}\n磁力:{u}\n\n"
+            if msgs:
+                print(msgs)
+                try:
+                    await bot.send(event=event,message=msgs)
+                except Exception:
+                    time_name = pendulum.now().format("Y-MM-DD-HH_mm_ss")
+                    with open(f"/root/newfan_{time_name}.log","w") as f:
+                        f.write(str(msgs))
+                    with open(f"/home/dmf/newfan_{time_name}.log","w") as f:
+                        f.write(str(msgs))
+                    await bot.send(event=event,message=f"帐号可能被风控!使用\ncmd cat newfan_{time_name}.log查看日志")
+    
+
+# 合并消息
+async def send_forward_msg_group(
+        bot: Bot,
+        event: GroupMessageEvent,
+        name: str,
+        msgs: [],
+):
+    def to_json(msg):
+        return {"type": "node", "data": {"name": name, "uin": bot.self_id, "content": msg}}
+
+    messages = [to_json(msg) for msg in msgs]
+    await bot.call_api(
+        "send_group_forward_msg", group_id=event.group_id, messages=messages
+    )
