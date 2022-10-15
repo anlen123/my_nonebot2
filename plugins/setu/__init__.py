@@ -10,6 +10,9 @@ config = global_config.dict()
 pathHome = os.environ["HOME"]
 imgRoot = config.get('imgroot', pathHome)
 
+export = nonebot.require("nonebot_plugin_navicat")
+clien = export.redis_client  # redis的
+
 pathHome = imgRoot + "QQbotFiles/img"
 if not os.path.exists(pathHome):
     os.makedirs(pathHome)
@@ -27,7 +30,12 @@ async def setu_rev(bot: Bot, event: GroupMessageEvent):
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list) - 1)]
         path_temp = path.replace(imgRoot+"QQbotFiles/img/","")
-        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
+        try:
+            await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
+        except:
+            os.system(f"echo '1' >> {path_temp}")
+            await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
+
 
 
 del_img = on_regex(pattern="^rm\ ")
@@ -51,6 +59,15 @@ async def del_img_handle(event: GroupMessageEvent):
             await del_img.finish("成功删除")
     else:
         await del_img.finish('错误参数,例子: rm 1.jpg')
+
+clear_redis = on_regex(pattern="^redis_clear$")
+
+
+@clear_redis.handle()
+async def clear_redis_handle(event: GroupMessageEvent):
+    clien.delete(f"{imgRoot}QQbotFiles/nsfw/")
+    print(f"{imgRoot}QQbotFiles/nsfw/")
+    await clear_redis.finish('redis清除成功')
 
 
 save = on_regex(pattern="^上传色图$")
@@ -89,9 +106,16 @@ async def get_img_url(path: str) -> str:
 
 
 async def get_img_list(path):
+    print("获取文件夹图片")
+    root_path = path
+    temp_files = clien.get(f'{root_path}')
+    if temp_files:
+        print("有redis缓存了")
+        return eval(temp_files)
     files = []
     folders = [f"{path}"]
     while folders:
+        rd.shuffle(folders)
         pre = folders.pop(0)
         for path in os.listdir(pre):
             if os.path.isdir(pre + "/" + path):
@@ -100,8 +124,12 @@ async def get_img_list(path):
                 file = pre + "/"  + path
                 if file.endswith("png") or file.endswith("jpg") or file.endswith("jpeg"):
                     files.append(file)
-                    if len(files) >= 1000:
+                    if len(files) >= 2000:
+                        print("没有redis缓存")
+                        clien.set(f'{root_path}',str(files))
                         return files
+    print("没有redis缓存")
+    clien.set(f'{root_path}',str(files))
     return files
 
 
@@ -143,6 +171,7 @@ async def send_forward_msg_group(
         "send_group_forward_msg", group_id=event.group_id, messages=messages
     )
 
+
 nsfw = on_regex("^nsfw$")
 
 
@@ -157,5 +186,10 @@ async def nsfw_rep(bot: Bot, event: GroupMessageEvent):
         path = rd.choice(img_list)
         img_path = await get_img_url(path)
         print(img_path)
-        await send_forward_msg_group(bot, event, "qqbot", [MessageSegment.image(img_path)])
+        try:
+            await send_forward_msg_group(bot, event, "qqbot", [MessageSegment.image(img_path)])
+        except:
+            os.system(f"echo '1' >> {img_path}")
+            await send_forward_msg_group(bot, event, "qqbot", [MessageSegment.image(img_path)])
+
 

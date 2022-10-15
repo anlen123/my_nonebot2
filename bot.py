@@ -57,6 +57,7 @@ nonebot.load_plugin("plugins.nonebot_plugin_picsearcher.nonebot_plugin_picsearch
 nonebot.load_plugin("plugins.nonebot_plugin_pixiv.nonebot_plugin_pixiv")
 nonebot.load_plugin("plugins.nonebot_plugin_ygo.nonebot_plugin_ygo")
 nonebot.load_plugin("plugins.nonebot_plugin_bilibilibot")
+nonebot.load_plugin("plugins.nonebot_plugin_tgface")
 
 
 if __name__ == "__main__":
