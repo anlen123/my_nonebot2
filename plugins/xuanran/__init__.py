@@ -8,7 +8,7 @@ from pathlib import Path
 import nonebot
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message
-from nonebot.params import T_State, State
+from nonebot.params import T_State
 import time
 import random
 import asyncio
@@ -55,7 +55,7 @@ why = on_regex(pattern="是什么$")
 
 
 @why.handle()
-async def why_rev(bot: Bot, event: Event, state: T_State = State()):
+async def why_rev(bot: Bot, event: Event):
     msg = event.get_plaintext()
     msg = "https://zh.wikipedia.org/wiki/" + msg[:-3]
     s = time.time()

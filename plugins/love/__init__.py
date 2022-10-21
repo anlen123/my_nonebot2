@@ -8,7 +8,7 @@ from nonebot import on_command, on_startswith, on_keyword, on_message
 from nonebot.plugin import on_notice, on_regex
 from nonebot.rule import Rule, regex, to_me
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent
-from nonebot.params import T_State, State
+from nonebot.params import T_State
 import re
 
 _sub_plugins = set()

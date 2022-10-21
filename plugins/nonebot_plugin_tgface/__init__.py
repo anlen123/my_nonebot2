@@ -1,10 +1,8 @@
-from pathlib import Path
-
-import nonebot
-from .config import Config
+import nonebot, os, uuid, aiohttp, json
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent
-import requests, os, uuid, aiohttp, json
+import nonebot_plugin_navicat as export # 兼容老写法，不至于大改
+
 
 global_config = nonebot.get_driver().config
 config = global_config.dict()
@@ -19,7 +17,7 @@ tgface = on_regex(pattern="^https://t.me/addstickers/")
 if not os.path.exists("tgface"):
     os.makedirs("tgface")
 
-export = nonebot.require("nonebot_plugin_navicat")
+# export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client  # redis的
 
 

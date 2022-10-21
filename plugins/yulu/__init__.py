@@ -4,6 +4,7 @@ from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent, MessageSe
 import random as rd
 import os, time, uuid, re, requests
 from datetime import datetime
+import nonebot_plugin_navicat as export
 from typing import List
 
 global_config = nonebot.get_driver().config
@@ -11,7 +12,6 @@ config = global_config.dict()
 pathHome = os.environ["HOME"]
 imgRoot = config.get('imgroot', pathHome)
 
-export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client  # redis的
 
 yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")

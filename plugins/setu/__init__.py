@@ -1,16 +1,17 @@
 import nonebot
-from nonebot.plugin import on_regex, on_startswith, on_keyword
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent
+from nonebot.plugin import on_regex, on_keyword
+from nonebot.adapters.onebot.v11 import Bot, MessageSegment, GroupMessageEvent
 import os, uuid, requests, time
 import random as rd
 from datetime import datetime
+from nonebot import require
+import nonebot_plugin_navicat as export # 兼容老写法，不至于大改
 
 global_config = nonebot.get_driver().config
 config = global_config.dict()
 pathHome = os.environ["HOME"]
 imgRoot = config.get('imgroot', pathHome)
 
-export = nonebot.require("nonebot_plugin_navicat")
 clien = export.redis_client  # redis的
 
 pathHome = imgRoot + "QQbotFiles/img"
@@ -30,12 +31,8 @@ async def setu_rev(bot: Bot, event: GroupMessageEvent):
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list) - 1)]
         path_temp = path.replace(imgRoot+"QQbotFiles/img/","")
-        try:
-            await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
-        except:
-            os.system(f"echo '1' >> {path_temp}")
-            await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
-
+        os.system(f"echo '1' >> {path_temp}")
+        await bot.send(event=event, message=MessageSegment.image(await get_img_url(path)) + f"rm {path_temp}")
 
 
 del_img = on_regex(pattern="^rm\ ")
@@ -66,6 +63,8 @@ clear_redis = on_regex(pattern="^redis_clear$")
 @clear_redis.handle()
 async def clear_redis_handle(event: GroupMessageEvent):
     clien.delete(f"{imgRoot}QQbotFiles/nsfw/")
+    clien.delete(f"{imgRoot}QQbotFiles/img/")
+    clien.delete(f"{imgRoot}QQbotFiles/3c/")
     print(f"{imgRoot}QQbotFiles/nsfw/")
     await clear_redis.finish('redis清除成功')
 
