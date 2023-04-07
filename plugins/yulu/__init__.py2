@@ -35,7 +35,7 @@ async def yulu_rev(bot: Bot, event: GroupMessageEvent):
         day = time.strftime("%m-%d")
         clien.hincrby(f"{day}:yulu", path, 1)
         await bot.send(event=event,
-                       message=MessageSegment.image(await get_img_url(f"{path}")) + f"rmyl {path.split('/')[-1]}")
+                       message=MessageSegment.image(await get_img_url(f"{path}")) + f"rmyl {path.split('/')[-1]}" + f"[CQ:at,qq=1761512493]")
 
 
 yulu_save = on_regex("^上传语录$")

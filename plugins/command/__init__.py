@@ -10,7 +10,7 @@ config = global_config.dict()
 
 cmd_super = config.get("cmd_super", [])
 cmd_ban = config.get("cmd_ban", [])
-cmd_pre = config.get("cmd_pre", [])
+cmd_pre = config.get("cmd_pre", "")
 
 cmd = on_regex(pattern="^cmd\ ")
 
@@ -57,7 +57,11 @@ async def cmd_rev(bot: Bot, event: Event):
 
 async def run(command: str):
     try:
-        command = f"{cmd_pre};{command}"
+        if cmd_pre:
+            command = f"{cmd_pre};{command}"
+        else:
+            command = f"{command}"
+        print(command)
         proc = await asyncio.create_subprocess_shell(
             command,
             stdout=asyncio.subprocess.PIPE,
