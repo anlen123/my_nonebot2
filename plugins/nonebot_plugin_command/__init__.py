@@ -3,7 +3,6 @@ from nonebot import get_driver
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, Message
 import asyncio
-from .config import Config
 
 global_config = get_driver().config
 config = global_config.dict()
@@ -34,7 +33,9 @@ async def cmd_rev(bot: Bot, event: Event):
     else:
         await bot.send(event=event, message="您的指令是没有返回值的")
 
+
 cmd_m = on_regex(pattern="^内存$")
+
 
 @cmd_m.handle()
 async def cmd_rev(bot: Bot, event: Event):

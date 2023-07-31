@@ -1,5 +1,4 @@
 import nonebot
-from .config import Config
 from nonebot import on_message
 from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot, Event, Message
