@@ -32,8 +32,8 @@ nonebot.load_plugin("plugins.nonebot_plugin_sbbot")
 nonebot.load_plugin("plugins.nonebot_plugin_biliav")
 nonebot.load_plugin("plugins.nonebot_plugin_picsearcher.nonebot_plugin_picsearcher")
 nonebot.load_plugin("plugins.nonebot_plugin_pixiv.nonebot_plugin_pixiv")
-nonebot.load_plugin("plugins.nonebot_plugin_ygo.nonebot_plugin_ygo")
-nonebot.load_plugin("plugins.chat_gpt4")
+# nonebot.load_plugin("plugins.nonebot_plugin_ygo.nonebot_plugin_ygo")
+nonebot.load_plugin("plugins.chat_gpt")
 
 if __name__ == "__main__":
     # nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
