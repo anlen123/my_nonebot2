@@ -83,13 +83,16 @@ async def get_av_data(av):
     av= str(av)
     if av[0:2] == "BV":
         avcode= bv2av(av)
+        print(f"av:{avcode}")
     else:
         avcode = av.replace("av","")
     new_url =  url + f"?aid={avcode}"
+    print(f"url:{new_url}")
     async with httpx.AsyncClient() as client:
-        headers = {'Content-Type': "application/x-www-form-urlencoded"}
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'}
         r = await client.get(new_url, headers=headers)
     rd=  json.loads(r.text)
+    print(rd)
     if rd['code']=="0":
         if not rd["data"]:
             return None

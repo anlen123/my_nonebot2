@@ -4,9 +4,16 @@ from nonebot.plugin import on_notice, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent
 import aiohttp, asyncio, json, nonebot, re, httpx, meilisearch
 from nonebot import get_driver
+import openai
+from PIL import Image
+import requests
+from io import BytesIO
+import base64
+import os
 
 global_config = get_driver().config
 config = global_config.dict()
+openai.api_key = config.get('gpt_api_key')
 
 meilisearch_host = config.get('meilisearch_host')
 card_limit = 3
@@ -30,6 +37,8 @@ class Ygo_Card:
             self.race = card.race
             self.attribute = card.attribute
             self.img = card.img
+            self.card_no = card.card_no
+            self.quality = card.quality
         if len(args) == 2:
             id = args[0]
             card = args[1]
@@ -46,6 +55,8 @@ class Ygo_Card:
             self.race = card['race']
             self.attribute = card['attribute']
             self.img = card['img']
+            self.card_no = card['card_no']
+            self.quality = card['quality']
 
 
 master_duel = on_regex(pattern="^ygo ")
@@ -55,18 +66,6 @@ master_duel = on_regex(pattern="^ygo ")
 async def master_duel_rev(bot: Bot, event: Event):
     content = str(event.get_plaintext()[4:]).strip()
     print(content)
-    number = 1
-    # number = str(content.split(" ")[-1])
-    # if is_int(number):
-    #     if int(number) > 5:
-    #         number = 5
-    #     else:
-    #         number = int(number)
-    # else:
-    #     if number == 'all':
-    #         number = 99999
-    #     else:
-    #         number = 1
     ret_by_alias = await search_card_by_alias(content)
     hits_by_alias = ret_by_alias.get('hits')
     msg = get_send_msg(hits_by_alias)
@@ -89,7 +88,7 @@ async def master_duel_rev(bot: Bot, event: Event):
                 for hit in hits[1:card_limit]:
                     name.append(hit.get('name'))
                 other = '\n'.join(name)
-                message += ("\n其他符合条件的卡名：" + other)
+                message += ("\n其他符合条件的卡名：\n" + other)
 
             await bot.send(event, message)
         else:
@@ -121,10 +120,10 @@ def get_send_msg(hits):
         return msg
     for _ in hits:
         if _:
+            img = pin_quality(_['img'], _['quality'])
             msg.append("名称：" + MessageSegment.text(_['name']) + f"({_['id']})\n"
-                       + MessageSegment.text(_['attribute']) + "\n"
-                       + MessageSegment.image(_['img']) + "\n"
-                       + _['desc'])
+                       + MessageSegment.image(img) + "\n"
+                       + _['desc'] + f"\n====================\n品质: {_['quality']}\n编号: {_['card_no']}\n")
     return msg
 
 
@@ -217,7 +216,7 @@ master_duel_ck_gpt = on_regex(pattern="^ygogpt ")
 async def master_duel_ck_gpt_rev(bot: Bot, event: Event):
     content = str(event.get_plaintext()[7:]).strip()
     print(content)
-    content = await chat_with_chatmindai(content)
+    content = await chat_free_gpt(content)
     print(content)
     if not content:
         await bot.send(event, MessageSegment.text(f"查询条件构造错误({content})"))
@@ -322,42 +321,179 @@ async def write_alias_db(id, alias):
             return await resp.json()
 
 
-async def chat_with_chatmindai(content: str):
-    url = "https://beta.chatmindai.net/api/chat-process"
-    payload = json.dumps({
-        "message": f"{content}",
-        "chatid": "",
-        "roleid": "229nmq5mey7kzcn0nvx1690954442548",
-        "isContextEnabled": 0
-    })
+async def chat_free_gpt(message: str) -> list:
+    def chat_by_rule(messages: list):
+        openai.api_base = "https://api.chatanywhere.com.cn/v1"
+        """为提供的对话消息创建新的回答 (流式传输)
 
-    headers = {
-        'Accept': '*/*',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZW51bSI6IjEzNjc2NTkxNTg5IiwiaWQiOjM1MDQyLCJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImV4cCI6MTY5MTQwODA1NiwianRpIjoiMTZkYTRjMDBkZGYwNGIzYTllOTA2YjJhY2Y5MDcxYmMifQ.n4pQ0szJZSk-q2tp554RAZhGX8Ty0L73opJjBqH1PX4',
-        'Connection': 'keep-alive',
-        'Content-Type': 'application/json',
-        'Origin': 'https://beta.chatmindai.net',
-        'Referer': 'https://beta.chatmindai.net/chat',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'same-origin',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"'
-    }
+        Args:
+            messages (list): 完整的对话消息
+            api_key (str): OpenAI API 密钥
 
-    msg = ""
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, headers=headers, data=payload) as response:
-            while True:
-                line = await response.content.readline()
-                if not line:
+        Returns:
+            tuple: (results, error_desc)
+        """
+        try:
+            response = openai.ChatCompletion.create(
+                model='gpt-3.5-turbo',
+                messages=messages,
+                stream=True,
+            )
+            completion = {'role': '', 'content': ''}
+            for event in response:
+                if event['choices'][0]['finish_reason'] == 'stop':
+                    # print(f'收到的完成数据: {completion}')
                     break
-                msg += str(line.decode('utf-8'))
-    return msg
+                for delta_k, delta_v in event['choices'][0]['delta'].items():
+                    print(f'{delta_v}', end='')
+                    completion[delta_k] += delta_v
+            return completion.get("content")
+        except Exception as err:
+            return f'OpenAI API 异常: {err}'
+
+    rule = """给你一个json串表示自然语言的描述对应的类型，尝试理解并消化给你的例子再帮我转换为特定格式的字符串, 并把转换结果用|分割，只用输出结果即可，不用任何解释，Let's think step by step。
+注意: attribute的属性只有["场地魔法","永续魔法","永续陷阱","速攻魔法","反击陷阱"]
+monsters_type的属性只有["超量","同调","灵摆","融合","LINK","通常","二重","灵魂","调整"]
+火属性通通改为炎属性, 所有的大于都是大于等于, 所有的小于都是小于等于, 转换结果的键不得重复, type只能有三个值其中一个，怪兽卡, 魔法卡, 陷阱卡
+lv的值只能是数学，如果不是数字，就过滤掉lv这个结果 
+{
+"攻击力": "ATK",
+"防御力": "DEF",
+"属性": "attribute",
+"族": "race",
+"陷阱卡": "type",
+"魔法卡": "type",
+"怪兽卡": "type",
+"永续": "attribute",
+"反击": "attribute",
+"速攻": "attribute",
+"场地": "attribute",
+"link": "lv",
+"等级": "lv"
+"名字": "q"
+"怪兽种类": "monsters_type"
+}
+例子1:  攻击力大于1000 -> ATK>1000
+例子2: 龙族 -> race=龙族
+例子3: 光属性->attibution=光属性
+例子4: 防御力小于3000 -> DEF<3000
+例子5: 永续陷阱卡 -> type=陷阱卡|attribute=永续陷阱
+例子6: 速攻魔法卡 -> type=魔法卡|attribute=速攻魔法
+例子7: 场地魔法卡 -> type=魔法卡|attribute=场地魔法
+例子8: 等级大于10 -> lv>=10
+例子9: 等级等于8的龙族怪兽 -> lv=8|race=龙族|type=怪兽卡
+例子10: link5的炎属性怪兽 -> lv=5|attribute=炎属性|type=怪兽卡
+例子11: 名字中带有闪刀的永续魔法 -> type=魔法卡|attribute=永续魔法|q=闪刀'
+例子12: 一只光属性link2的怪兽 -> lv=2|attribute=光属性|type=怪兽卡
+例子13: 龙link的反击陷阱卡 -> type=陷阱卡|attribute=反击陷阱|name=龙link
+例子14: 兽带的场地 -> type=魔法卡|attribute=场地魔法|q=兽带
+例子15: 名字带有黑羽的场地 -> type=魔法卡|attribute=场地魔法|q=黑羽
+例子16: 名字带有闪刀的超量怪兽 -> type=怪兽卡|attribute=场地魔法|monsters_type=超量|q=闪刀
+例子17: 名字带有刀的同调怪兽 -> type=怪兽卡|monsters_type=同调|q=刀
+例子18: 一只又是超量又是灵摆的暗属性龙族怪兽 -> type=怪兽卡|attribute=暗属性|race=龙族|monsters_type=超量|monsters_type=灵摆
+例子19: 灵摆通常怪兽 -> type=怪兽卡|monsters_type=灵摆|monsters_type=通常
+例子20: 融合效果怪兽 -> type=怪兽卡|monsters_type=融合|monsters_type=效果
+例子21: 灵摆 超量 暗属性 -> type=怪兽卡|monsters_type=灵摆|monsters_type=超量|attribute=暗属性
+例子22: 闪刀 LINK1 水属性-> type=怪兽卡|monsters_type=LINK|attribute=水属性|lv=1|q=闪刀
+例子23: LINK5 龙族 暗属性 前 -> type=怪兽卡|monsters_type=LINK|lv=5|race=龙族|attribute=暗属性|q=前"""
+    messages = [{'role': 'system', 'content': f'{rule}'}, {'role': 'user', 'content': f'{message}'}, ]
+    return chat_by_rule(messages)
+
+
+# # 调用openai 问答示例
+# async def chat_guanfang(prompt):
+#     rule = """给你一个json串表示自然语言的描述对应的类型，尝试理解并消化给你的例子再帮我转换为特定格式的字符串, 并把转换结果用|分割，只用输出结果即可，不用任何解释，Let's think step by step。
+#     注意: attribute的属性只有["场地魔法","永续魔法","永续陷阱","速攻魔法","反击陷阱"]
+#     monsters_type的属性只有["超量","同调","灵摆","融合","LINK","通常","二重","灵魂","调整"]
+#     火属性通通改为炎属性, 所有的大于都是大于等于, 所有的小于都是小于等于, 转换结果的键不得重复, type只能有三个值其中一个，怪兽卡, 魔法卡, 陷阱卡
+#     lv的值只能是数学，如果不是数字，就过滤掉lv这个结果
+#     {
+#     "攻击力": "ATK",
+#     "防御力": "DEF",
+#     "属性": "attribute",
+#     "族": "race",
+#     "陷阱卡": "type",
+#     "魔法卡": "type",
+#     "怪兽卡": "type",
+#     "永续": "attribute",
+#     "反击": "attribute",
+#     "速攻": "attribute",
+#     "场地": "attribute",
+#     "link": "lv",
+#     "等级": "lv"
+#     "名字": "q"
+#     "怪兽种类": "monsters_type"
+#     }
+#     例子1:  攻击力大于1000 -> ATK>1000
+#     例子2: 龙族 -> race=龙族
+#     例子3: 光属性->attibution=光属性
+#     例子4: 防御力小于3000 -> DEF<3000
+#     例子5: 永续陷阱卡 -> type=陷阱卡|attribute=永续陷阱
+#     例子6: 速攻魔法卡 -> type=魔法卡|attribute=速攻魔法
+#     例子7: 场地魔法卡 -> type=魔法卡|attribute=场地魔法
+#     例子8: 等级大于10 -> lv>=10
+#     例子9: 等级等于8的龙族怪兽 -> lv=8|race=龙族|type=怪兽卡
+#     例子10: link5的炎属性怪兽 -> lv=5|attribute=炎属性|type=怪兽卡
+#     例子11: 名字中带有闪刀的永续魔法 -> type=魔法卡|attribute=永续魔法|q=闪刀'
+#     例子12: 一只光属性link2的怪兽 -> lv=2|attribute=光属性|type=怪兽卡
+#     例子13: 龙link的反击陷阱卡 -> type=陷阱卡|attribute=反击陷阱|name=龙link
+#     例子14: 兽带的场地 -> type=魔法卡|attribute=场地魔法|q=兽带
+#     例子15: 名字带有黑羽的场地 -> type=魔法卡|attribute=场地魔法|q=黑羽
+#     例子16: 名字带有闪刀的超量怪兽 -> type=怪兽卡|attribute=场地魔法|monsters_type=超量|q=闪刀
+#     例子17: 名字带有刀的同调怪兽 -> type=怪兽卡|monsters_type=同调|q=刀
+#     例子18: 一只又是超量又是灵摆的暗属性龙族怪兽 -> type=怪兽卡|attribute=暗属性|race=龙族|monsters_type=超量|monsters_type=灵摆
+#     例子19: 灵摆通常怪兽 -> type=怪兽卡|monsters_type=灵摆|monsters_type=通常
+#     例子20: 融合效果怪兽 -> type=怪兽卡|monsters_type=融合|monsters_type=效果
+#     例子21: 灵摆 超量 暗属性 -> type=怪兽卡|monsters_type=灵摆|monsters_type=超量|attribute=暗属性
+#     例子22: 闪刀 LINK1 水属性-> type=怪兽卡|monsters_type=LINK|attribute=水属性|lv=1|q=闪刀
+#     例子23: LINK5 龙族 暗属性 前 -> type=怪兽卡|monsters_type=LINK|lv=5|race=龙族|attribute=暗属性|q=前"""
+#     response = openai.ChatCompletion.create(
+#         model="gpt-3.5-turbo",
+#         messages=[
+#             {"role": "system", "content": f"{rule}"},
+#             {"role": "user", "content": prompt},
+#         ]
+#     )
+#     answer = response.choices[0].message.content
+#     return answer
+
+
+# async def chat_with_chatmindai(content: str):
+#     url = "https://beta.chatmindai.net/api/chat-process"
+#     payload = json.dumps({
+#         "message": f"{content}",
+#         "chatid": "",
+#         "roleid": "229nmq5mey7kzcn0nvx1690954442548",
+#         "isContextEnabled": 0
+#     })
+#
+#     headers = {
+#         'Accept': '*/*',
+#         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+#         'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZW51bSI6IjEzNjc2NTkxNTg5IiwiaWQiOjM1MDQyLCJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImV4cCI6MTY5MTQwODA1NiwianRpIjoiMTZkYTRjMDBkZGYwNGIzYTllOTA2YjJhY2Y5MDcxYmMifQ.n4pQ0szJZSk-q2tp554RAZhGX8Ty0L73opJjBqH1PX4',
+#         'Connection': 'keep-alive',
+#         'Content-Type': 'application/json',
+#         'Origin': 'https://beta.chatmindai.net',
+#         'Referer': 'https://beta.chatmindai.net/chat',
+#         'Sec-Fetch-Dest': 'empty',
+#         'Sec-Fetch-Mode': 'cors',
+#         'Sec-Fetch-Site': 'same-origin',
+#         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+#         'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+#         'sec-ch-ua-mobile': '?0',
+#         'sec-ch-ua-platform': '"macOS"'
+#     }
+#
+#     msg = ""
+#
+#     async with aiohttp.ClientSession() as session:
+#         async with session.post(url, headers=headers, data=payload) as response:
+#             while True:
+#                 line = await response.content.readline()
+#                 if not line:
+#                     break
+#                 msg += str(line.decode('utf-8'))
+#     return msg
 
 
 async def get_card_by_id(id: int) -> Ygo_Card:
@@ -371,6 +507,41 @@ async def get_card_by_id(id: int) -> Ygo_Card:
         async with session.get(url, headers=headers) as resp:
             ret = await resp.json()
             return Ygo_Card(id, ret)
+
+
+def pin_quality(url_image_url, quality):
+    # 加载URL图片
+    response = requests.get(url_image_url)
+    url_image = Image.open(BytesIO(response.content))
+
+    # 加载本地图片
+    current_directory = os.getcwd()
+    if quality == '暂未登录MD':
+        return url_image_url
+
+    local_image_path = f'{current_directory}/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/{quality}'
+    local_image = Image.open(local_image_path)
+    local_image.thumbnail((local_image.width * 0.5, local_image.height * 0.5))
+
+    # 计算拼接后的图像大小
+    result_width = url_image.width
+    result_height = url_image.height + local_image.height
+
+    # 创建空白图像作为拼接结果
+    result_image = Image.new('RGB', (result_width, result_height))
+
+    # 将本地图片粘贴到拼接结果的顶部
+    result_image.paste(local_image, (url_image.width - local_image.width, 0))
+
+    # 将URL图片粘贴到拼接结果的底部
+    result_image.paste(url_image, (0, local_image.height))
+
+    # 将拼接后的图像转换为Base64格式
+    buffered = BytesIO()
+    result_image.save(buffered, format='JPEG')
+    image_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+    return "base64://" + image_base64
 
 
 master_duel_help = on_regex(pattern="^ygohelp$")

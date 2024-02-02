@@ -16,7 +16,11 @@ nonebot-plugin-test = "^0.3.0"
 [tool.nonebot]
 plugins = []
 plugin_dirs = ["nb/plugins"]
+adapters = [
+    { name = "QQ 频道", module_name = "nonebot.adapters.qqguild" }
+]
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
