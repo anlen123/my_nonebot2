@@ -3,13 +3,11 @@ from pathlib import Path
 import nonebot
 from typing import List
 from nonebot import get_driver
-from .config import Config
 from nonebot import on_command, on_startswith, on_keyword, on_message
 from nonebot.plugin import on_notice, on_regex
 from nonebot.rule import Rule, regex, to_me
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent
 from nonebot.params import T_State
-from nonebot_plugin_guild_patch import GuildMessageEvent
 import asyncio
 import re
 
@@ -40,22 +38,16 @@ imgRoot = config.get('imgroot', "")
 # love = on_message(rule=bool_img())
 
 
-love = on_regex(pattern="^love$")
+love = on_regex(pattern="^ll$")
 
 
 @love.handle()
 async def love_rev(bot: Bot, event: Event):
+
     await bot.send(event, message="我也爱你")
-    # with open("/root/QQbotFiles/pixivZip/97369334/97369334.gif", 'rb') as f:
+    # # with open("/root/QQbotFiles/pixivZip/97369334/97369334.gif", 'rb') as f:
     #     await bot.send(event, MessageSegment.image('base64://' + base64.b64encode(f.read()).decode()))
 
-
-love2 = on_regex(pattern="^love2$")
-
-
-@love2.handle()
-async def love2_rev(bot: Bot, event: GuildMessageEvent):
-    await bot.send(event, message="我也爱你2")
 
 
 qqbot_des = on_regex(pattern="^菜单$", rule=to_me())
