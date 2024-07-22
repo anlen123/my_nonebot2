@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/plugins/nonebot_plugin_picsearcher" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/plugins/nonebot_plugin_pixiv" vcs="Git" />
   </component>
 </project>

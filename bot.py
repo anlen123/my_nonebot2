@@ -24,8 +24,9 @@ nonebot.load_plugin("plugins.nonebot_plugin_pixiv.nonebot_plugin_pixiv")
 nonebot.load_plugin("plugins.nonebot_plugin_sbbot")
 nonebot.load_plugin("plugins.nonebot_plugin_biliav")
 nonebot.load_plugin("plugins.nonebot_plugin_picsearcher.nonebot_plugin_picsearcher")
+nonebot.load_plugin("plugins.nonebot_plugin_masterduel.nonebot_plugin_masterduel")
 # nonebot.load_plugin("plugins.nonebot_plugin_command") #看情况恢复吧， win上使用太危险了
-# nonebot.load_plugin("plugins.nonebot_plugin_xuanran")
+nonebot.load_plugin("plugins.nonebot_plugin_xuanran")
 # nonebot.load_plugin("plugins.nonebot_plugin_yulu")
 
 # nonebot.load_plugin("plugins.chat_gpt")
