@@ -32,7 +32,8 @@ async def handle(bot: Bot, event: Event):
     if not event.get_plaintext().strip():
         return
 
-    avCode = re.search('av(\d{1,12})|BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2})', str(event.get_message()))
+    avCode = re.search('av(\d{1,100})|BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2,100})', str(event.get_message()))
+    print(avCode)
     if not avCode:
         return
     rj = await get_av_data(avCode[0])

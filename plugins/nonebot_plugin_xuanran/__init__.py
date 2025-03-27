@@ -15,8 +15,13 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+global_config = nonebot.get_driver().config
+config = global_config.dict()
+
 xr = on_regex(pattern="^xr\ ")
 
+imgRoot = config.get('imgroot') if config.get(
+    'imgroot') else f"{os.environ['HOME']}/"
 
 @xr.handle()
 async def xr_rev(bot: Bot, event: Event):
@@ -26,8 +31,9 @@ async def xr_rev(bot: Bot, event: Event):
     msg = msg.replace("。", ".")
     msg = msg.replace(",", ".")
     msg = msg.replace("，", ".")
-    pngName = f"{os.getcwd()}\\{random.randint(1, 99999999999)}.png"
+    pngName = f"{imgRoot}\\QQbotFiles\\xr\\{random.randint(1, 99999999999)}.png"
     screenshot(msg, pngName)
+    os.system(f"echo 123 >> {pngName}")
     await bot.send(event=event, message=MessageSegment.image(pngName))
     os.remove(pngName)
 
@@ -44,6 +50,7 @@ def screenshot(sss: str, pic_name):
         print(width, height)
         driver.set_window_size(width, height)
         time.sleep(1)
+        print(pic_name)
         driver.save_screenshot(pic_name)
     except Exception as e:
         print(e)

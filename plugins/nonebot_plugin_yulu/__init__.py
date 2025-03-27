@@ -6,13 +6,12 @@ import os, time, uuid, re, requests
 from datetime import datetime
 import nonebot_plugin_navicat as export
 from typing import List
+from .config import config
 
-global_config = nonebot.get_driver().config
-config = global_config.dict()
-pathHome = os.environ["HOME"]
-imgRoot = config.get('imgroot', pathHome)
+from objprint import op
+import shutil, httpx
 
-clien = export.redis_client  # redis的
+imgRoot = config.imgRoot
 
 yulu = on_regex("^语录$|^yulu$|^yl$|^来点语录$")
 
@@ -32,10 +31,7 @@ async def yulu_rev(bot: Bot, event: GroupMessageEvent):
     else:
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list) - 1)]
-        day = time.strftime("%m-%d")
-        clien.hincrby(f"{day}:yulu", path, 1)
-        await bot.send(event=event,
-                       message=MessageSegment.image(await get_img_url(f"{path}")) + f"rmyl {path.split('/')[-1]}")
+        await bot.send(event=event, message=MessageSegment.image(await get_img_url(f"{path}")))
 
 
 yulu_save = on_regex("^上传语录$")
@@ -53,50 +49,34 @@ async def yulu_save_got(event: GroupMessageEvent):
     msg = event.message
     url = msg[0].data['url']
     group_id = event.group_id
-    today = await get_Y_M_D()
-    path_prefix = f"{imgRoot}QQbotFiles/yulu/{group_id}/{today}/"
+    path_prefix = f"{imgRoot}QQbotFiles/yulu/{group_id}/"
     if not os.path.exists(path_prefix):
         os.makedirs(path_prefix)
     if url:
-        r = requests.get(url)
-        with open(f"{imgRoot}QQbotFiles/yulu/{group_id}/{today}/{today}-{uuid.uuid4()}.png", mode="wb") as f:
+        r = httpx.get(url)
+        with open(f"{imgRoot}QQbotFiles/yulu/{group_id}/{uuid.uuid4()}.png", mode="wb") as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
     else:
         await yulu_save.finish("好像出错了!!!")
 
 
-ylRank = on_regex(pattern="^ylRank$")
-
-
-@ylRank.handle()
-async def ylRank(bot: Bot, event: GroupMessageEvent):
-    day = time.strftime("%m-%d")
-    yuluMsg = eval(str(clien.hgetall(f"{day}:yulu")))
-    yuluMsg = sorted(yuluMsg.items(), key=lambda k: -int(k[1]))[:3]
-    msg = "今日语录排行榜\n"
-    for index, x in enumerate(yuluMsg):
-        count = re.findall("\(b'(.*?)',\ b'(.*?)'\)", str(x))[0]
-        msg += f"第{index + 1}名: 出现次数:{count[1]} [CQ:image,file=file:///{count[0]}]\n"
-    await bot.send(event=event, message=Message(msg))
-
-
-del_yl_img = on_regex(pattern="^rmyl\ ")
-
-
-@del_yl_img.handle()
-async def del_img_handle(event: GroupMessageEvent):
-    msg = str(event.message).strip()[5:]
-    if msg.endswith("png") or msg.endswith("jpg") or msg.endswith("jpeg"):
-        img_list = await get_all_yl(event.group_id)
-        for img in img_list:
-            if img.endswith(msg):
-                os.system(f"rm {img}")
-                await del_yl_img.finish("语录成功删除")
-                break
-        await del_yl_img.finish("语录删除失败")
-    else:
-        await del_yl_img.finish('错误参数,例子: rmyl 1.jpg')
+# del_yl_img = on_regex(pattern="^rmyl\ ")
+#
+#
+# @del_yl_img.handle()
+# async def del_img_handle(event: GroupMessageEvent):
+#     msg = str(event.message).strip()[5:]
+#     if msg.endswith("png") or msg.endswith("jpg") or msg.endswith("jpeg"):
+#         img_list = await get_all_yl(event.group_id)
+#         for img in img_list:
+#             if img.endswith(msg):
+#                 os.system(f"rm {img}")
+#                 await del_yl_img.finish("语录成功删除")
+#                 break
+#         await del_yl_img.finish("语录删除失败")
+#     else:
+#         await del_yl_img.finish('错误参数,例子: rmyl 1.jpg')
 
 
 async def get_img_url(path: str) -> str:

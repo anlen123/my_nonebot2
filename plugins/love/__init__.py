@@ -38,7 +38,7 @@ imgRoot = config.get('imgroot', "")
 # love = on_message(rule=bool_img())
 
 
-love = on_regex(pattern="^ll$")
+love = on_regex(pattern="^(ll|love)$")
 
 
 @love.handle()
@@ -57,7 +57,7 @@ qqbot_des = on_regex(pattern="^菜单$", rule=to_me())
 async def qqbot_des_rev(bot: Bot, event: Event):
     msg = """qqbot使用说明如下：
 1.love, 描述：会给你回复love
-2.st, 描述：会发一张色图
+2.st, 描述：会发一张色图(无了)
 3.sx NB, 描述：通过缩写查全意
 4.xr https://baidu.com, 描述：渲染网页成图片
 5.yl, 描述：发送上传过的语录，使用上传语录，可以上传图片
@@ -65,10 +65,10 @@ async def qqbot_des_rev(bot: Bot, event: Event):
 7.搜图
 8.pixiv pid, 描述：懂的都懂
 9.ygo 闪刀，描述：游戏王查卡器
-10.ygogpt 一只攻击力150的怪兽，描述：基于gpt3的游戏王查卡器
-11.gpt3 你的问题，描述：chatGPT3回答你的问题
-12.gpt4 你的问题，描述：chatGPT4回答你的问题
-13.gpt_count 描述：给出gpt的剩余次数。
+10.ck 游戏王查卡
+11.dsr 你的问题（dsr是R1模型, ds3是v3模型），描述：deepseek回答你的问题, dsclear清除上下文
+12.gm 你的问题，描述：gnmini回答你的问题, gmclear清除上下文
+13.gmt 你的问题，描述：gnmini的推理模型回答你的问题, gmclear清除上下文
 -------后续新加功能会补充
     """
     await bot.send(event, message=msg)

@@ -1,8 +1,10 @@
-from pydantic import BaseSettings
+from pydantic import BaseModel
+from typing import List, Dict
+from nonebot import get_plugin_config
 
 
-class Config(BaseSettings):
-    # Your Config Here
+class Config(BaseModel):
+    imgRoot:str = "D:\\nb2\\imgroot\\"
 
-    class Config:
-        extra = "ignore"
+
+config = get_plugin_config(Config)

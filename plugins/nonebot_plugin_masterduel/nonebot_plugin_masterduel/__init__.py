@@ -9,8 +9,7 @@ from nonebot.rule import Rule, to_me
 from nonebot.typing import T_State
 from nonebot.params import Depends
 
-from .config import Config
-from .config import Config
+from .config import config
 from .mapper import *
 from .model.Card import YgoCard
 from .utils import imgUtils
@@ -19,23 +18,138 @@ from .utils import rarityUtils
 from nonebot_plugin_waiter import waiter
 from nonebot_plugin_userinfo import get_user_info
 
-global_config = nonebot.get_driver().config
-config = global_config.dict()
+nonebot_plugin_masterduel_root_dir = config.nonebot_plugin_masterduel_root_dir
+nonebot_plugin_masterduel_img_dir = config.nonebot_plugin_masterduel_img_dir
+nonebot_plugin_masterduel_img_card_dir = config.nonebot_plugin_masterduel_img_card_dir
 
-nonebot_plugin_masterduel_img_dir = config.get('nonebot_plugin_masterduel_img_dir')
-nonebot_plugin_masterduel_root_dir = config.get('nonebot_plugin_masterduel_root_dir')
+mapper.close_ygo_game_open_value()
+
+master_duel_help = on_regex(pattern="^游戏王功能")
+
+
+@master_duel_help.handle()
+async def master_duel_help_rec(bot: Bot, event: Event, state: T_State):
+    msg = """
+    1.查卡                           
+    示例：ck 闪刀姬零衣
+    
+    2.设置外号，下次可通过外号来查卡     
+    示例：外号 26077387 零一
+    
+    3.模糊搜索前20张卡                 
+    示例：lck 闪刀姬
+    
+    4.模糊搜索前20张卡（带卡图）        
+    示例：pl 闪刀姬
+    
+    5.上传游戏王卡图                   
+    示例：上传游戏王卡图 26077387，之后传入图片
+    
+    6.md卡组码查询                    
+    示例：卡组码 00fe5k7
+    
+    7.裁定查询                        
+    示例：裁定 26077387
+    
+    8.卡包查询                        
+    示例：卡包 3319001
+    
+    9.我是游戏王高手（游戏王卡图猜谜）    
+    示例：我是游戏王高手 或者 下一题
+    
+    10.后续开发： 通过ai查卡，尽情期待，有什么好的意见也可以提上来
+    """
+    await bot.send(event=event, message=MessageSegment.text(msg))
+
 
 master_duel = on_regex(pattern="^ck")
 master_duel_CK = on_regex(pattern="^CK")
+master_duel_Ck = on_regex(pattern="^Ck")
+master_duel_cK = on_regex(pattern="^cK")
+master_duel_cK1 = on_regex(pattern="^查卡")
 
 
 @master_duel.handle()
 @master_duel_CK.handle()
-async def master_duel_rev(bot: Bot, event: Event):
+@master_duel_Ck.handle()
+@master_duel_cK.handle()
+@master_duel_cK1.handle()
+async def master_duel_rev(bot: Bot, event: Event, state: T_State):
     cmd = event.get_plaintext()[2:]
     cmd = cmd.strip()
     ygoCard = get_ygo(cmd)
-    await send_card(bot, event, ygoCard)
+    if ygoCard:
+        await send_card(bot, event, ygoCard)
+        state['alias'] = "None"
+        return
+    else:
+        ygoCardList = mapper.get_card_info_like_names(cmd)
+        if not ygoCardList:
+            await bot.send(event, MessageSegment.text("未查询到卡片"))
+            state['alias'] = "None"
+            return
+        state['alias_name'] = cmd
+        await lck(bot, event, cmd, extrMsg="\n输入序号即可设置外号")
+        count = set()
+        ygoCardList_new = []
+        for y in ygoCardList:
+            if y.name not in count:
+                ygoCardList_new.append(y)
+                count.add(y.name)
+            if len(count) >= 20:
+                break
+        seq = 1
+        for card in ygoCardList_new:
+            state[str(seq)] = str(card.id)
+            seq += 1
+        state['count'] = len(ygoCardList)
+        print(state)
+
+
+@master_duel.got("alias")
+@master_duel.got("alias")
+async def get_setu(bot: Bot, event: MessageEvent, state: T_State):
+    if state['alias'] == "None":
+        return
+    seq = event.get_plaintext().strip()
+    count = state['count']
+    if seq.isdigit() and 1 <= int(seq) <= count:
+        card_id = state[str(seq)]
+        alias = state['alias_name']
+        await alias_card(bot, event, f"{int(card_id)} {alias}")
+
+
+master_like_duel = on_regex(pattern="^lck")
+
+
+@master_like_duel.handle()
+async def master_like_duel_rev(bot: Bot, event: Event):
+    cmd = event.get_plaintext()[3:]
+    cmd = cmd.strip()
+    await lck(bot, event, cmd)
+
+
+async def lck(bot: Bot, event: Event, cmd: str, extrMsg: str = None):
+    ygoCardList = mapper.get_card_info_like_names(cmd)
+    if not ygoCardList:
+        await bot.send(event, MessageSegment.text("未查询到卡片"))
+        return
+    count = set()
+    ygoCardList_new = []
+    for y in ygoCardList:
+        if y.name not in count:
+            ygoCardList_new.append(y)
+            count.add(y.name)
+        if len(count) >= 20:
+            break
+    msgs = ""
+    seq = 1
+    for card in ygoCardList_new:
+        msgs += MessageSegment.text(f"{seq}、卡号：{card.id}      {card.name}\n")
+        seq += 1
+    if extrMsg:
+        msgs += MessageSegment.text(extrMsg)
+    await bot.send(event=event, message=msgs)
 
 
 def get_ygo(cmd: str):
@@ -62,10 +176,7 @@ async def send_card(bot: Bot, event: Event, ygoCard: YgoCard, pack: bool = True,
         directory = f"{nonebot_plugin_masterduel_img_dir}\\{ygoCard.id}"
         if os.path.exists(directory):
             files = os.listdir(directory)
-            print(directory)
-            print(random.choice(files))
             file = directory + "\\" + random.choice(files)
-            print(file)
             await retry_send(bot, event,
                              MessageSegment.image(file))  # await bot.send(event, MessageSegment.image(file))
 
@@ -80,12 +191,10 @@ async def get_send_msg(card: YgoCard, pack: bool = True, desc: bool = True) -> M
     sale_time = None
     if pack:
         sale_time, count_sum, pack_name = get_selas_time_by_id(card.id)
-    print(pack)
-    print(sale_time)
-    print(desc)
     msg = MessageSegment.text(f"卡号：{card.id}\n")
     if pack:
-        msg += MessageSegment.text(f"发售时间：{sale_time}\n卡包号：{pack_name}\n{card.name}\n")
+        ban_msg = mapper.get_ban_msg(card.id)
+        msg += MessageSegment.text(f"发售时间：{sale_time}\n{ban_msg}卡包号：{pack_name}\n{card.name}\n")
     if not rarity:
         msg += MessageSegment.text("暂未登录MD")
     msg += MessageSegment.image(urlBase64)
@@ -103,6 +212,10 @@ alias_card2 = on_regex(pattern="^外号")
 async def alias_card_rev(bot: Bot, event: Event):
     cmd = event.get_plaintext()[2:]
     cmd = cmd.strip()
+    await alias_card(bot, event, cmd)
+
+
+async def alias_card(bot: Bot, event: Event, cmd: str):
     ags = cmd.split(" ")
     if len(ags) != 2 and is_int(ags[0]):
         await bot.send(event, "例子：别名 30459350 王宫壁")
@@ -122,25 +235,6 @@ def is_int(n: str):
         return float_n == int_n
 
 
-master_like_duel = on_regex(pattern="^lck")
-
-
-@master_like_duel.handle()
-async def master_like_duel_rev(bot: Bot, event: Event):
-    cmd = event.get_plaintext()[3:]
-    cmd = cmd.strip()
-
-    ygoCardList = mapper.get_card_info_like_names(cmd)
-    if not ygoCardList:
-        await bot.send(event, MessageSegment.text("未查询到卡片"))
-        return
-    ygoCardList = ygoCardList[:20]
-    msgs = ""
-    for card in ygoCardList:
-        msgs += MessageSegment.text(f"卡号：{card.id}      {card.name}\n")
-    await bot.send(event=event, message=msgs)
-
-
 def push_ygo_card() -> Rule:
     async def push_ygo_card_(bot: "Bot", event: "Event") -> bool:
         if event.get_type() != "message":
@@ -158,6 +252,7 @@ master_duel_push_img = on_message(rule=push_ygo_card())
 
 @master_duel_push_img.handle()
 async def master_duel_push_img_rev(bot: Bot, event: MessageEvent, state: T_State):
+    print("22222")
     card_id = event.get_plaintext().strip().split(" ")[-1].strip()
     if card_id:
         state['card_id'] = card_id
@@ -169,7 +264,7 @@ async def master_duel_push_img_rev(bot: Bot, event: MessageEvent, state: T_State
 
 
 @master_duel_push_img.got("img", prompt="图呢？")
-async def get_setu(bot: Bot, event: MessageEvent, state: T_State):
+async def master_duel_push_img_got(bot: Bot, event: MessageEvent, state: T_State):
     if state['img'] == "None":
         return
     msg = event.get_message()
@@ -200,7 +295,6 @@ async def master_duel_rev(bot: Bot, event: Event):
     sss = imgUtils.get_all_temp(mainCardList, exCardList)
     pngName = f"{os.getcwd()}\\{random.randint(1, 99999999999)}.png"
     imgUtils.screenshot(sss, pngName)
-    print(pngName)
     await bot.send(event=event, message=MessageSegment.image(pngName))
     os.remove(pngName)
 
@@ -219,7 +313,6 @@ async def cai_ding_rev(bot: Bot, event: Event):
         htmlStr = get_cai_ding_html(ygoCard.id)
         pngName = f"{os.getcwd()}\\{random.randint(1, 99999999999)}.png"
         imgUtils.screenshot(htmlStr, pngName)
-        print(pngName)
         await bot.send(event=event, message=messageSegment + MessageSegment.image(pngName))
         os.remove(pngName)
     else:
@@ -241,7 +334,6 @@ async def card_pack_rev(bot: Bot, event: Event):
     sss = imgUtils.get_all_temp(cardIds, None)
     pngName = f"{os.getcwd()}\\{random.randint(1, 99999999999)}.png"
     imgUtils.screenshot(sss, pngName)
-    print(pngName)
     await bot.send(event=event, message=MessageSegment.image(pngName))
     os.remove(pngName)
 
@@ -259,32 +351,34 @@ async def ygo_rank_rev(bot: Bot, event: Event):
 
 
 cai_card = on_regex(pattern="^我是游戏王高手$")
+cai_card2 = on_regex(pattern="^下一题$")
 
 
 @cai_card.handle()
+@cai_card2.handle()
 async def cai_card_rev(bot: Bot, event: Event):
-    if os.listdir(f"{nonebot_plugin_masterduel_img_dir}\\cai"):
+    if is_ygo_game_open():
         await bot.send(event=event, message="已经开了一题了，做完上一题再说")
         return
     cardAndNameList = mapper.get_id_and_name_all()
     cardId, name = random.choice(cardAndNameList)
     mapper.crop_image_from_url(cardId)
-    print(cardId)
     fileUrl = f"{nonebot_plugin_masterduel_img_dir}\\cai\\{cardId}.jpg"
-    try:
+    mapper.open_ygo_game_open_value()
+    await bot.send(event=event, message=MessageSegment.image(fileUrl))
 
-        await bot.send(event=event, message=MessageSegment.image(fileUrl))
+    try:
 
         @waiter(waits=["message"])
         async def check(event_: Event):
-            print("111111")
             cmd = event_.get_plaintext()
-            if cmd.strip().startswith("ck") or cmd.strip().startswith("CK"):
-                print("22222")
-                user_info = await get_user_info(bot, event, event.get_user_id())
+            if cmd == "下一题":
+                return "下一题", 1, 1
+            if cmd.strip().lower().startswith("ck"):
+                user_info = await get_user_info(bot, event_, event_.get_user_id())
                 return cmd[2:].strip(), user_info.user_id, user_info.user_name
 
-        async for resp in check(timeout=180, retry=4, prompt="错误喔，请仔细看看捏"):
+        async for resp in check(timeout=100, retry=4, prompt="错误喔，请仔细看看捏"):
 
             if resp is None:
                 try:
@@ -297,6 +391,12 @@ async def cai_card_rev(bot: Bot, event: Event):
 
             cmd_, user_id, user_name = resp
 
+            if resp == ("下一题", 1, 1):
+                await retry_send(bot, event, MessageSegment.text("上述题目已失效 全部回答错误！！！公布答案"))
+                ygoCard = get_card_info_by_id(cardId)
+                await send_card(bot, event, ygoCard, pack=False, desc=False)
+                raise Exception("下一题")
+
             ygoCard = get_ygo(cmd_)
             if ygoCard:
                 try:
@@ -306,7 +406,8 @@ async def cai_card_rev(bot: Bot, event: Event):
                 if int(ygoCard.id) == int(cardId):
                     mapper.ygo_rank_add(int(user_id), user_name)
                     await retry_send(bot, event,
-                                     MessageSegment.text(f"牛逼啊，回答正确了 积分+1  输入\"游戏王高手排名\" 查看排名"))
+                                     MessageSegment.text(f"牛逼啊，回答正确了 积分+1  输入\"游戏王高手排名\" 查看排名"),
+                                     user_id)
                     break
         else:
             await retry_send(bot, event, MessageSegment.text("全部回答错误！！！公布答案"))
@@ -317,15 +418,39 @@ async def cai_card_rev(bot: Bot, event: Event):
                 time.sleep(3)
                 print(e)
                 await send_card(bot, event, ygoCard, pack=False, desc=False)
+    except Exception as e:
+        print(f"{e=}")
+        mapper.close_ygo_game_open_value()
+        await cai_card_rev(bot, event)
     finally:
-        if os.path.exists(fileUrl):
-            os.remove(fileUrl)
+        pass
+        mapper.close_ygo_game_open_value()
 
 
-async def retry_send(bot: Bot, event: Event, msg: MessageSegment):
+pl_function = on_regex(pattern="^pl")
+
+
+@pl_function.handle()
+async def pl_function_rev(bot: Bot, event: Event):
+    cmd = event.get_plaintext()[2:]
+    cmd = cmd.strip()
+    cards = mapper.get_card_info_like_names(cmd)
+    if not cards:
+        await bot.send(event=event, message="未查询到卡片")
+        return
+    sss = imgUtils.get_pl_all_temp(cards)
+    pngName = f"{os.getcwd()}\\{random.randint(1, 99999999999)}.png"
+    imgUtils.screenshot(sss, pngName)
+    await bot.send(event=event, message=MessageSegment.image(pngName))
+    os.remove(pngName)
+
+
+async def retry_send(bot: Bot, event: Event, msg: MessageSegment, user_id: int = None):
     count = 1
     for x in range(5):
         try:
+            if user_id:
+                msg += MessageSegment.at(user_id)
             await bot.send(event=event, message=msg)
             break
         except Exception as e:

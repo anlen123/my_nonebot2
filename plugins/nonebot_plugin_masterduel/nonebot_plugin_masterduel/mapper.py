@@ -16,11 +16,13 @@ from .model.Datas import Datas
 from .model.Rarity import Rarity
 from .model.Texts import Texts
 from .utils.likelihoodUtils import Likelihood
+from .config import config
 
-global_config = nonebot.get_driver().config
-config = global_config.dict()
-nonebot_plugin_masterduel_img_dir = config.get('nonebot_plugin_masterduel_img_dir')
-nonebot_plugin_masterduel_root_dir = config.get('nonebot_plugin_masterduel_root_dir')
+from objprint import op
+
+nonebot_plugin_masterduel_root_dir = config.nonebot_plugin_masterduel_root_dir
+nonebot_plugin_masterduel_img_dir = config.nonebot_plugin_masterduel_img_dir
+nonebot_plugin_masterduel_img_card_dir = config.nonebot_plugin_masterduel_img_card_dir
 
 
 def get_like(s1: str, s2: str):
@@ -86,6 +88,36 @@ def set_card_alias_by_id(cardId: int, name: str):
         set_nonebot_plugin_masterduel(f'insert into alias (name, card_id) VALUES ("{name}",{cardId})')
 
 
+def get_ban_msg(card_id: int):
+    datas = read_ban_card(card_id)
+    all_date = get_all_ban_date()
+    get_all_ban_date()
+    msg = ""
+
+    index = 1
+    datas_dict = {}
+    for data in datas:
+        card_id, _, ban_date, c = data
+        datas_dict[ban_date] = c
+
+    flag = 3
+    for date in all_date:
+        c = datas_dict.get(date, 3)
+        if c != flag:
+            msg += f"第{index}次调整 {date}: {flag} -> {c}\n"
+            flag = c
+            index += 1
+    return msg
+
+
+def read_ban_card(card_id: int):
+    return get_nonebot_plugin_masterduel(f"SELECT * FROM ban WHERE id = {card_id} ORDER BY date")
+
+
+def get_all_ban_date():
+    return [_[0] for _ in get_nonebot_plugin_masterduel(f"select distinct date from ban where ban_type order by date")]
+
+
 def get_nonebot_plugin_masterduel_rarity(sql: str) -> list[Rarity]:
     rows = get_nonebot_plugin_masterduel(sql)
     rarityList = []
@@ -114,6 +146,23 @@ def set_nonebot_plugin_masterduel(sql: str):
     cursor.execute(sql)
     conn.commit()
     conn.close()
+
+
+def close_ygo_game_open_value():
+    set_nonebot_plugin_masterduel(f"update redis_like set value =\"0\" where name=\"ygo_game_open\"")
+
+
+def open_ygo_game_open_value():
+    set_nonebot_plugin_masterduel(f"update redis_like set value =\"1\" where name=\"ygo_game_open\"")
+
+
+def is_ygo_game_open() -> bool:
+    ygo_game_open = get_nonebot_plugin_masterduel(f"select * from redis_like where name=\"ygo_game_open\"")
+    print(f"{ygo_game_open=}")
+    if ygo_game_open:
+        ygo_game_open_value = ygo_game_open[0][1]
+        return str(ygo_game_open_value) == "1"
+    return False
 
 
 def get_nonebot_plugin_masterduel_alias(sql: str) -> list[Alias]:
@@ -165,7 +214,6 @@ def get_max_like_id(name: str):
     rows = get_id_and_name_all()
     ret = None
     max_number = 0
-
     for row in rows:
         name1 = row[1]
         dis = get_like(name1, name)
@@ -174,7 +222,8 @@ def get_max_like_id(name: str):
             max_number = dis
             ret = row
             print(dis)
-    if not ret:
+
+    if (not ret) or (float(max_number) < 0.5):
         return ""
     return ret[0]
 
