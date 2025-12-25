@@ -32,6 +32,7 @@ nonebot.load_plugin("plugins.nonebot_plugin_masterduel.nonebot_plugin_masterduel
 # nonebot.load_plugin("plugins.nonebot_plugin_command") #看情况恢复吧， win上使用太危险了
 nonebot.load_plugin("plugins.nonebot_plugin_xuanran")
 nonebot.load_plugin("plugins.nonebot_plugin_yulu")
+nonebot.load_plugin('plugins.nonebot_plugin_pokemon')
   
 if __name__ == "__main__":
     # nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")

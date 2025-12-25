@@ -16,6 +16,7 @@ def set_nonebot_plugin_masterduel(sql: str):
     conn.close()
 
 
+
 def write_ban_cards():
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     with open('lflist.conf', 'r', encoding='utf-8') as f:
@@ -36,3 +37,6 @@ def write_ban_cards():
                     # print(card_info)
                     set_nonebot_plugin_masterduel(
                         f'insert into ban (id,type,date,ban_type) values ("{card_info[0]}","1","{date_ban}","{card_info[1]}")')
+
+
+write_ban_cards()

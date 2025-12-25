@@ -133,7 +133,7 @@ def screenshot(sss: str, pic_name):
         time.sleep(1)
         driver.save_screenshot(pic_name)
         url = f"{os.getcwd()}\\{name}"
-        os.remove(url)
+        # os.remove(url)
     except Exception as e:
         print(e)
     finally:
@@ -237,11 +237,14 @@ def get_pl_singe_temp(card: YgoCard):
 
 
 def get_all_temp(cardListMain: None, cardListEx: None):
+    from collections import Counter  # 如未导入请加上
+
     cardId2count = Counter(cardListMain)
     tempList = []
     UR = 0
     SR = 0
 
+    # 主卡组
     for key, value in cardId2count.items():
         rarity = rarityUtils.get_rarity(int(key))
         if rarity == "UR":
@@ -250,6 +253,8 @@ def get_all_temp(cardListMain: None, cardListEx: None):
             SR += (30 * value)
         tempList.append(get_singe_temp(int(key), value, rarity))
     tempMainStr = '\n'.join(tempList)
+
+    # 额外卡组
     if cardListEx:
         cardIdEx2count = Counter(cardListEx)
         tempExList = []
@@ -263,71 +268,144 @@ def get_all_temp(cardListMain: None, cardListEx: None):
         tempExStr = '\n'.join(tempExList)
     else:
         tempExStr = ""
+
+    # UR/SR 图标路径（请根据实际文件名调整扩展名，通常是 .png）
     UR_FILE_URL = f"{nonebot_plugin_masterduel_img_dir}\\UR"
     SR_FILE_URL = f"{nonebot_plugin_masterduel_img_dir}\\SR"
+
     sss = f"""
-    <link rel="stylesheet" id="deck-card-css"
-        href="https://duelmeta.com/wp-content/plugins/ygo-plugin-master/assets/css/deck-card.css?ver=6.4.5" type="text/css"
-        media="all">
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>牌组展示</title>
         <style>
+            body {{
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f5f5f5;
+                margin: 0;
+                padding: 20px;
+            }}
+
+            .wrapper {{
+                max-width: 1300px;
+                margin: 0 auto;
+            }}
+
             .area {{
                 border: 20px solid green;
+                background: #fff;
+                padding: 25px;
+                position: relative;
             }}
-            .card-number {{
-                font-size: 100px;
-                /* 调整这个值以匹配上面的UR图标的字体大小 */
+
+            .card-wrapper {{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 15px;
+                padding: 10px 0;
+                list-style: none;
+                margin: 0;
+            }}
+
+            .ygo-card {{
+                position: relative;
+                width: 110px;
+                flex: 0 0 auto;
+            }}
+
+            .ygo-card .card-image {{
+                position: relative;
+                width: 100%;
+            }}
+
+            .ygo-card .card-image img {{
+                width: 100%;
+                height: auto;
+                display: block;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            }}
+
+            /* 稀有度图标：右上角 */
+            .rarity {{
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                z-index: 10;
+            }}
+
+            .rarity img {{
+                width: 34px;
+                height: 34px;
+            }}
+
+            /* 份数图标：左下角 */
+            .card-limit {{
+                position: absolute;
+                bottom: -8px;
+                left: -8px;
+                z-index: 10;
+            }}
+
+            .card-limit img {{
+                width: 32px;
+                height: 32px;
+            }}
+
+            /* === 新增：费用显示部分（移到最上面并缩小） === */
+            .cost-header {{
+                text-align: left;
+                margin-bottom: 20px;
+                padding: 10px 15px;
+                line-height: 1.4;
+            }}
+
+            .cost-header img {{
+                width: 60px;          /* 原80px → 缩小到60px */
+                height: 60px;
+                vertical-align: middle;
+            }}
+
+            .cost-header .card-number {{
+                font-size: 70px;      /* 原100px → 缩小到70px */
                 font-weight: bold;
-                /* 如果需要，可以加粗字体 */
+                margin-left: 15px;
+                vertical-align: middle;
             }}
         </style>
-        
-    <body class="post-template-default single single-post postid-77257 single-format-standard social-top post-style-1">
-        <div id="page" class="site up action">
-            <div id="content" class="site-content">
-                <div class="b2-single-content wrapper">
-                    <div id="primary-home" class="content-area">
-                        <article class="single-article b2-radius box">
-                            <div class="entry-content">
-                                <div class="su-row">
-                                    <div class="su-column su-column-size-1-2">
-                                        <div class="su-column-inner su-u-clearfix su-u-trim">
-                                            <div class="deck-wrapper deck-post">
-                                                <div class="area">
-                                                    <br>
-                                                    <br>
-                                                    <div class="area-item">
-                                                        <ul class="card-wrapper">
-                                                        {tempMainStr}
-                                                        </ul>
-                                                    </div>
-                                                   <br>
-                                                   <br>
-                                                    <div class="area-item">
-                                                        <ul class="card-wrapper">
-                                                        {tempExStr}
-                                                        </ul>
-                                                    </div>
-                                                    <div style="text-align: left; margin-top: 12px;">
-                                                        <img src="{UR_FILE_URL}"
-                                                            alt="Additional Image">
-                                                        <a class="card-number">： {UR}</a>
-                                                        <br>
-                                                        <img src="{SR_FILE_URL}"
-                                                            alt="Additional Image">
-                                                        <a class="card-number">： {SR}</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="area">
+                <!-- UR/SR 拆解费用：现在放在最上面 -->
+                <div class="cost-header">
+                    <img src="{UR_FILE_URL}" alt="UR">
+                    <span class="card-number">： {UR}</span>
+                    <br>
+                    <img src="{SR_FILE_URL}" alt="SR">
+                    <span class="card-number">： {SR}</span>
+                </div>
+
+                <br><br>
+                <!-- 主卡组 -->
+                <div class="area-item">
+                    <ul class="card-wrapper">
+                        {tempMainStr}
+                    </ul>
+                </div>
+                <br><br>
+                <!-- 额外卡组 -->
+                <div class="area-item">
+                    <ul class="card-wrapper">
+                        {tempExStr}
+                    </ul>
                 </div>
             </div>
         </div>
     </body>
+    </html>
     """
     return sss
 

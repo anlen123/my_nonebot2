@@ -73,22 +73,22 @@ if __name__ == '__main__':
         create_rarity()
     except:
         pass
-    # resp = requests.get(
-    #     "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/CardList.json")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/CardList.json")
 
 
-    # cardJson = json.loads(resp.text)
+    cardJson = json.loads(resp.text)
 
-    # resp = requests.get(
-    #     "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/YdkIds.txt")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/YdkIds.txt")
 
-    # txt = resp.text.split("\n")
+    txt = resp.text.split("\n")
 
-    with open("CardList.json","r") as f :
-        cardJson = json.loads(f.read())
+    # with open("CardList.json","r") as f :
+    #     cardJson = json.loads(f.read())
 
-    with open("YdkIds.txt", "r") as f:
-        txt = f.read().split("\n")
+    # with open("YdkIds.txt", "r") as f:
+    #     txt = f.read().split("\n")
 
     for x in txt:
         if x:
