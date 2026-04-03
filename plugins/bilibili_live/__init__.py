@@ -368,41 +368,55 @@ async def poll_live_status():
     if not UIDS:
         return
 
+    nonebot.logger.debug(f"[bilibili_live] 开始轮询，共 {len(UIDS)} 个 uid")
+
     for uid in list(UIDS.keys()):
+        nonebot.logger.debug(f"[bilibili_live] 正在请求 uid={uid} 的直播状态...")
         info = await fetch_room_info(uid)
         if info is None:
+            nonebot.logger.warning(f"[bilibili_live] uid={uid} 接口请求失败，跳过")
             continue
 
         is_live  = info.get("liveStatus") == 1
         was_live = live_status.get(uid, False)
+        nonebot.logger.debug(
+            f"[bilibili_live] uid={uid} liveStatus={info.get('liveStatus')} "
+            f"is_live={is_live} was_live={was_live} title={info.get('title','')[:20]}"
+        )
 
         if is_live and not was_live:
+            nonebot.logger.info(f"[bilibili_live] uid={uid} 检测到开播，触发开播通知")
             live_status[uid] = True
             await on_live_start(uid, info)
 
         elif not is_live and was_live:
+            nonebot.logger.info(f"[bilibili_live] uid={uid} 检测到下播，触发下播通知")
             live_status[uid] = False
             await on_live_end(uid, info)
 
         elif is_live and uid in live_session:
             session = live_session[uid]
 
-            # 更新峰值人气
             online = info.get("online", 0)
             if online > session.get("peak_online", 0):
                 session["peak_online"] = online
 
-            # 增量累积弹幕
             room_id = session.get("room_id")
             if room_id:
+                before = sum(session["danmaku_counter"].values())
                 await update_session_danmaku(uid, int(room_id))
+                after = sum(session["danmaku_counter"].values())
+                if after > before:
+                    nonebot.logger.debug(f"[bilibili_live] uid={uid} 新增弹幕 {after - before} 条，累计 {after} 条")
 
-            # 每小时播报
             last = session.get("last_hourly_notify")
             if last and (datetime.now() - last).total_seconds() >= 3600:
+                nonebot.logger.info(f"[bilibili_live] uid={uid} 触发每小时播报")
                 await send_hourly_report(uid, info)
 
         await asyncio.sleep(1)
+
+    nonebot.logger.debug(f"[bilibili_live] 本轮轮询结束")
 
 
 nonebot.logger.info(

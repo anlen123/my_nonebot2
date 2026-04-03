@@ -196,41 +196,52 @@ async def poll_new_videos():
     if not UIDS:
         return
 
+    nonebot.logger.debug(f"[bilibili_video] 开始轮询，共 {len(UIDS)} 个 uid")
+
     for uid in list(UIDS.keys()):
+        nonebot.logger.debug(f"[bilibili_video] 正在请求 uid={uid} 的动态列表...")
         videos = await fetch_latest_videos(uid, ps=5)
+
         if not videos:
+            nonebot.logger.warning(f"[bilibili_video] uid={uid} 未获取到视频，跳过")
             await asyncio.sleep(2)
             continue
+
+        nonebot.logger.debug(f"[bilibili_video] uid={uid} 获取到 {len(videos)} 条视频，最新={videos[0]['bvid']} 《{videos[0]['title'][:20]}》")
 
         newest_bvid = videos[0]["bvid"]
 
         if uid not in initialized:
-            # 首次运行：静默记录当前最新，不推送
             latest_bvid[uid] = newest_bvid
             initialized[uid] = True
-            nonebot.logger.info(f"[bilibili_video] uid={uid} 初始化，最新视频={newest_bvid}")
+            nonebot.logger.info(f"[bilibili_video] uid={uid} 初始化完成，最新视频={newest_bvid} 《{videos[0]['title'][:30]}》")
             await asyncio.sleep(2)
             continue
 
         known_bvid = latest_bvid.get(uid, "")
         if newest_bvid == known_bvid:
+            nonebot.logger.debug(f"[bilibili_video] uid={uid} 无新视频（最新仍为 {known_bvid}）")
             await asyncio.sleep(2)
             continue
 
-        # 找出所有比 known_bvid 更新的视频（按 pubdate 倒序，取出新的部分）
+        # 找出所有比 known_bvid 更新的视频
         new_videos = []
         for v in videos:
             if v["bvid"] == known_bvid:
                 break
             new_videos.append(v)
 
-        # 从旧到新推送，避免顺序颠倒
+        nonebot.logger.info(f"[bilibili_video] uid={uid} 发现 {len(new_videos)} 个新视频，准备推送")
+
         for v in reversed(new_videos):
+            nonebot.logger.info(f"[bilibili_video] 推送新视频 bvid={v['bvid']} 《{v['title'][:30]}》 -> 群 {UIDS.get(uid, [])}")
             await notify_new_video(uid, v)
             await asyncio.sleep(1)
 
         latest_bvid[uid] = newest_bvid
         await asyncio.sleep(2)
+
+    nonebot.logger.debug(f"[bilibili_video] 本轮轮询结束")
 
 
 nonebot.logger.info(
