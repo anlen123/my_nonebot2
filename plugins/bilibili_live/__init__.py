@@ -191,12 +191,10 @@ async def notify_groups(group_ids: List[str], messages: list):
 
 async def on_live_start(uid: str, info: dict):
     """开播处理"""
-    uname     = info.get("uname", uid)
     title     = info.get("title", "未知标题")
-    area_name = info.get("area_name", "")
-    room_id   = info.get("room_id", "")
-    cover_url = info.get("cover", "") or info.get("user_cover", "")
-    live_url  = f"https://live.bilibili.com/{room_id}"
+    room_id   = info.get("roomid", "")
+    cover_url = info.get("cover", "")
+    live_url  = info.get("url", f"https://live.bilibili.com/{room_id}")
 
     # 记录本场开始时间
     live_session[uid] = {
@@ -218,22 +216,19 @@ async def on_live_start(uid: str, info: dict):
     # 文字通知
     text = (
         f"🔴 【开播通知】\n"
-        f"UP主：{uname}\n"
         f"标题：{title}\n"
-        f"分区：{area_name}\n"
         f"直播间：{live_url}"
     )
     msgs.append(MessageSegment.text(text))
 
     group_ids = UIDS.get(uid, [])
     await notify_groups(group_ids, msgs)
-    nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 开播，已通知群 {group_ids}")
+    nonebot.logger.info(f"[bilibili_live] uid={uid} 开播，已通知群 {group_ids}")
 
 
 async def on_live_end(uid: str, info: dict):
     """下播处理：发下播通知 + 弹幕词云"""
-    uname   = info.get("uname", uid)
-    room_id = info.get("room_id") or live_session.get(uid, {}).get("room_id", 0)
+    room_id = info.get("roomid") or live_session.get(uid, {}).get("room_id", 0)
 
     session = live_session.pop(uid, {})
     start_time: Optional[datetime] = session.get("start_time")
@@ -252,7 +247,6 @@ async def on_live_end(uid: str, info: dict):
     # 下播文字通知
     text = (
         f"⚫ 【下播通知】\n"
-        f"UP主：{uname}\n"
         f"本场时长：{duration_str}\n"
         f"弹幕数（近期）：{danmaku_count} 条"
     )
@@ -277,7 +271,7 @@ async def on_live_end(uid: str, info: dict):
 
     group_ids = UIDS.get(uid, [])
     await notify_groups(group_ids, msgs)
-    nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 下播，已通知群 {group_ids}")
+    nonebot.logger.info(f"[bilibili_live] uid={uid} 下播，已通知群 {group_ids}")
 
 
 # ── 定时任务 ──────────────────────────────────────────────────────────────────
@@ -294,7 +288,7 @@ async def poll_live_status():
             continue
 
         # live_status: 1=直播中, 0=未直播, 2=轮播
-        is_live = info.get("live_status") == 1
+        is_live = info.get("liveStatus") == 1
         was_live = live_status.get(uid, False)
 
         if is_live and not was_live:
