@@ -56,42 +56,47 @@ def _make_cookies() -> dict:
 
 # ── B 站接口 ──────────────────────────────────────────────────────────────────
 
-async def fetch_latest_videos(uid: str, ps: int = 5) -> List[dict]:
+async def fetch_latest_videos(uid: str, ps: int = 20) -> List[dict]:
     """
-    获取 uid 最新投稿视频列表，返回 [{bvid, title, desc, pic, duration, stat, pubdate, url}, ...]
-    需要 SESSDATA Cookie 才能正常访问。
+    通过动态接口获取 uid 最新投稿视频（type=8），只需 SESSDATA Cookie。
+    返回 [{bvid, title, desc, pic, duration, play, comment, pubdate, url}, ...]
     """
+    import json as _json
     try:
         async with aiohttp.ClientSession(
             headers=BASE_HEADERS, cookies=_make_cookies()
         ) as s:
             async with s.get(
-                "https://api.bilibili.com/x/space/arc/search",
-                params={
-                    "mid": uid, "ps": ps, "pn": 1,
-                    "order": "pubdate", "jsonp": "jsonp",
-                },
+                "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history",
+                params={"host_uid": uid, "offset_dynamic_id": 0, "need_top": 0, "platform": "web"},
                 timeout=aiohttp.ClientTimeout(total=15),
             ) as r:
                 data = await r.json(content_type=None)
                 if data.get("code") != 0:
                     nonebot.logger.warning(
-                        f"[bilibili_video] fetch uid={uid} code={data.get('code')} msg={data.get('message')}"
+                        f"[bilibili_video] fetch uid={uid} code={data.get('code')} msg={data.get('message','')}"
                     )
                     return []
-                vlist = data.get("data", {}).get("list", {}).get("vlist", [])
+                cards = (data.get("data") or {}).get("cards") or []
                 result = []
-                for v in vlist:
+                for c in cards:
+                    desc = c.get("desc", {})
+                    # type=8 是投稿视频
+                    if desc.get("type") != 8:
+                        continue
+                    card = _json.loads(c.get("card", "{}"))
+                    bvid = desc.get("bvid", "")
+                    stat = desc.get("stat", {})
                     result.append({
-                        "bvid":     v.get("bvid", ""),
-                        "title":    v.get("title", ""),
-                        "desc":     v.get("description", ""),
-                        "pic":      v.get("pic", ""),
-                        "duration": v.get("length", ""),       # "mm:ss" 格式
-                        "play":     v.get("play", 0),
-                        "comment":  v.get("comment", 0),
-                        "pubdate":  v.get("created", 0),
-                        "url":      f"https://www.bilibili.com/video/{v.get('bvid', '')}",
+                        "bvid":    bvid,
+                        "title":   card.get("title", ""),
+                        "desc":    card.get("desc", ""),
+                        "pic":     card.get("pic", ""),
+                        "duration": card.get("duration", 0),   # 秒数
+                        "play":    stat.get("view", 0),
+                        "comment": stat.get("reply", 0),
+                        "pubdate": desc.get("timestamp", 0),
+                        "url":     f"https://www.bilibili.com/video/{bvid}",
                     })
                 return result
     except Exception as e:
@@ -152,7 +157,8 @@ async def notify_new_video(uid: str, video: dict):
     url     = video["url"]
     play    = video["play"]
     comment = video["comment"]
-    duration = video["duration"]
+    dur_sec  = video["duration"]
+    duration = f"{dur_sec // 60}:{dur_sec % 60:02d}" if isinstance(dur_sec, int) else str(dur_sec)
     pubdate = datetime.fromtimestamp(video["pubdate"]).strftime("%Y-%m-%d %H:%M")
 
     # 播放量格式化
