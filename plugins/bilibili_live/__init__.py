@@ -287,8 +287,6 @@ async def on_live_end(uid: str, info: dict):
     special_text = (
         f"\n🎖️ 特别嘉奖：{'  &  '.join(special)}" if special else ""
     )
-
-
     # 下播通知文字
     end_text = (
         f"{uname} 下播啦，本次直播了 {duration_str}，粉丝数变化 {fans_delta_str}\n\n"

@@ -36,7 +36,7 @@ nonebot.load_plugin("plugins.nonebot_plugin_masterduel.nonebot_plugin_masterduel
 # nonebot.load_plugin("plugins.nonebot_plugin_command") #看情况恢复吧， win上使用太危险了
 nonebot.load_plugin("plugins.nonebot_plugin_xuanran")
 nonebot.load_plugin("plugins.nonebot_plugin_yulu")
-nonebot.load_plugin('plugins.nonebot_plugin_pokemon')
+# nonebot.load_plugin('plugins.nonebot_plugin_pokemon')
 nonebot.load_plugin("plugins.bilibili_live")
 nonebot.load_plugin("plugins.bilibili_video")
   
