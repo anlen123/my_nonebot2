@@ -14,7 +14,6 @@ nb-cli = "^0.5.0"
 nonebot-plugin-test = "^0.3.0"
 
 [tool.nonebot]
-plugins = []
 plugin_dirs = ["nb/plugins"]
 adapters = [
     { name = "QQ 频道", module_name = "nonebot.adapters.qqguild" }
