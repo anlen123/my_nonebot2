@@ -33,6 +33,7 @@ nonebot.load_plugin("plugins.nonebot_plugin_masterduel.nonebot_plugin_masterduel
 nonebot.load_plugin("plugins.nonebot_plugin_xuanran")
 nonebot.load_plugin("plugins.nonebot_plugin_yulu")
 nonebot.load_plugin('plugins.nonebot_plugin_pokemon')
+nonebot.load_plugin("plugins.bilibili_live")
   
 if __name__ == "__main__":
     # nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
