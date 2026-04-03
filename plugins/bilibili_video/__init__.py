@@ -136,18 +136,22 @@ async def fetch_uname(uid: str) -> str:
 # ── 推送 ──────────────────────────────────────────────────────────────────────
 
 async def notify_groups(group_ids: List[str], messages: list):
+    """将 messages 列表拼成一条消息发送，图片和文字合并在同一条"""
+    from nonebot.adapters.onebot.v11 import Message
+    combined = Message()
+    for seg in messages:
+        combined += seg
     try:
         bot: Bot = nonebot.get_bot()
     except Exception:
         nonebot.logger.warning("[bilibili_video] no bot available")
         return
     for gid in group_ids:
-        for msg in messages:
-            try:
-                await bot.send_group_msg(group_id=int(gid), message=msg)
-                await asyncio.sleep(0.5)
-            except Exception as e:
-                nonebot.logger.warning(f"[bilibili_video] send group {gid}: {e}")
+        try:
+            await bot.send_group_msg(group_id=int(gid), message=combined)
+            await asyncio.sleep(0.5)
+        except Exception as e:
+            nonebot.logger.warning(f"[bilibili_video] send group {gid}: {e}")
 
 
 async def notify_new_video(uid: str, video: dict):
