@@ -21,20 +21,18 @@ from typing import Dict, List, Optional
 
 import aiohttp
 import nonebot
-from nonebot import get_driver, require
+from nonebot import require
 from nonebot.adapters.onebot.v11 import Bot, MessageSegment
 
-from .config import Config
+from .config import load_config
 
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
 
 # ── 初始化配置 ────────────────────────────────────────────────────────────────
-global_config = get_driver().config
-plugin_config = Config.parse_obj(global_config.dict())
-
-UIDS: Dict[str, List[str]] = plugin_config.bilibili_live_uids        # uid -> [group_id, ...]
-INTERVAL: int = plugin_config.bilibili_live_interval
+_cfg = load_config()
+UIDS: Dict[str, List[str]] = _cfg["bilibili_live_uids"]     # uid -> [group_id, ...]
+INTERVAL: int = _cfg["bilibili_live_interval"]
 
 # ── 运行时状态 ────────────────────────────────────────────────────────────────
 # live_status[uid] = True/False  (是否正在直播)
