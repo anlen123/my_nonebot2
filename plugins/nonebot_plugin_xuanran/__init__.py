@@ -52,7 +52,7 @@ def _screenshot_sync(url: str) -> bytes:
         )
         try:
             page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            page.wait_for_timeout(2000)  # 额外等待 2s 让动态内容渲染
+            page.wait_for_timeout(10000)  # 额外等待 10s 让动态内容渲染
             img_bytes = page.screenshot(full_page=True, type="png")
         finally:
             browser.close()
