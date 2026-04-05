@@ -31,11 +31,18 @@ async def xr_rev(bot: Bot, event: Event):
 
 
 async def screenshot(url: str) -> bytes:
-    from playwright.async_api import async_playwright
+    """在线程池中运行同步 Playwright，规避 Windows ProactorEventLoop 限制"""
+    import asyncio
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _screenshot_sync, url)
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page(
+
+def _screenshot_sync(url: str) -> bytes:
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page(
             viewport={"width": 1440, "height": 900},
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -44,10 +51,9 @@ async def screenshot(url: str) -> bytes:
             ),
         )
         try:
-            await page.goto(url, wait_until="networkidle", timeout=20000)
-            # 截取完整页面（高度自适应）
-            img_bytes = await page.screenshot(full_page=True, type="png")
+            page.goto(url, wait_until="networkidle", timeout=20000)
+            img_bytes = page.screenshot(full_page=True, type="png")
         finally:
-            await browser.close()
+            browser.close()
 
     return img_bytes
