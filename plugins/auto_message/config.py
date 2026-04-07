@@ -14,20 +14,35 @@ def _find_env_file() -> Path:
 
 
 def _parse_env_file(path: Path) -> Dict[str, str]:
+    """解析 key=value 格式，支持值跨多行（遇到 [ 未闭合时持续拼接直到 ] 出现）"""
     result = {}
     if not path.exists():
         return result
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
+
+    lines = path.read_text(encoding="utf-8").splitlines()
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        i += 1
+        if not line or line.startswith("#") or "=" not in line:
             continue
-        if "=" not in line:
-            continue
+
         key, _, value = line.partition("=")
         key = key.strip()
         value = value.strip()
-        if "#" in value and not (value.startswith('"') or value.startswith("'")):
-            value = value[:value.index("#")].strip()
+
+        # 如果值包含未闭合的 [ 或 {，继续拼接后续行直到括号平衡
+        open_brackets = value.count("[") + value.count("{")
+        close_brackets = value.count("]") + value.count("}")
+        while open_brackets > close_brackets and i < len(lines):
+            next_line = lines[i].strip()
+            i += 1
+            if next_line.startswith("#"):
+                continue
+            value += next_line
+            open_brackets += next_line.count("[") + next_line.count("{")
+            close_brackets += next_line.count("]") + next_line.count("}")
+
         result[key] = value
     return result
 
