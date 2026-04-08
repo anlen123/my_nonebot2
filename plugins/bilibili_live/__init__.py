@@ -36,6 +36,9 @@ INTERVAL: int = _cfg["bilibili_live_interval"]
 # ── 运行时状态 ────────────────────────────────────────────────────────────────
 live_status: Dict[str, bool] = {uid: False for uid in UIDS}
 
+# 首次轮询完成标记，未初始化时静默识别，不推送开播通知
+initialized: Dict[str, bool] = {}
+
 # live_session[uid] = {
 #   start_time, room_id, fans_start,
 #   danmaku_counter: Counter(username->count),
@@ -388,6 +391,30 @@ async def poll_live_status():
             f"is_live={is_live} was_live={was_live} title={info.get('title','')[:20]}"
         )
 
+        # ── 首次轮询：静默识别当前状态，不推送开播通知 ──
+        if uid not in initialized:
+            initialized[uid] = True
+            live_status[uid] = is_live
+            if is_live:
+                # 静默建立 session，start_time 设为当前时间（不知道真实开播时间）
+                uname, fans = await fetch_user_card(uid)
+                live_session[uid] = {
+                    "start_time": datetime.now(),
+                    "room_id": info.get("roomid", ""),
+                    "uname": uname,
+                    "fans_start": fans,
+                    "danmaku_counter": Counter(),
+                    "seen_danmaku": set(),
+                    "peak_online": info.get("online", 0),
+                    "last_hourly_notify": datetime.now(),  # 下次播报从现在起算 1 小时
+                }
+                nonebot.logger.info(f"[bilibili_live] uid={uid} 初始化时已在直播，静默识别，1小时后播报")
+            else:
+                nonebot.logger.info(f"[bilibili_live] uid={uid} 初始化完成，当前未直播")
+            await asyncio.sleep(1)
+            continue
+
+        # ── 正常轮询 ──
         if is_live and not was_live:
             nonebot.logger.info(f"[bilibili_live] uid={uid} 检测到开播，触发开播通知")
             live_status[uid] = True
