@@ -17,8 +17,8 @@ import nonebot
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
 
-# 脚本路径
-SCRAPER_DIR = Path("/Users/liuhq/CatPaw-Desk")
+# 脚本路径（与插件同目录）
+SCRAPER_DIR = Path(__file__).parent
 
 # 缓存目录：插件同级的 cache/ 文件夹
 CACHE_DIR = Path(__file__).parent / "cache"
