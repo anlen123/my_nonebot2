@@ -9,17 +9,27 @@ bazaardb —— BazaarDB 物品查询插件
 
 import asyncio
 import base64
-import json
 import os
 import re
 import tempfile
+from pathlib import Path
 from urllib.parse import quote
+
 
 import nonebot
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
 
+# 缓存目录：插件同级的 cache/ 文件夹
+CACHE_DIR = Path(__file__).parent / "cache"
+CACHE_DIR.mkdir(exist_ok=True)
+
 bz = on_regex(pattern=r"^bz ")
+
+
+def _cache_path(keyword: str) -> Path:
+    safe = keyword.replace("/", "_").replace("\\", "_").replace(" ", "_")
+    return CACHE_DIR / f"{safe}.png"
 
 
 @bz.handle()
@@ -27,6 +37,14 @@ async def bz_rev(bot: Bot, event: Event):
     keyword = str(event.message).strip()[3:].strip()
     if not keyword:
         await bot.send(event=event, message=MessageSegment.text("请输入关键词，例如：bz 光纤"))
+        return
+
+    # 命中缓存直接发送
+    cache_file = _cache_path(keyword)
+    if cache_file.exists():
+        nonebot.logger.info(f"[bazaardb] 命中缓存 keyword={keyword}")
+        img_b64 = base64.b64encode(cache_file.read_bytes()).decode()
+        await bot.send(event=event, message=MessageSegment.image(f"base64://{img_b64}"))
         return
 
     await bot.send(event=event, message=MessageSegment.text(f"🔍 正在查询「{keyword}」，请稍候..."))
@@ -43,6 +61,10 @@ async def bz_rev(bot: Bot, event: Event):
     if img_bytes is None:
         await bot.send(event=event, message=MessageSegment.text(f"未找到「{keyword}」相关物品"))
         return
+
+    # 写入缓存
+    cache_file.write_bytes(img_bytes)
+    nonebot.logger.info(f"[bazaardb] 已缓存 keyword={keyword} -> {cache_file}")
 
     img_b64 = base64.b64encode(img_bytes).decode()
     await bot.send(event=event, message=MessageSegment.image(f"base64://{img_b64}"))
@@ -314,7 +336,7 @@ def _query_sync(keyword: str) -> bytes | None:
 
         nonebot.logger.info(f"[bazaardb] 关键词={keyword} 找到 {len(items)} 个物品")
 
-        # 生成 HTML 并截图（写临时文件，截图后删除）
+        # 生成 HTML 写临时文件用于截图
         html_content = _build_html(items)
         with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
             html_path = f.name
@@ -333,7 +355,7 @@ def _query_sync(keyword: str) -> bytes | None:
             img_bytes = card_page.screenshot(full_page=True, type="png")
             card_page.close()
         finally:
-            os.unlink(html_path)
+            os.unlink(html_path)  # HTML 临时文件删除，PNG 由调用方缓存
 
         browser.close()
 
