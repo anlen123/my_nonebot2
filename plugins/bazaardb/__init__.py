@@ -591,15 +591,15 @@ def _query_sync(keyword: str) -> bytes | None:
             viewport={"width": 1280, "height": 900},
         )
 
-        def _fetch_page(url: str, js: str, label: str) -> list:
+        def _fetch_page(url: str, js: str, label: str, selector: str) -> list:
             page = context.new_page()
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
             try:
-                page.wait_for_load_state("networkidle", timeout=8000)
+                page.wait_for_load_state("networkidle", timeout=10000)
             except Exception:
                 pass
             try:
-                page.wait_for_selector("._ak", timeout=15000)
+                page.wait_for_selector(selector, timeout=20000)
             except Exception:
                 nonebot.logger.info(f"[bazaardb] 无{label}结果 keyword={keyword}")
                 page.close()
@@ -610,8 +610,9 @@ def _query_sync(keyword: str) -> bytes | None:
             return records
 
         # 顺序抓取物品和怪物（同步环境不可并行）
-        items_result    = _fetch_page(items_url,    JS_EXTRACT_ITEMS,    "物品")
-        monsters_result = _fetch_page(monsters_url, JS_EXTRACT_MONSTERS, "怪物")
+        # 物品页等 ._ak（物品名），怪物页等 ._bD._bE（怪物卡片容器）
+        items_result    = _fetch_page(items_url,    JS_EXTRACT_ITEMS,    "物品", "._ak")
+        monsters_result = _fetch_page(monsters_url, JS_EXTRACT_MONSTERS, "怪物", "._bD._bE")
 
         # 过滤掉没有词条也没有描述的空物品
         items_result = [
