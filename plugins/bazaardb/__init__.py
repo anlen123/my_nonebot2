@@ -141,9 +141,56 @@ async def bz_bind_rev(bot: Bot, event: Event):
 
     _bindings.setdefault(group_id, {})[qq_id] = game_account
     _save_bindings(_bindings)
-
     nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account}")
-    await bot.send(event=event, message=MessageSegment.text(f"✅ 绑定成功！{qq_id} → {game_account}"))
+
+    # 查询用户当前排位数据
+    rating_info = None
+    try:
+        async with aiohttp.ClientSession() as session:
+            rating_info = await _fetch_latest_rating(session, game_account)
+    except Exception:
+        pass
+
+    # 获取群名称
+    group_name = group_id
+    try:
+        group_info = await bot.get_group_info(group_id=int(group_id))
+        group_name = group_info.get("group_name", group_id)
+    except Exception:
+        pass
+
+    # 获取 QQ 昵称
+    nick = qq_id
+    try:
+        member_info = await bot.get_group_member_info(group_id=int(group_id), user_id=int(qq_id))
+        nick = member_info.get("card") or member_info.get("nickname") or qq_id
+    except Exception:
+        pass
+
+    if rating_info:
+        from datetime import datetime
+        rank_str  = f"#{rating_info['position']:,}" if rating_info.get("position") else "#-"
+        score     = rating_info["rating"]
+        msg = (
+            f"✅ 绑定成功！\n"
+            f"🆔 游戏 ID: {game_account}\n"
+            f"🔢 QQ 号: {qq_id}\n"
+            f"👤 平台昵称: {nick}\n"
+            f"👥 群组: {group_name}({group_id})\n"
+            f"🏆 全服排名: {rank_str}\n"
+            f"⭐ 天梯分数: {score}"
+        )
+    else:
+        msg = (
+            f"✅ 绑定成功！\n"
+            f"🆔 游戏 ID: {game_account}\n"
+            f"🔢 QQ 号: {qq_id}\n"
+            f"👤 平台昵称: {nick}\n"
+            f"👥 群组: {group_name}({group_id})\n"
+            f"⚠️ 暂无传奇段位排位记录"
+        )
+
+    await bot.send(event=event, message=MessageSegment.text(msg))
 
 
 # ── 巴扎解绑：解除当前QQ的绑定 ───────────────────────────────────────────────
