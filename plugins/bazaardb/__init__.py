@@ -32,7 +32,7 @@ bz_user     = on_regex(pattern=r"^巴扎查分 ")
 bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
 bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
 bz_rank     = on_regex(pattern=r"^巴扎排名$")
-bz_alias    = on_regex(pattern=r"^巴扎别名&")
+bz_alias    = on_regex(pattern=r"^巴扎别名")
 
 # ── 别名持久化：{ "xxx": "yyy" } ─────────────────────────────────────────────
 ALIAS_FILE = Path(__file__).parent / "aliases.json"
@@ -217,13 +217,23 @@ async def bz_bind_rev(bot: Bot, event: Event):
         await bot.send(event=event, message=MessageSegment.text("请在群聊中使用此命令"))
         return
 
-    game_account = str(event.message).strip()[5:].strip()
-    if not game_account:
-        await bot.send(event=event, message=MessageSegment.text("请输入游戏账号，例如：巴扎绑定 xikala"))
+    args = str(event.message).strip()[5:].strip().split()
+    if not args:
+        await bot.send(event=event, message=MessageSegment.text(
+            "用法：\n巴扎绑定 <游戏账号>（绑定自己）\n巴扎绑定 <QQ号> <游戏账号>（绑定指定QQ）"
+        ))
         return
 
     group_id = str(event.group_id)
-    qq_id    = str(event.user_id)
+
+    if len(args) >= 2 and args[0].isdigit():
+        # 巴扎绑定 QQ号 游戏账号
+        qq_id        = args[0]
+        game_account = args[1]
+    else:
+        # 巴扎绑定 游戏账号（绑定自己）
+        qq_id        = str(event.user_id)
+        game_account = args[0]
 
     group_map = _bindings.setdefault(group_id, {})
     old_account = group_map.get(qq_id)
