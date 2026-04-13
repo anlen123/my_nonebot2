@@ -178,6 +178,22 @@ BASE_URL   = "https://bazaar.mrmao.life"
 SEASON_ID  = "14"
 MEDALS     = ["🥇", "🥈", "🥉"]
 
+# 上次排名快照持久化：{ "群号": { "游戏账号": rating, ... } }
+SNAPSHOT_FILE = Path(__file__).parent / "rank_snapshot.json"
+
+def _load_snapshot() -> Dict[str, Dict[str, int]]:
+    if SNAPSHOT_FILE.exists():
+        try:
+            return json.loads(SNAPSHOT_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_snapshot(data: Dict[str, Dict[str, int]]):
+    SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+_snapshots: Dict[str, Dict[str, int]] = _load_snapshot()
+
 
 async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
     """拉取用户最新一条排位记录，返回 {rating, position} 或 None"""
@@ -235,21 +251,39 @@ async def bz_rank_rev(bot: Bot, event: Event):
     except Exception:
         pass
 
-    # 构建排行列表（过滤无数据的成员）
+    # 上次快照
+    last_snapshot = _snapshots.get(group_id, {})
+
+    # 构建排行列表
     ranked = []
     no_data = []
+    new_snapshot: Dict[str, int] = {}
+
     for qq, account in group_map.items():
         r = results.get(qq)
         if r:
+            rating = r["rating"]
+            new_snapshot[account] = rating
+            # 与上次快照对比
+            last_rating = last_snapshot.get(account)
+            if last_rating is not None:
+                delta = rating - last_rating
+            else:
+                delta = None
             ranked.append({
-                "qq":      qq,
-                "account": account,
-                "nick":    nick_map.get(qq, qq),
-                "rating":  r["rating"],
+                "qq":       qq,
+                "account":  account,
+                "nick":     nick_map.get(qq, qq),
+                "rating":   rating,
                 "position": r["position"],
+                "delta":    delta,
             })
         else:
             no_data.append(account)
+
+    # 保存新快照
+    _snapshots[group_id] = new_snapshot
+    _save_snapshot(_snapshots)
 
     # 按 rating 降序排列
     ranked.sort(key=lambda x: x["rating"], reverse=True)
@@ -257,16 +291,40 @@ async def bz_rank_rev(bot: Bot, event: Event):
     total    = len(group_map)
     on_board = len(ranked)
 
-    lines = [f"📅 群内绑定成员顺位 (共 {on_board}/{total} 人上榜)\n"]
-    for i, item in enumerate(ranked):
-        pos_str  = f"#{item['position']}" if item['position'] else "#-"
-        medal    = MEDALS[i] if i < 3 else f"{i + 1}."
-        nick     = item["nick"]
-        account  = item["account"]
-        lines.append(f"{medal} {account}({nick}) - {pos_str} ({item['rating']}分)")
+    # 构建每条消息行
+    def _delta_str(delta) -> str:
+        if delta is None:
+            return ""
+        if delta > 0:
+            return f" ▲+{delta}"
+        if delta < 0:
+            return f" ▼{delta}"
+        return " →0"
 
+    header = f"📅 群内绑定成员顺位 (共 {on_board}/{total} 人上榜)"
     if no_data:
-        lines.append(f"\n⚠️ 以下账号暂无传奇段位记录：{', '.join(no_data)}")
+        header += f"\n⚠️ 无传奇记录：{', '.join(no_data)}"
 
-    await bot.send(event=event, message=MessageSegment.text("\n".join(lines)))
+    detail_lines = []
+    for i, item in enumerate(ranked):
+        pos_str = f"#{item['position']}" if item['position'] else "#-"
+        medal   = MEDALS[i] if i < 3 else f"{i + 1}."
+        delta_s = _delta_str(item["delta"])
+        detail_lines.append(
+            f"{medal} {item['account']}({item['nick']}) - {pos_str} ({item['rating']}分{delta_s})"
+        )
+
+    # 用合并消息发送
+    def _node(text: str) -> dict:
+        return {
+            "type": "node",
+            "data": {
+                "name":    "巴扎排名",
+                "uin":     bot.self_id,
+                "content": text,
+            }
+        }
+
+    messages = [_node(header)] + [_node(line) for line in detail_lines]
+    await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
 
