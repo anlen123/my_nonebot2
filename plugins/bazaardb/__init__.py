@@ -30,6 +30,7 @@ CACHE_DIR.mkdir(exist_ok=True)
 bz          = on_regex(pattern=r"^bz ")
 bz_user     = on_regex(pattern=r"^巴扎查分 ")
 bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
+bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
 bz_rank     = on_regex(pattern=r"^巴扎排名$")
 
 # ── 绑定数据持久化（JSON 文件）────────────────────────────────────────────────
@@ -170,6 +171,29 @@ async def bz_bind_rev(bot: Bot, event: Event):
 
     nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account}")
     await bot.send(event=event, message=MessageSegment.text(f"✅ 绑定成功！{qq_id} → {game_account}"))
+
+
+# ── 巴扎解绑：解除当前QQ的绑定 ───────────────────────────────────────────────
+
+@bz_unbind.handle()
+async def bz_unbind_rev(bot: Bot, event: Event):
+    if not isinstance(event, GroupMessageEvent):
+        await bot.send(event=event, message=MessageSegment.text("请在群聊中使用此命令"))
+        return
+
+    group_id = str(event.group_id)
+    qq_id    = str(event.user_id)
+
+    group_map = _bindings.get(group_id, {})
+    if qq_id not in group_map:
+        await bot.send(event=event, message=MessageSegment.text("你还没有绑定任何账号"))
+        return
+
+    account = group_map.pop(qq_id)
+    _save_bindings(_bindings)
+
+    nonebot.logger.info(f"[bazaardb] 解绑 group={group_id} qq={qq_id} account={account}")
+    await bot.send(event=event, message=MessageSegment.text(f"✅ 解绑成功！已移除 {qq_id} → {account} 的绑定"))
 
 
 # ── 巴扎排名：查询群内所有绑定成员排名 ───────────────────────────────────────
