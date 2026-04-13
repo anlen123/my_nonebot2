@@ -318,6 +318,12 @@ async def bz_rank_rev(bot: Bot, event: Event):
             }
         }
 
-    messages = [_node(header)] + [_node(line) for line in detail_lines]
+    # 前三名每人单独一个气泡，4名及以后合并成一个气泡
+    top3    = detail_lines[:3]
+    rest    = detail_lines[3:]
+    messages = [_node(header)]
+    messages += [_node(line) for line in top3]
+    if rest:
+        messages.append(_node("\n".join(rest)))
     await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
 
