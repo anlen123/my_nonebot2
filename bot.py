@@ -38,6 +38,7 @@ nonebot.load_plugin("plugins.bilibili_video")
 nonebot.load_plugin("plugins.auto_message")
 nonebot.load_plugin("plugins.bazaardb")
 nonebot.load_plugin("plugins.repeater")
+nonebot.load_plugin("plugins.welcome")
   
 if __name__ == "__main__":
     # nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
