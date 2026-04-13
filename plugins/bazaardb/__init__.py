@@ -118,7 +118,6 @@ async def bz_rev(bot: Bot, event: Event):
         await _send_image(bot, event, cache_file.read_bytes())
         return
 
-    await bot.send(event=event, message=MessageSegment.text(f"正在查询「{keyword}」，请稍候..."))
     try:
         img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_item_sync, keyword)
     except Exception as e:
@@ -195,7 +194,6 @@ async def bz_user_rev(bot: Bot, event: Event):
         await bot.send(event=event, message=MessageSegment.text("请输入用户名，例如：巴扎查分 xikala"))
         return
 
-    await bot.send(event=event, message=MessageSegment.text(f"正在查询「{username}」的排位数据，请稍候..."))
     try:
         img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_user_sync, username)
     except Exception as e:
