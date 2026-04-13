@@ -25,7 +25,7 @@ from typing import Dict
 
 import nonebot
 from nonebot.plugin import on_notice
-from nonebot.adapters.onebot.v11 import Bot, Event, GroupIncreaseNoticeEvent, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import Bot, GroupIncreaseNoticeEvent, MessageSegment, Message
 
 
 # ── 读取配置 ──────────────────────────────────────────────────────────────────
@@ -86,14 +86,7 @@ WELCOME_CONFIG: Dict[str, dict] = load_welcome_config()
 
 # ── 事件处理 ──────────────────────────────────────────────────────────────────
 
-welcome     = on_notice()
-welcome_dbg = on_notice()
-
-
-@welcome_dbg.handle()
-async def welcome_debug(bot: Bot, event: Event):
-    """临时调试：打印所有 notice 事件类型"""
-    nonebot.logger.info(f"[welcome] notice event type={type(event).__name__} data={event.dict()}")
+welcome = on_notice()
 
 
 @welcome.handle()
