@@ -113,7 +113,7 @@ async def welcome_handle(bot: Bot, event: GroupIncreaseNoticeEvent):
         else:
             p = Path(img_path)
             if p.exists():
-                msg += MessageSegment.image(f"file:///{p.resolve()}")
+                msg += MessageSegment.image(p.read_bytes())
             else:
                 nonebot.logger.warning(f"[welcome] 图片不存在: {img_path}")
 
