@@ -135,18 +135,26 @@ async def fetch_uname(uid: str) -> str:
 
 # ── 推送 ──────────────────────────────────────────────────────────────────────
 
-async def notify_groups(group_ids: List[str], messages: list):
-    """将 messages 列表拼成一条消息发送，图片和文字合并在同一条"""
+async def notify_groups(groups: list, messages: list):
+    """
+    groups: [{"groupId": "xxx", "isAtAll": bool}, ...]
+    将 messages 拼成一条消息发送，isAtAll=True 时在消息头部插入 @全体成员
+    """
     from nonebot.adapters.onebot.v11 import Message
-    combined = Message()
-    for seg in messages:
-        combined += seg
     try:
         bot: Bot = nonebot.get_bot()
     except Exception:
         nonebot.logger.warning("[bilibili_video] no bot available")
         return
-    for gid in group_ids:
+    for g in groups:
+        gid       = g["groupId"]
+        is_at_all = g.get("isAtAll", False)
+        combined  = Message()
+        if is_at_all:
+            combined += MessageSegment(type="at", data={"qq": "all"})
+            combined += MessageSegment.text("\n")
+        for seg in messages:
+            combined += seg
         try:
             await bot.send_group_msg(group_id=int(gid), message=combined)
             await asyncio.sleep(0.5)

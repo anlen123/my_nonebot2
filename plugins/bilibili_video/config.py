@@ -32,14 +32,30 @@ def _parse_env_file(path: Path) -> Dict[str, str]:
     return result
 
 
+def _normalize_uids(raw_uids: dict) -> Dict[str, List[dict]]:
+    result = {}
+    for uid, groups in raw_uids.items():
+        normalized = []
+        for g in groups:
+            if isinstance(g, str):
+                normalized.append({"groupId": g, "isAtAll": False})
+            elif isinstance(g, dict):
+                normalized.append({
+                    "groupId": str(g.get("groupId", "")),
+                    "isAtAll": bool(g.get("isAtAll", False)),
+                })
+        result[uid] = normalized
+    return result
+
+
 def load_config() -> Dict:
     env_path = _find_env_file()
     raw = _parse_env_file(env_path)
 
-    # BILIBILI_VIDEO_UIDS={"uid": ["群号1", "群号2"], ...}
+    # BILIBILI_VIDEO_UIDS={"uid": [{"groupId": "xxx", "isAtAll": true}], ...}
     uids_raw = raw.get("BILIBILI_VIDEO_UIDS", os.environ.get("BILIBILI_VIDEO_UIDS", "{}"))
     try:
-        uids: Dict[str, List[str]] = json.loads(uids_raw)
+        uids = _normalize_uids(json.loads(uids_raw))
     except (json.JSONDecodeError, TypeError):
         uids = {}
 

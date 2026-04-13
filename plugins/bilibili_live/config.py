@@ -27,7 +27,6 @@ def _parse_env_file(path: Path) -> Dict[str, str]:
             continue
         key, _, value = line.partition("=")
         key = key.strip()
-        # 去掉行尾注释（# 之后的内容），但要保留字符串内部的 #
         value = value.strip()
         if "#" in value and not (value.startswith('"') or value.startswith("'")):
             value = value[:value.index("#")].strip()
@@ -35,14 +34,35 @@ def _parse_env_file(path: Path) -> Dict[str, str]:
     return result
 
 
+def _normalize_uids(raw_uids: dict) -> Dict[str, List[dict]]:
+    """
+    兼容两种配置格式，统一转为 {uid: [{"groupId": "xxx", "isAtAll": bool}]}
+      旧格式：{"uid": ["group1", "group2"]}
+      新格式：{"uid": [{"groupId": "group1", "isAtAll": true}]}
+    """
+    result = {}
+    for uid, groups in raw_uids.items():
+        normalized = []
+        for g in groups:
+            if isinstance(g, str):
+                normalized.append({"groupId": g, "isAtAll": False})
+            elif isinstance(g, dict):
+                normalized.append({
+                    "groupId": str(g.get("groupId", "")),
+                    "isAtAll": bool(g.get("isAtAll", False)),
+                })
+        result[uid] = normalized
+    return result
+
+
 def load_config() -> Dict:
     env_path = _find_env_file()
     raw = _parse_env_file(env_path)
 
-    # BILIBILI_LIVE_UIDS={"uid": ["group1", "group2"], ...}
+    # BILIBILI_LIVE_UIDS={"uid": [{"groupId": "xxx", "isAtAll": true}], ...}
     uids_raw = raw.get("BILIBILI_LIVE_UIDS", os.environ.get("BILIBILI_LIVE_UIDS", "{}"))
     try:
-        uids: Dict[str, List[str]] = json.loads(uids_raw)
+        uids = _normalize_uids(json.loads(uids_raw))
     except (json.JSONDecodeError, TypeError):
         uids = {}
 
