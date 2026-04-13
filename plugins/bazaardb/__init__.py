@@ -27,7 +27,7 @@ SCRAPER_DIR = Path(__file__).parent
 CACHE_DIR = Path(__file__).parent / "cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-# bz          = on_regex(pattern=r"^bz ")  # 已关闭
+bz          = on_regex(pattern=r"^巴扎 ")
 bz_user     = on_regex(pattern=r"^巴扎查分 ")
 bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
 bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
@@ -82,7 +82,34 @@ def _query_item_sync(keyword: str) -> bytes | None:
     return png.read_bytes() if png.exists() else None
 
 
-# bz 物品/怪物查询已关闭
+@bz.handle()
+async def bz_rev(bot: Bot, event: Event):
+    keyword = str(event.message).strip()[3:].strip()
+    if not keyword:
+        await bot.send(event=event, message=MessageSegment.text("请输入关键词，例如：巴扎 光纤"))
+        return
+
+    cache_file = _item_cache_path(keyword)
+    if cache_file.exists():
+        nonebot.logger.info(f"[bazaardb] 命中缓存 keyword={keyword}")
+        await _send_image(bot, event, cache_file.read_bytes())
+        return
+
+    await bot.send(event=event, message=MessageSegment.text(f"正在查询「{keyword}」，请稍候..."))
+    try:
+        img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_item_sync, keyword)
+    except Exception as e:
+        nonebot.logger.warning(f"[bazaardb] 查询失败 keyword={keyword}: {e}")
+        await bot.send(event=event, message=MessageSegment.text(f"查询失败：{e}"))
+        return
+
+    if img_bytes is None:
+        await bot.send(event=event, message=MessageSegment.text(f"未找到「{keyword}」相关物品或怪物"))
+        return
+
+    cache_file.write_bytes(img_bytes)
+    nonebot.logger.info(f"[bazaardb] 已缓存 keyword={keyword}")
+    await _send_image(bot, event, img_bytes)
 
 
 # ── 巴扎查分 <用户名>：用户排位查询 ──────────────────────────────────────────

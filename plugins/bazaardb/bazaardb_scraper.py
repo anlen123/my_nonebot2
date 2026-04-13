@@ -6,17 +6,20 @@ BazaarDB 爬虫 + 卡片生成器（物品 & 怪物）
 依赖: pip install playwright && playwright install chromium
 输出: bazaardb_{key}.json / bazaardb_{key}.html / bazaardb_{key}.png
 
-搜索策略：
-  - 先搜 c=items，有结果就渲染物品卡片
-  - 再搜 c=monsters，有结果就渲染怪物卡片
-  - 两者都有时合并到同一个 HTML/PNG
+数据获取策略（无 DOM 爬取）：
+  - 用 Playwright 打开任意页面，让 Cloudflare 验证通过
+  - 之后用 page.evaluate 发 fetch 请求，带 RSC:1 请求头
+  - 服务端直接在响应体中内嵌完整 JSON（Next.js RSC 数据流）
+  - 从 RSC 文本中提取 initialData.pageCards，无需解析任何 DOM
+  - 物品和怪物分别搜索，合并后生成卡片
 """
 
 import asyncio
 import json
 import os
-import sys
 import re
+import sys
+from typing import Optional
 from urllib.parse import quote
 from playwright.async_api import async_playwright
 
@@ -70,166 +73,304 @@ def enchant_theme(name: str) -> str:
 
 
 # ─────────────────────────────────────────────
-# JS 提取逻辑
+# RSC 数据提取
 # ─────────────────────────────────────────────
-JS_EXTRACT_ITEMS = """
-() => {
-    const results = [];
-    const previewBlocks = document.querySelectorAll("._ag");
-    for (const block of previewBlocks) {
-        const cardLink = block.querySelector("a[href*='/card/']");
-        if (!cardLink) continue;
 
-        const nameEl = block.querySelector("._ak span");
-        const name = nameEl ? nameEl.textContent.trim() : "";
-
-        const heroTagEl = block.querySelector("a[href*='t%3A'] div span, a[href*='t%3A'] div");
-        const heroTag = heroTagEl ? heroTagEl.textContent.trim() : "";
-
-        const typeTagEls = block.querySelectorAll("._di, ._ds span");
-        const typeTags = Array.from(typeTagEls)
-            .map(el => el.textContent.trim())
-            .filter(t => t && t !== heroTag);
-
-        // ── 主动技能区（第一个 ._bS，不含 ._bV 的 ._bT）──
-        // 冷却时间：._bW 下的 ._cb 文本节点（可能有金/钻两档）
-        const activeBs = block.querySelector("._bS");
-        let cooldowns = [];
-        let active_skills = [];
-        if (activeBs) {
-            // 冷却时间：._bW ._cb（可能多个，对应金/钻档位）
-            const cdEls = activeBs.querySelectorAll("._bW ._cb");
-            cooldowns = Array.from(cdEls).map(el => el.textContent.trim()).filter(Boolean);
-
-            // 主动技能描述行：._bT（非 ._bV）下的每个 ._ch ._cL
-            const activeBtEls = activeBs.querySelectorAll("._bT:not(._bV)");
-            for (const bt of activeBtEls) {
-                const chEls = bt.querySelectorAll("._ch");
-                for (const ch of chEls) {
-                    const clEl = ch.querySelector("._cL");
-                    if (clEl) {
-                        const txt = clEl.innerText.trim();
-                        if (txt) active_skills.push(txt);
-                    }
-                }
-            }
-        }
-
-        // ── 被动技能区（._bT._bV）──
-        const passiveBtEls = block.querySelectorAll("._bT._bV");
-        let passive_skills = [];
-        for (const bt of passiveBtEls) {
-            const chEls = bt.querySelectorAll("._ch");
-            for (const ch of chEls) {
-                const clEl = ch.querySelector("._cL");
-                if (clEl) {
-                    const txt = clEl.innerText.trim();
-                    if (txt) passive_skills.push(txt);
-                }
-            }
-            // 兼容旧结构：直接 ._cL（无 ._ch 包裹）
-            if (passive_skills.length === 0) {
-                const clEl = bt.querySelector("._cL");
-                if (clEl) {
-                    const txt = clEl.innerText.trim();
-                    if (txt) passive_skills.push(txt);
-                }
-            }
-        }
-
-        // 兼容旧字段 description（取第一条被动）
-        const description = passive_skills[0] || "";
-
-        const enchantBlocks = block.querySelectorAll("._bT._bU");
-        const enchantments = [];
-        for (const enc of enchantBlocks) {
-            const encNameEl = enc.querySelector("._bW span");
-            const encDescEl = enc.querySelector("._cL");
-            if (encNameEl && encDescEl) {
-                enchantments.push({
-                    name: encNameEl.textContent.trim(),
-                    description: encDescEl.innerText.trim()
-                });
-            }
-        }
-
-        const imgs = block.querySelectorAll('img');
-        const imgBlur = imgs[0] ? imgs[0].src : '';
-        const imgSrc  = imgs[1] ? imgs[1].src : (imgs[0] ? imgs[0].src : '');
-
-        results.push({
-            type: "item",
-            name, hero_tag: heroTag, type_tags: typeTags,
-            description, enchantments,
-            cooldowns, active_skills, passive_skills,
-            url: cardLink.href, img_blur: imgBlur, img_src: imgSrc
-        });
-    }
-    return results;
+# 词条英文名 → 中文名映射
+ENCHANT_NAME_MAP = {
+    "Golden":      "黄金",
+    "Heavy":       "沉重",
+    "Icy":         "寒冰",
+    "Turbo":       "疾速",
+    "Shielded":    "护盾",
+    "Restorative": "回复",
+    "Toxic":       "毒素",
+    "Fiery":       "炽焰",
+    "Shiny":       "闪亮",
+    "Deadly":      "致命",
+    "Radiant":     "辉耀",
+    "Obsidian":    "黑曜",
+    "Mossy":       "长青",
 }
-"""
 
-JS_EXTRACT_MONSTERS = """
-() => {
-    const results = [];
-    // 怪物卡片根容器：._bD._bE
-    const monsterCards = document.querySelectorAll("._bD._bE");
-    for (const card of monsterCards) {
-        const cardLink = card.querySelector("a[href*='/card/']");
-        if (!cardLink) continue;
-
-        // 名称
-        const nameEl = card.querySelector("._ak span");
-        const name = nameEl ? nameEl.textContent.trim() : "";
-
-        // 等级/天数/金币/XP（._cr 区域）
-        const crEl = card.querySelector("._cr");
-        const levelText = crEl ? crEl.innerText.trim() : "";
-
-        // 血量（._ai 第一个 ._a）
-        const hpEl = card.querySelector("._ai ._a");
-        const hp = hpEl ? hpEl.innerText.trim().replace(/[^0-9]/g, "") : "";
-
-        // 品质标签（._di）
-        const tierEl = card.querySelector("._di");
-        const tier = tierEl ? tierEl.textContent.trim() : "";
-
-        // 怪物主图（._ac）和模糊背景（._ab 下的背景 div）
-        const mainImgEl = card.querySelector("._ac");
-        const imgSrc = mainImgEl ? mainImgEl.src : "";
-        // 模糊背景：._ab 里的 img（base64）或 background-image
-        const blurImgEl = card.querySelector("._ab img");
-        const blurBgEl  = card.querySelector("._ab[style*='background-image']");
-        let imgBlur = "";
-        if (blurImgEl) {
-            imgBlur = blurImgEl.src;
-        } else if (blurBgEl) {
-            const bg = blurBgEl.style.backgroundImage;
-            imgBlur = bg.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
-        }
-
-        // 携带物品列表（._ai 里的 a[href*='/card/']）
-        const itemLinks = card.querySelectorAll("._ai a[href*='/card/']");
-        const items = [];
-        for (const a of itemLinks) {
-            const label = a.getAttribute("aria-label") || "";
-            const itemName = label.replace("See details for ", "");
-            const itemImgs = a.querySelectorAll("img");
-            const itemBlur = itemImgs[0] ? itemImgs[0].src : "";
-            const itemSrc  = itemImgs[1] ? itemImgs[1].src : (itemImgs[0] ? itemImgs[0].src : "");
-            items.push({ name: itemName, img_src: itemSrc, img_blur: itemBlur, url: a.href });
-        }
-
-        results.push({
-            type: "monster",
-            name, tier, level_text: levelText, hp,
-            url: cardLink.href, img_src: imgSrc, img_blur: imgBlur,
-            items
-        });
-    }
-    return results;
+# 英雄英文名 → 中文名映射
+HERO_NAME_MAP = {
+    "Dooley":    "杜利",
+    "Pygmalien": "皮格马利翁",
+    "Stelle":    "斯黛尔",
+    "Jules":     "朱尔斯",
+    "Mak":       "马克",
+    "Vanessa":   "凡妮莎",
+    "Common":    "",
 }
-"""
+
+# 品质档位英文 → 中文
+TIER_NAME_MAP = {
+    "Bronze":  "青铜",
+    "Silver":  "白银",
+    "Gold":    "黄金",
+    "Diamond": "钻石",
+    "Legendary": "传奇",
+}
+
+
+def resolve_tooltip_value(replacement_spec: dict, tier: Optional[str] = None) -> str:
+    """
+    将 TooltipReplacements 中的值解析为字符串。
+    spec 可能是 {"Fixed": 1} 或 {"Gold": 1, "Diamond": 2} 等。
+    """
+    if not replacement_spec:
+        return "?"
+    if "Fixed" in replacement_spec:
+        v = replacement_spec["Fixed"]
+        # 毫秒转秒
+        if isinstance(v, (int, float)) and v >= 1000 and isinstance(v, int):
+            return str(v // 1000)
+        return str(v)
+    # 按档位取值，优先用传入的 tier，否则取所有档位
+    if tier and tier in replacement_spec:
+        v = replacement_spec[tier]
+        return str(v)
+    # 返回所有档位的值，格式：青铜1/白银2/黄金3/钻石4
+    parts = []
+    for t in ["Bronze", "Silver", "Gold", "Diamond"]:
+        if t in replacement_spec:
+            parts.append(str(replacement_spec[t]))
+    return " » ".join(parts) if parts else "?"
+
+
+def render_tooltip_text(text: str, replacements: dict, tier: Optional[str] = None) -> str:
+    """将 tooltip 模板文本中的占位符替换为实际数值。"""
+    for placeholder, spec in replacements.items():
+        # 跳过 .targets 类型的占位符（目标数量，通常不显示在描述里）
+        if ".targets" in placeholder:
+            val = resolve_tooltip_value(spec, tier)
+            text = text.replace(placeholder, val)
+        else:
+            val = resolve_tooltip_value(spec, tier)
+            text = text.replace(placeholder, val)
+    return text
+
+
+def parse_item_card(raw: dict) -> dict:  # noqa
+    """
+    将 RSC 数据流中的原始物品 JSON 转换为渲染所需的结构。
+    尽量兼容旧版 scraper 的输出格式。
+    """
+    name = raw.get("Title", {}).get("Text", "")
+    heroes = raw.get("Heroes", [])
+    hero_tag = HERO_NAME_MAP.get(heroes[0], heroes[0]) if heroes else ""
+
+    # 档位标签（BaseTier 以上的所有档位）
+    base_tier = raw.get("BaseTier", "Silver")
+    tier_order = ["Bronze", "Silver", "Gold", "Diamond", "Legendary"]
+    base_idx = tier_order.index(base_tier) if base_tier in tier_order else 1
+    available_tiers = tier_order[base_idx:]
+    type_tags = []
+    for t in available_tiers:
+        cn = TIER_NAME_MAP.get(t, t)
+        type_tags.append(cn + "+")
+    # 加上 DisplayTags
+    for dt in raw.get("DisplayTags", []):
+        type_tags.append(dt)
+
+    # 冷却时间（毫秒 → 秒，按档位）
+    base_attrs = raw.get("BaseAttributes", {})
+    tiers_data = raw.get("Tiers", {})
+    cooldowns = []
+    base_cd = base_attrs.get("CooldownMax")
+    if base_cd is not None:
+        # 收集各档位冷却时间
+        cd_vals = []
+        for t in available_tiers:
+            override = tiers_data.get(t, {}).get("OverrideAttributes", {})
+            cd = override.get("CooldownMax", base_cd)
+            cd_vals.append(str(cd // 1000))
+        # 去重，保留变化
+        seen = []
+        for v in cd_vals:
+            if not seen or seen[-1] != v:
+                seen.append(v)
+        cooldowns = seen
+
+    # 技能描述（Tooltips）
+    tooltips = raw.get("Tooltips", [])
+    replacements = raw.get("TooltipReplacements", {})
+    active_skills = []
+    passive_skills = []
+    for tip in tooltips:
+        tt = tip.get("TooltipType", "")
+        if tt in ("bzdbgg.HiddenSearchable",):
+            continue
+        text = tip.get("Content", {}).get("Text", "")
+        if not text:
+            continue
+        rendered = render_tooltip_text(text, replacements)
+        if tt == "Active":
+            active_skills.append(rendered)
+        elif tt == "Passive":
+            passive_skills.append(rendered)
+
+    # 词条
+    enchantments = []
+    for enc_key, enc_data in raw.get("Enchantments", {}).items():
+        enc_name_cn = ENCHANT_NAME_MAP.get(enc_key, enc_key)
+        enc_tips = enc_data.get("Localization", {}).get("Tooltips", [])
+        enc_replacements = enc_data.get("TooltipReplacements", {})
+        enc_descs = []
+        for et in enc_tips:
+            et_text = et.get("Content", {}).get("Text", "")
+            if et_text:
+                enc_descs.append(render_tooltip_text(et_text, enc_replacements))
+        enc_desc = " ".join(enc_descs)
+        if enc_desc:
+            enchantments.append({"name": enc_name_cn, "description": enc_desc})
+
+    img_src = raw.get("Art", "")
+    img_blur = raw.get("ArtBlur", "")
+    uri = raw.get("Uri", "")
+    url = f"https://bazaardb.gg{uri}" if uri else ""
+
+    return {
+        "type": "item",
+        "name": name,
+        "hero_tag": hero_tag,
+        "type_tags": type_tags,
+        "description": passive_skills[0] if passive_skills else "",
+        "enchantments": enchantments,
+        "cooldowns": cooldowns,
+        "active_skills": active_skills,
+        "passive_skills": passive_skills,
+        "url": url,
+        "img_src": img_src,
+        "img_blur": img_blur,
+    }
+
+
+def parse_monster_card(raw: dict) -> dict:
+    """
+    将 RSC 数据流中的原始怪物 JSON 转换为渲染所需的结构。
+    怪物数据在 MonsterMetadata 字段中。
+    """
+    name = raw.get("Title", {}).get("Text", "")
+    meta = raw.get("MonsterMetadata") or {}
+
+    hp = str(meta.get("health", ""))
+    available_day = meta.get("available", "")
+    day = meta.get("day", "")
+
+    # 品质（tier）从 Tags 中推断
+    tags = raw.get("Tags", [])
+    tier = ""
+    for t in ["Legendary", "Diamond", "Gold", "Silver", "Bronze"]:
+        if t in tags:
+            tier = TIER_NAME_MAP.get(t, t)
+            break
+
+    # level_text 模拟旧格式
+    level_text = f"Day {day}+\n{available_day}" if day else available_day
+
+    # 携带物品
+    items = []
+    for board_item in meta.get("board", []):
+        items.append({
+            "name": board_item.get("title", ""),
+            "img_src": board_item.get("art", ""),
+            "img_blur": board_item.get("artBlur", ""),
+            "url": f"https://bazaardb.gg{board_item.get('url', '')}",
+        })
+
+    img_src = raw.get("Art", "")
+    img_blur = raw.get("ArtBlur", "")
+    uri = raw.get("Uri", "")
+    url = f"https://bazaardb.gg{uri}" if uri else ""
+
+    return {
+        "type": "monster",
+        "name": name,
+        "tier": tier,
+        "level_text": level_text,
+        "hp": hp,
+        "url": url,
+        "img_src": img_src,
+        "img_blur": img_blur,
+        "items": items,
+    }
+
+
+def _extract_json_array(text: str, key: str) -> list[dict]:
+    """
+    在 text 中找到 '"<key>":[' 并用括号匹配提取完整 JSON 数组。
+    """
+    search = f'"{key}":['  
+    pc_idx = text.find(search)
+    if pc_idx < 0:
+        return []
+
+    start = text.index("[", pc_idx)
+    depth = 0
+    end = start
+    for i, ch in enumerate(text[start:], start):
+        if ch in ("[", "{"):
+            depth += 1
+        elif ch in ("]", "}"):
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+
+    try:
+        return json.loads(text[start:end])
+    except json.JSONDecodeError:
+        return []
+
+
+def extract_page_cards_from_html(html: str, category: str = "items") -> list[dict]:
+    """
+    从 page.content() 返回的 HTML 中提取卡片数组。
+
+    Next.js App Router 把 Flight 数据放在 <script> 标签里：
+        self.__next_f.push([1,"...JSON 转义字符串..."])
+    page.content() 返回的 HTML 中，这些字符串里的引号被双重转义为 \\"。
+    策略：提取所有 __next_f.push([1,"..."]) 块，逐一解码，
+    在解码后的文本里搜索对应字段。
+
+    物品搜索页（category=items）：用 "pageCards" 字段
+    怪物搜索页（category=monsters）：用 "cards" 字段（"cards":[{"Id":...）
+    注意：怪物搜索页同时包含 pageCards（相关物品）和 cards（怪物），
+    必须按 category 选择正确的字段。
+    """
+    # 提取所有 __next_f.push([1,"..."]) 块的原始字符串
+    raw_chunks = re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', html, re.DOTALL)
+
+    # 按 category 决定搜索顺序
+    # "cards" 需要精确匹配 "cards":[{"Id": 避免匹配到 UI 渲染数据里的 tag 描述
+    if category == "monsters":
+        field_candidates = [
+            ("cards",     '"cards":[{"Id":'),
+            ("pageCards", '"pageCards":'),
+        ]
+    else:
+        field_candidates = [
+            ("pageCards", '"pageCards":'),
+            ("cards",     '"cards":[{"Id":'),
+        ]
+
+    for field_key, search_pattern in field_candidates:
+        for raw_str in raw_chunks:
+            try:
+                decoded = json.loads('"' + raw_str + '"')
+            except json.JSONDecodeError:
+                continue
+
+            if search_pattern not in decoded:
+                continue
+
+            result = _extract_json_array(decoded, field_key)
+            if result:
+                return result
+
+    return []
 
 
 # ─────────────────────────────────────────────
@@ -271,7 +412,6 @@ def build_item_card(item: dict) -> str:
 
     skills_html = active_html + passive_html
     if not skills_html:
-        # 兼容旧数据
         desc = item.get("description", "")
         if desc:
             skills_html = f'<div class="skill-line skill-passive">{highlight(desc)}</div>'
@@ -302,7 +442,6 @@ def build_item_card(item: dict) -> str:
 # HTML 构建：怪物卡片
 # ─────────────────────────────────────────────
 def build_monster_card(monster: dict) -> str:
-    # 解析等级/天数/金币/XP
     level_text = monster.get("level_text", "")
     level_line = ""
     gold_line = ""
@@ -316,12 +455,10 @@ def build_monster_card(monster: dict) -> str:
         elif "XP" in line:
             xp_line = line
 
-    # 品质标签颜色
     tier = monster.get("tier", "")
     tier_color_map = {"黄金": "#d4a820", "白银": "#a0b8c8", "青铜": "#c87840", "钻石": "#60d0f0", "传奇": "#e060e0"}
     tier_color = tier_color_map.get(tier, "#a0a0a0")
 
-    # 携带物品格子
     items_html = ""
     for it in monster.get("items", []):
         items_html += f"""
@@ -336,7 +473,6 @@ def build_monster_card(monster: dict) -> str:
     return f"""
   <div class="card monster-card">
     <div class="monster-header">
-      <!-- 左：怪物图 + 基本信息 -->
       <div class="monster-left">
         <div class="monster-portrait-wrap">
           <img class="img-blur" src="{monster['img_blur']}" alt="">
@@ -354,7 +490,6 @@ def build_monster_card(monster: dict) -> str:
           </div>
         </div>
       </div>
-      <!-- 右：血量 + 携带物品 -->
       <div class="monster-right">
         <div class="monster-hp">
           <span class="hp-icon">♥</span>
@@ -532,7 +667,6 @@ def build_html(records: list[dict]) -> str:
     padding: 14px 18px; gap: 20px;
   }}
 
-  /* 左侧：头像 + 基本信息 */
   .monster-left {{
     display: flex; align-items: center; gap: 14px;
     flex-shrink: 0; min-width: 220px;
@@ -566,7 +700,6 @@ def build_html(records: list[dict]) -> str:
   .reward-gold {{ font-size: 12px; font-weight: 700; color: #d4a820; }}
   .reward-xp   {{ font-size: 12px; font-weight: 700; color: #60a8e0; }}
 
-  /* 右侧：血量 + 物品栏 */
   .monster-right {{
     flex: 1; display: flex; flex-direction: column; gap: 10px; justify-content: center;
   }}
@@ -580,7 +713,6 @@ def build_html(records: list[dict]) -> str:
   .hp-icon {{ color: #40c870; font-size: 14px; }}
   .hp-value {{ font-size: 16px; font-weight: 700; color: #40c870; }}
 
-  /* 物品栏 */
   .monster-items-row {{
     display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start;
   }}
@@ -619,6 +751,40 @@ def build_html(records: list[dict]) -> str:
 
 
 # ─────────────────────────────────────────────
+# 核心：拦截初始 HTML 响应获取数据
+# ─────────────────────────────────────────────
+async def fetch_via_page_content(context, category: str, query: str) -> list[dict]:
+    """
+    新建一个页面，导航到搜索 URL，等待 domcontentloaded 后用 page.content() 获取 HTML。
+    Next.js App Router 会将完整的 pageCards JSON 内嵌在 <script> 标签（Flight 数据）里，
+    page.content() 可以直接读取，无需解析 DOM，也不需要等待 JS 渲染。
+    Cloudflare 对浏览器发出的页面请求放行。
+    """
+    encoded_q = quote(query)
+    url = f"https://bazaardb.gg/search?c={category}&q={encoded_q}"
+    label = "物品" if category == "items" else "怪物"
+    print(f"  → 搜索{label}: {url}")
+
+    page = await context.new_page()
+    try:
+        await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        # 等待 Next.js Flight 数据注入完成（通常在 domcontentloaded 后很快）
+        # 如果 pageCards 还没出现，稍等一下
+        html = await page.content()
+        if "pageCards" not in html:
+            await page.wait_for_timeout(1500)
+            html = await page.content()
+    except Exception:
+        html = await page.content()
+    finally:
+        await page.close()
+
+    cards_raw = extract_page_cards_from_html(html, category)
+    print(f"    ✓ 找到 {len(cards_raw)} 个{label}原始记录")
+    return cards_raw
+
+
+# ─────────────────────────────────────────────
 # 爬取 + 导出
 # ─────────────────────────────────────────────
 async def scrape_and_export(key: str, out_dir: str = "."):
@@ -626,8 +792,6 @@ async def scrape_and_export(key: str, out_dir: str = "."):
     json_path = os.path.join(out_dir, f"bazaardb_{safe_key}.json")
     html_path = os.path.join(out_dir, f"bazaardb_{safe_key}.html")
     png_path  = os.path.join(out_dir, f"bazaardb_{safe_key}.png")
-
-    all_records = []
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
@@ -640,56 +804,53 @@ async def scrape_and_export(key: str, out_dir: str = "."):
             viewport={"width": 1280, "height": 900},
         )
 
-        async def fetch(category: str, js: str, label: str):
-            url = f"https://bazaardb.gg/search?c={category}&q={quote(key)}"
-            print(f"  → 搜索{label}: {url}")
-            page = await context.new_page()
-            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
-            try:
-                await page.wait_for_load_state("networkidle", timeout=8000)
-            except Exception:
-                pass
-            try:
-                await page.wait_for_selector("._ak", timeout=15000)
-            except Exception:
-                print(f"    ⚠ 无{label}结果")
-                await page.close()
-                return []
-            records = await page.evaluate(js)
-            print(f"    ✓ 找到 {len(records)} 个{label}")
-            await page.close()
-            return records
+        # ── 步骤 1 & 2：并行获取物品和怪物数据 ──
+        # 数据内嵌在 Next.js Flight <script> 标签里，page.content() 直接读取
+        print("[1/3] 获取数据（物品 + 怪物并行）...")
+        items_task    = asyncio.create_task(fetch_via_page_content(context, "items",    key))
+        monsters_task = asyncio.create_task(fetch_via_page_content(context, "monsters", key))
+        items_raw, monsters_raw = await asyncio.gather(items_task, monsters_task)
 
-        # 并行搜索物品和怪物
-        items_task    = asyncio.create_task(fetch("items",    JS_EXTRACT_ITEMS,    "物品"))
-        monsters_task = asyncio.create_task(fetch("monsters", JS_EXTRACT_MONSTERS, "怪物"))
-        items_result, monsters_result = await asyncio.gather(items_task, monsters_task)
+        # ── 步骤 3：转换数据结构 ──
+        all_records = []
 
-        # 过滤掉没有词条也没有描述的空物品卡片
-        items_result = [
-            r for r in items_result
-            if r.get("enchantments") or r.get("description")
-        ]
+        MONSTER_TYPES = {"Monster", "CombatEncounter"}
 
-        all_records = items_result + monsters_result
+        for raw in items_raw:
+            card_type = raw.get("Type", "")
+            monster_meta = raw.get("MonsterMetadata")
+            if card_type in MONSTER_TYPES or (monster_meta and monster_meta != "$undefined"):
+                parsed = parse_monster_card(raw)
+            else:
+                parsed = parse_item_card(raw)
+                # 过滤掉没有词条也没有描述的空物品
+                if not parsed["enchantments"] and not parsed["description"] and not parsed["active_skills"]:
+                    continue
+            all_records.append(parsed)
+
+        for raw in monsters_raw:
+            card_type = raw.get("Type", "")
+            monster_meta = raw.get("MonsterMetadata")
+            if card_type in MONSTER_TYPES or (monster_meta and monster_meta != "$undefined"):
+                parsed = parse_monster_card(raw)
+                all_records.append(parsed)
 
         if not all_records:
             print("⚠ 未找到任何结果。")
             await browser.close()
             return
 
-        # ── 保存 JSON ──
+        # ── 步骤 4：保存 JSON ──
         print(f"\n[2/3] 生成 JSON → {json_path}")
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(all_records, f, ensure_ascii=False, indent=2)
 
-        # ── 生成 HTML ──
+        # ── 步骤 5：生成 HTML + 截图 ──
         print(f"[3/3] 生成 HTML + PNG → {html_path} / {png_path}")
         html_content = build_html(all_records)
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
-        # ── 截图 PNG ──
         card_page = await context.new_page()
         await card_page.goto(f"file://{os.path.abspath(html_path)}", wait_until="domcontentloaded")
         try:
@@ -704,12 +865,13 @@ async def scrape_and_export(key: str, out_dir: str = "."):
         await card_page.close()
         await browser.close()
 
+    n_items    = len([r for r in all_records if r["type"] == "item"])
+    n_monsters = len([r for r in all_records if r["type"] == "monster"])
     print(f"\n✅ 完成！")
     print(f"   JSON : {json_path}")
     print(f"   HTML : {html_path}")
     print(f"   PNG  : {png_path}")
-    print(f"   共 {len([r for r in all_records if r['type']=='item'])} 个物品，"
-          f"{len([r for r in all_records if r['type']=='monster'])} 个怪物")
+    print(f"   共 {n_items} 个物品，{n_monsters} 个怪物")
 
 
 async def main():
