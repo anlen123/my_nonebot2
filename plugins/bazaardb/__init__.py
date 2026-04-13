@@ -27,9 +27,10 @@ SCRAPER_DIR = Path(__file__).parent
 CACHE_DIR = Path(__file__).parent / "cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-bz          = on_regex(pattern=r"^bz ")
+# bz          = on_regex(pattern=r"^bz ")  # 已关闭
 bz_user     = on_regex(pattern=r"^巴扎查分 ")
 bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
+bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
 bz_rank     = on_regex(pattern=r"^巴扎排名$")
 
 # ── 绑定数据持久化（JSON 文件）────────────────────────────────────────────────
@@ -81,34 +82,7 @@ def _query_item_sync(keyword: str) -> bytes | None:
     return png.read_bytes() if png.exists() else None
 
 
-@bz.handle()
-async def bz_rev(bot: Bot, event: Event):
-    keyword = str(event.message).strip()[3:].strip()
-    if not keyword:
-        await bot.send(event=event, message=MessageSegment.text("请输入关键词，例如：bz 光纤"))
-        return
-
-    cache_file = _item_cache_path(keyword)
-    if cache_file.exists():
-        nonebot.logger.info(f"[bazaardb] 命中缓存 keyword={keyword}")
-        await _send_image(bot, event, cache_file.read_bytes())
-        return
-
-    await bot.send(event=event, message=MessageSegment.text(f"正在查询「{keyword}」，请稍候..."))
-    try:
-        img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_item_sync, keyword)
-    except Exception as e:
-        nonebot.logger.warning(f"[bazaardb] 查询失败 keyword={keyword}: {e}")
-        await bot.send(event=event, message=MessageSegment.text(f"查询失败：{e}"))
-        return
-
-    if img_bytes is None:
-        await bot.send(event=event, message=MessageSegment.text(f"未找到「{keyword}」相关物品或怪物"))
-        return
-
-    cache_file.write_bytes(img_bytes)
-    nonebot.logger.info(f"[bazaardb] 已缓存 keyword={keyword}")
-    await _send_image(bot, event, img_bytes)
+# bz 物品/怪物查询已关闭
 
 
 # ── 巴扎查分 <用户名>：用户排位查询 ──────────────────────────────────────────
@@ -170,6 +144,29 @@ async def bz_bind_rev(bot: Bot, event: Event):
 
     nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account}")
     await bot.send(event=event, message=MessageSegment.text(f"✅ 绑定成功！{qq_id} → {game_account}"))
+
+
+# ── 巴扎解绑：解除当前QQ的绑定 ───────────────────────────────────────────────
+
+@bz_unbind.handle()
+async def bz_unbind_rev(bot: Bot, event: Event):
+    if not isinstance(event, GroupMessageEvent):
+        await bot.send(event=event, message=MessageSegment.text("请在群聊中使用此命令"))
+        return
+
+    group_id = str(event.group_id)
+    qq_id    = str(event.user_id)
+
+    group_map = _bindings.get(group_id, {})
+    if qq_id not in group_map:
+        await bot.send(event=event, message=MessageSegment.text("你还没有绑定任何账号"))
+        return
+
+    account = group_map.pop(qq_id)
+    _save_bindings(_bindings)
+
+    nonebot.logger.info(f"[bazaardb] 解绑 group={group_id} qq={qq_id} account={account}")
+    await bot.send(event=event, message=MessageSegment.text(f"✅ 解绑成功！已移除 {qq_id} → {account} 的绑定"))
 
 
 # ── 巴扎排名：查询群内所有绑定成员排名 ───────────────────────────────────────
