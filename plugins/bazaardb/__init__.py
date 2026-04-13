@@ -2,18 +2,23 @@
 bazaardb -- BazaarDB 物品 & 怪物 & 用户查询插件
 
 用法：
-  bz <关键词>          查询物品/怪物，例如：bz 光纤 / bz 多尔王
-  巴扎查分 <用户名>    查询用户排位分数，例如：巴扎查分 xikala
+  bz <关键词>            查询物品/怪物，例如：bz 光纤 / bz 多尔王
+  巴扎查分 <用户名>      查询用户排位分数，例如：巴扎查分 xikala
+  巴扎绑定 <游戏账号>    绑定当前QQ到游戏账号（群维度）
+  巴扎排名               查询本群所有绑定成员的当前排名
 """
 
 import asyncio
 import base64
 import importlib.util
+import json
+import aiohttp
 from pathlib import Path
+from typing import Dict, List, Optional
 
 import nonebot
 from nonebot.plugin import on_regex
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, GroupMessageEvent
 
 # 脚本目录（与插件同目录）
 SCRAPER_DIR = Path(__file__).parent
@@ -22,8 +27,28 @@ SCRAPER_DIR = Path(__file__).parent
 CACHE_DIR = Path(__file__).parent / "cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-bz      = on_regex(pattern=r"^bz ")
-bz_user = on_regex(pattern=r"^巴扎查分 ")
+bz          = on_regex(pattern=r"^bz ")
+bz_user     = on_regex(pattern=r"^巴扎查分 ")
+bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
+bz_rank     = on_regex(pattern=r"^巴扎排名$")
+
+# ── 绑定数据持久化（JSON 文件）────────────────────────────────────────────────
+# 结构：{ "群号": { "QQ号": "游戏账号", ... }, ... }
+BIND_FILE = Path(__file__).parent / "bindings.json"
+
+def _load_bindings() -> Dict[str, Dict[str, str]]:
+    if BIND_FILE.exists():
+        try:
+            return json.loads(BIND_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_bindings(data: Dict[str, Dict[str, str]]):
+    BIND_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+# 内存缓存
+_bindings: Dict[str, Dict[str, str]] = _load_bindings()
 
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────────
@@ -122,4 +147,126 @@ async def bz_user_rev(bot: Bot, event: Event):
 
     nonebot.logger.info(f"[bazaardb] 查分成功 username={username}")
     await _send_image(bot, event, img_bytes)
+
+
+# ── 巴扎绑定 <游戏账号>：绑定QQ到游戏账号 ────────────────────────────────────
+
+@bz_bind.handle()
+async def bz_bind_rev(bot: Bot, event: Event):
+    if not isinstance(event, GroupMessageEvent):
+        await bot.send(event=event, message=MessageSegment.text("请在群聊中使用此命令"))
+        return
+
+    game_account = str(event.message).strip()[5:].strip()
+    if not game_account:
+        await bot.send(event=event, message=MessageSegment.text("请输入游戏账号，例如：巴扎绑定 xikala"))
+        return
+
+    group_id = str(event.group_id)
+    qq_id    = str(event.user_id)
+
+    _bindings.setdefault(group_id, {})[qq_id] = game_account
+    _save_bindings(_bindings)
+
+    nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account}")
+    await bot.send(event=event, message=MessageSegment.text(f"✅ 绑定成功！{qq_id} → {game_account}"))
+
+
+# ── 巴扎排名：查询群内所有绑定成员排名 ───────────────────────────────────────
+
+BASE_URL   = "https://bazaar.mrmao.life"
+SEASON_ID  = "14"
+MEDALS     = ["🥇", "🥈", "🥉"]
+
+
+async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
+    """拉取用户最新一条排位记录，返回 {rating, position} 或 None"""
+    url = f"{BASE_URL}/api/rating-history?username={username}&seasonId={SEASON_ID}"
+    try:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+            data = await resp.json(content_type=None)
+            if data and isinstance(data, list):
+                latest = data[-1]
+                return {
+                    "rating":   latest.get("rating", 0),
+                    "position": latest.get("position", None),
+                }
+    except Exception as e:
+        nonebot.logger.warning(f"[bazaardb] 拉取 {username} 失败: {e}")
+    return None
+
+
+@bz_rank.handle()
+async def bz_rank_rev(bot: Bot, event: Event):
+    if not isinstance(event, GroupMessageEvent):
+        await bot.send(event=event, message=MessageSegment.text("请在群聊中使用此命令"))
+        return
+
+    group_id  = str(event.group_id)
+    group_map = _bindings.get(group_id, {})
+
+    if not group_map:
+        await bot.send(event=event, message=MessageSegment.text(
+            "本群还没有人绑定账号，请先发送「巴扎绑定 <游戏账号>」进行绑定"
+        ))
+        return
+
+    await bot.send(event=event, message=MessageSegment.text(
+        f"正在查询本群 {len(group_map)} 位成员的排位数据，请稍候..."
+    ))
+
+    # 并发拉取所有成员数据
+    async with aiohttp.ClientSession() as session:
+        tasks = {
+            qq: asyncio.create_task(_fetch_latest_rating(session, account))
+            for qq, account in group_map.items()
+        }
+        results: Dict[str, Optional[dict]] = {}
+        for qq, task in tasks.items():
+            results[qq] = await task
+
+    # 尝试获取群成员昵称
+    nick_map: Dict[str, str] = {}
+    try:
+        members = await bot.get_group_member_list(group_id=int(group_id))
+        for m in members:
+            uid = str(m["user_id"])
+            nick_map[uid] = m.get("card") or m.get("nickname") or uid
+    except Exception:
+        pass
+
+    # 构建排行列表（过滤无数据的成员）
+    ranked = []
+    no_data = []
+    for qq, account in group_map.items():
+        r = results.get(qq)
+        if r:
+            ranked.append({
+                "qq":      qq,
+                "account": account,
+                "nick":    nick_map.get(qq, qq),
+                "rating":  r["rating"],
+                "position": r["position"],
+            })
+        else:
+            no_data.append(account)
+
+    # 按 rating 降序排列
+    ranked.sort(key=lambda x: x["rating"], reverse=True)
+
+    total    = len(group_map)
+    on_board = len(ranked)
+
+    lines = [f"📅 群内绑定成员顺位 (共 {on_board}/{total} 人上榜)\n"]
+    for i, item in enumerate(ranked):
+        pos_str  = f"#{item['position']}" if item['position'] else "#-"
+        medal    = MEDALS[i] if i < 3 else f"{i + 1}."
+        nick     = item["nick"]
+        account  = item["account"]
+        lines.append(f"{medal} {account}({nick}) - {pos_str} ({item['rating']}分)")
+
+    if no_data:
+        lines.append(f"\n⚠️ 以下账号暂无传奇段位记录：{', '.join(no_data)}")
+
+    await bot.send(event=event, message=MessageSegment.text("\n".join(lines)))
 
