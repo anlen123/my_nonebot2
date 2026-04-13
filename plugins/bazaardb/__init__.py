@@ -32,7 +32,7 @@ bz_user     = on_regex(pattern=r"^巴扎查分 ")
 bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
 bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
 bz_rank     = on_regex(pattern=r"^巴扎排名$")
-bz_alias    = on_regex(pattern=r"^巴扎别名 ")
+bz_alias    = on_regex(pattern=r"^巴扎别名&")
 
 # ── 别名持久化：{ "xxx": "yyy" } ─────────────────────────────────────────────
 ALIAS_FILE = Path(__file__).parent / "aliases.json"
