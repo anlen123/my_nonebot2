@@ -53,6 +53,10 @@ repeater = on_message(priority=99, block=False)
 
 @repeater.handle()
 async def repeater_handle(bot: Bot, event: GroupMessageEvent):
+    # 忽略机器人自己发的消息，避免自我触发循环
+    if str(event.user_id) == str(bot.self_id):
+        return
+
     group_id = str(event.group_id)
     # 只处理纯文字消息
     text = event.get_plaintext().strip()
