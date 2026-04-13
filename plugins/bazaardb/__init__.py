@@ -32,6 +32,23 @@ bz_user     = on_regex(pattern=r"^巴扎查分 ")
 bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
 bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
 bz_rank     = on_regex(pattern=r"^巴扎排名$")
+bz_alias    = on_regex(pattern=r"^巴扎别名 ")
+
+# ── 别名持久化：{ "xxx": "yyy" } ─────────────────────────────────────────────
+ALIAS_FILE = Path(__file__).parent / "aliases.json"
+
+def _load_aliases() -> Dict[str, str]:
+    if ALIAS_FILE.exists():
+        try:
+            return json.loads(ALIAS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_aliases(data: Dict[str, str]):
+    ALIAS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+_aliases: Dict[str, str] = _load_aliases()
 
 # ── 绑定数据持久化（JSON 文件）────────────────────────────────────────────────
 # 结构：{ "群号": { "QQ号": "游戏账号", ... }, ... }
@@ -89,13 +106,18 @@ async def bz_rev(bot: Bot, event: Event):
         await bot.send(event=event, message=MessageSegment.text("请输入关键词，例如：巴扎 光纤"))
         return
 
+    # 别名解析
+    real_keyword = _aliases.get(keyword, keyword)
+    if real_keyword != keyword:
+        nonebot.logger.info(f"[bazaardb] 别名 {keyword} -> {real_keyword}")
+    keyword = real_keyword
+
     cache_file = _item_cache_path(keyword)
     if cache_file.exists():
         nonebot.logger.info(f"[bazaardb] 命中缓存 keyword={keyword}")
         await _send_image(bot, event, cache_file.read_bytes())
         return
 
-    await bot.send(event=event, message=MessageSegment.text(f"正在查询「{keyword}」，请稍候..."))
     try:
         img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_item_sync, keyword)
     except Exception as e:
@@ -110,6 +132,44 @@ async def bz_rev(bot: Bot, event: Event):
     cache_file.write_bytes(img_bytes)
     nonebot.logger.info(f"[bazaardb] 已缓存 keyword={keyword}")
     await _send_image(bot, event, img_bytes)
+
+
+# ── 巴扎别名 <xxx> <yyy>：设置/查看/删除别名 ─────────────────────────────────
+
+@bz_alias.handle()
+async def bz_alias_rev(bot: Bot, event: Event):
+    args = str(event.message).strip()[5:].strip().split()
+
+    # 巴扎别名 xxx yyy  -> 设置别名
+    if len(args) == 2:
+        src, dst = args[0], args[1]
+        _aliases[src] = dst
+        _save_aliases(_aliases)
+        nonebot.logger.info(f"[bazaardb] 设置别名 {src} -> {dst}")
+        await bot.send(event=event, message=MessageSegment.text(
+            f"✅ 别名设置成功：巴扎 {src} → 实际查询「{dst}」"
+        ))
+        return
+
+    # 巴扎别名 xxx     -> 查看该别名
+    if len(args) == 1:
+        src = args[0]
+        if src in _aliases:
+            await bot.send(event=event, message=MessageSegment.text(
+                f"📌 当前别名：{src} → {_aliases[src]}"
+            ))
+        else:
+            await bot.send(event=event, message=MessageSegment.text(
+                f"「{src}」未设置别名"
+            ))
+        return
+
+    # 无参数 -> 列出所有别名
+    if not _aliases:
+        await bot.send(event=event, message=MessageSegment.text("当前没有设置任何别名"))
+        return
+    lines = ["📋 当前所有别名："] + [f"  {k} → {v}" for k, v in _aliases.items()]
+    await bot.send(event=event, message=MessageSegment.text("\n".join(lines)))
 
 
 # ── 巴扎查分 <用户名>：用户排位查询 ──────────────────────────────────────────
@@ -134,7 +194,6 @@ async def bz_user_rev(bot: Bot, event: Event):
         await bot.send(event=event, message=MessageSegment.text("请输入用户名，例如：巴扎查分 xikala"))
         return
 
-    await bot.send(event=event, message=MessageSegment.text(f"正在查询「{username}」的排位数据，请稍候..."))
     try:
         img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_user_sync, username)
     except Exception as e:
