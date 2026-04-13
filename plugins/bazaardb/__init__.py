@@ -139,9 +139,12 @@ async def bz_bind_rev(bot: Bot, event: Event):
     group_id = str(event.group_id)
     qq_id    = str(event.user_id)
 
-    _bindings.setdefault(group_id, {})[qq_id] = game_account
+    group_map = _bindings.setdefault(group_id, {})
+    old_account = group_map.get(qq_id)
+    group_map[qq_id] = game_account
     _save_bindings(_bindings)
-    nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account}")
+    is_update = old_account and old_account != game_account
+    nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account} (旧={old_account})")
 
     # 查询用户当前排位数据
     rating_info = None
@@ -168,11 +171,13 @@ async def bz_bind_rev(bot: Bot, event: Event):
         pass
 
     if rating_info:
-        from datetime import datetime
         rank_str  = f"#{rating_info['position']:,}" if rating_info.get("position") else "#-"
         score     = rating_info["rating"]
+        header = "✅ 绑定更新！" if is_update else "✅ 绑定成功！"
+        if is_update:
+            header += f"\n🔄 {old_account} → {game_account}"
         msg = (
-            f"✅ 绑定成功！\n"
+            f"{header}\n"
             f"🆔 游戏 ID: {game_account}\n"
             f"🔢 QQ 号: {qq_id}\n"
             f"👤 平台昵称: {nick}\n"
@@ -181,8 +186,11 @@ async def bz_bind_rev(bot: Bot, event: Event):
             f"⭐ 天梯分数: {score}"
         )
     else:
+        header = "✅ 绑定更新！" if is_update else "✅ 绑定成功！"
+        if is_update:
+            header += f"\n🔄 {old_account} → {game_account}"
         msg = (
-            f"✅ 绑定成功！\n"
+            f"{header}\n"
             f"🆔 游戏 ID: {game_account}\n"
             f"🔢 QQ 号: {qq_id}\n"
             f"👤 平台昵称: {nick}\n"
