@@ -227,10 +227,6 @@ async def bz_rank_rev(bot: Bot, event: Event):
         ))
         return
 
-    await bot.send(event=event, message=MessageSegment.text(
-        f"正在查询本群 {len(group_map)} 位成员的排位数据，请稍候..."
-    ))
-
     # 并发拉取所有成员数据
     async with aiohttp.ClientSession() as session:
         tasks = {
