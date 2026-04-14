@@ -149,17 +149,29 @@ async def notify_groups(groups: list, messages: list):
     for g in groups:
         gid       = g["groupId"]
         is_at_all = g.get("isAtAll", False)
-        combined  = Message()
-        if is_at_all:
-            combined += MessageSegment(type="at", data={"qq": "all"})
-            combined += MessageSegment.text("\n")
-        for seg in messages:
-            combined += seg
+
+        def _build(with_at: bool) -> Message:
+            combined = Message()
+            if with_at:
+                combined += MessageSegment(type="at", data={"qq": "all"})
+                combined += MessageSegment.text("\n")
+            for seg in messages:
+                combined += seg
+            return combined
+
         try:
-            await bot.send_group_msg(group_id=int(gid), message=combined)
+            await bot.send_group_msg(group_id=int(gid), message=_build(is_at_all))
             await asyncio.sleep(0.5)
         except Exception as e:
-            nonebot.logger.warning(f"[bilibili_video] send group {gid}: {e}")
+            if is_at_all:
+                nonebot.logger.warning(f"[bilibili_video] send group {gid} with @all failed ({e})，降级重试")
+                try:
+                    await bot.send_group_msg(group_id=int(gid), message=_build(False))
+                    await asyncio.sleep(0.5)
+                except Exception as e2:
+                    nonebot.logger.warning(f"[bilibili_video] send group {gid} retry failed: {e2}")
+            else:
+                nonebot.logger.warning(f"[bilibili_video] send group {gid}: {e}")
 
 
 async def notify_new_video(uid: str, video: dict):
