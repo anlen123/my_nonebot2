@@ -194,10 +194,10 @@ def fmt_fans(n: int) -> str:
 
 # ── 推送 ──────────────────────────────────────────────────────────────────────
 
-async def notify_groups(groups: list, messages: list):
+async def notify_groups(groups: list, messages: list, at_all: bool = True):
     """
-    groups: [{"groupId": "xxx", "isAtAll": bool}, ...]
-    将 messages 拼成一条消息发送，isAtAll=True 时在消息头部插入 @全体成员
+    groups:  [{"groupId": "xxx", "isAtAll": bool}, ...]
+    at_all:  False 时强制不 @全体，忽略 groups 里的 isAtAll 配置
     """
     from nonebot.adapters.onebot.v11 import Message
     try:
@@ -207,7 +207,7 @@ async def notify_groups(groups: list, messages: list):
         return
     for g in groups:
         gid       = g["groupId"]
-        is_at_all = g.get("isAtAll", False)
+        is_at_all = at_all and g.get("isAtAll", False)
 
         def _build(with_at: bool) -> Message:
             combined = Message()
@@ -343,7 +343,7 @@ async def on_live_end(uid: str, info: dict):
         if wc_bytes:
             msgs.append(MessageSegment.image(f"base64://{base64.b64encode(wc_bytes).decode()}"))
 
-    await notify_groups(UIDS.get(uid, []), msgs)
+    await notify_groups(UIDS.get(uid, []), msgs, at_all=False)
     nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 下播")
 
 
@@ -384,7 +384,7 @@ async def send_hourly_report(uid: str, info: dict):
         f"👥 当前在线人数：{online_str}\n"
         f"🔗 {live_url}"
     )
-    await notify_groups(UIDS.get(uid, []), [MessageSegment.text(text)])
+    await notify_groups(UIDS.get(uid, []), [MessageSegment.text(text)], at_all=False)
     session["last_hourly_notify"] = datetime.now()
     nonebot.logger.info(f"[bilibili_live] uid={uid} 每小时播报已发送")
 
