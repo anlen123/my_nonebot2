@@ -326,10 +326,10 @@ BASE_URL   = "https://bazaar.mrmao.life"
 SEASON_ID  = "14"
 MEDALS     = ["🥇", "🥈", "🥉"]
 
-# 上次排名快照持久化：{ "群号": { "游戏账号": rating, ... } }
+# 上次排名快照持久化：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
 SNAPSHOT_FILE = Path(__file__).parent / "rank_snapshot.json"
 
-def _load_snapshot() -> Dict[str, Dict[str, int]]:
+def _load_snapshot() -> Dict[str, Dict[str, dict]]:
     if SNAPSHOT_FILE.exists():
         try:
             return json.loads(SNAPSHOT_FILE.read_text(encoding="utf-8"))
@@ -337,10 +337,10 @@ def _load_snapshot() -> Dict[str, Dict[str, int]]:
             pass
     return {}
 
-def _save_snapshot(data: Dict[str, Dict[str, int]]):
+def _save_snapshot(data: Dict[str, Dict[str, dict]]):
     SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
-_snapshots: Dict[str, Dict[str, int]] = _load_snapshot()
+_snapshots: Dict[str, Dict[str, dict]] = _load_snapshot()
 
 
 async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
@@ -401,26 +401,39 @@ async def bz_rank_rev(bot: Bot, event: Event):
     # 构建排行列表
     ranked = []
     no_data = []
-    new_snapshot: Dict[str, int] = {}
+    new_snapshot: Dict[str, dict] = {}
 
     for qq, account in group_map.items():
         r = results.get(qq)
         if r:
-            rating = r["rating"]
-            new_snapshot[account] = rating
-            # 与上次快照对比
-            last_rating = last_snapshot.get(account)
-            if last_rating is not None:
-                delta = rating - last_rating
+            rating   = r["rating"]
+            position = r["position"]
+            new_snapshot[account] = {"rating": rating, "position": position}
+
+            # 与上次快照对比（兼容旧格式：值为 int 的情况）
+            last = last_snapshot.get(account)
+            if isinstance(last, dict):
+                last_rating   = last.get("rating")
+                last_position = last.get("position")
+            elif isinstance(last, int):
+                last_rating   = last
+                last_position = None
             else:
-                delta = None
+                last_rating   = None
+                last_position = None
+
+            delta_rating   = (rating - last_rating)     if last_rating   is not None else None
+            delta_position = (last_position - position) if (last_position is not None and position is not None) else None
+            # 排名数字越小越靠前，所以 last - current > 0 表示排名上升
+
             ranked.append({
-                "qq":       qq,
-                "account":  account,
-                "nick":     nick_map.get(qq, qq),
-                "rating":   rating,
-                "position": r["position"],
-                "delta":    delta,
+                "qq":            qq,
+                "account":       account,
+                "nick":          nick_map.get(qq, qq),
+                "rating":        rating,
+                "position":      position,
+                "delta_rating":  delta_rating,
+                "delta_position": delta_position,
             })
         else:
             no_data.append(account)
@@ -436,14 +449,18 @@ async def bz_rank_rev(bot: Bot, event: Event):
     on_board = len(ranked)
 
     # 构建每条消息行
-    def _delta_str(delta) -> str:
-        if delta is None:
-            return ""
-        if delta > 0:
-            return f" ▲+{delta}"
-        if delta < 0:
-            return f" ▼{delta}"
-        return " →0"
+    def _fmt_delta_rating(d) -> str:
+        if d is None: return ""
+        if d > 0:     return f" ▲+{d}分"
+        if d < 0:     return f" ▼{d}分"
+        return " →0分"
+
+    def _fmt_delta_position(d) -> str:
+        # d = last_position - current_position，正数表示排名上升
+        if d is None: return ""
+        if d > 0:     return f" 📈+{d}"
+        if d < 0:     return f" 📉{d}"
+        return " →"
 
     header = f"📅 群内绑定成员顺位 (共 {on_board}/{total} 人上榜)"
     if no_data:
@@ -451,11 +468,12 @@ async def bz_rank_rev(bot: Bot, event: Event):
 
     detail_lines = []
     for i, item in enumerate(ranked):
-        pos_str = f"#{item['position']}" if item['position'] else "#-"
-        medal   = MEDALS[i] if i < 3 else f"{i + 1}."
-        delta_s = _delta_str(item["delta"])
+        pos_str  = f"#{item['position']}" if item['position'] else "#-"
+        medal    = MEDALS[i] if i < 3 else f"{i + 1}."
+        dr       = _fmt_delta_rating(item["delta_rating"])
+        dp       = _fmt_delta_position(item["delta_position"])
         detail_lines.append(
-            f"{medal} {item['account']}({item['nick']}) - {pos_str} ({item['rating']}分{delta_s})"
+            f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr})"
         )
 
     # 用合并消息发送
