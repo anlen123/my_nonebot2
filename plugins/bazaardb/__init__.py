@@ -450,17 +450,15 @@ async def bz_rank_rev(bot: Bot, event: Event):
 
     # 构建每条消息行
     def _fmt_delta_rating(d) -> str:
-        if d is None: return ""
-        if d > 0:     return f" ▲+{d}分"
-        if d < 0:     return f" ▼{d}分"
-        return " →0分"
+        if d is None or d == 0: return ""
+        if d > 0: return f" ▲+{d}分"
+        return f" ▼{d}分"
 
     def _fmt_delta_position(d) -> str:
         # d = last_position - current_position，正数表示排名上升
-        if d is None: return ""
-        if d > 0:     return f" 📈+{d}"
-        if d < 0:     return f" 📉{d}"
-        return " →"
+        if d is None or d == 0: return ""
+        if d > 0: return f" 📈+{d}"
+        return f" 📉{d}"
 
     header = f"📅 群内绑定成员顺位 (共 {on_board}/{total} 人上榜)"
     if no_data:
