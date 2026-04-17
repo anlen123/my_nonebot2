@@ -196,6 +196,8 @@ def parse_item_card(raw: dict) -> dict:  # noqa
     # 技能描述（Tooltips）
     tooltips = raw.get("Tooltips", [])
     replacements = raw.get("TooltipReplacements", {})
+    if not isinstance(replacements, dict):
+        replacements = {}
     active_skills = []
     passive_skills = []
     for tip in tooltips:
@@ -213,10 +215,15 @@ def parse_item_card(raw: dict) -> dict:  # noqa
 
     # 词条
     enchantments = []
-    for enc_key, enc_data in raw.get("Enchantments", {}).items():
+    _enc_raw = raw.get("Enchantments", {})
+    if not isinstance(_enc_raw, dict):
+        _enc_raw = {}
+    for enc_key, enc_data in _enc_raw.items():
         enc_name_cn = ENCHANT_NAME_MAP.get(enc_key, enc_key)
         enc_tips = enc_data.get("Localization", {}).get("Tooltips", [])
         enc_replacements = enc_data.get("TooltipReplacements", {})
+        if not isinstance(enc_replacements, dict):
+            enc_replacements = {}
         enc_descs = []
         for et in enc_tips:
             et_text = et.get("Content", {}).get("Text", "")
