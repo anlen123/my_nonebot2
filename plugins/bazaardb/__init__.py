@@ -326,7 +326,7 @@ BASE_URL   = "https://bazaar.mrmao.life"
 SEASON_ID  = "14"
 MEDALS     = ["🥇", "🥈", "🥉"]
 
-# 上次排名快照持久化：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
+# 群排名快照（所有成员对比用）：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
 SNAPSHOT_FILE = Path(__file__).parent / "rank_snapshot.json"
 
 def _load_snapshot() -> Dict[str, Dict[str, dict]]:
@@ -341,6 +341,22 @@ def _save_snapshot(data: Dict[str, Dict[str, dict]]):
     SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 _snapshots: Dict[str, Dict[str, dict]] = _load_snapshot()
+
+# 个人快照（发起者自己上次查询时的数据）：{ "qq号": {"rating": int, "position": int|None} }
+PERSONAL_SNAPSHOT_FILE = Path(__file__).parent / "personal_snapshot.json"
+
+def _load_personal_snapshot() -> Dict[str, dict]:
+    if PERSONAL_SNAPSHOT_FILE.exists():
+        try:
+            return json.loads(PERSONAL_SNAPSHOT_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_personal_snapshot(data: Dict[str, dict]):
+    PERSONAL_SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+_personal_snapshots: Dict[str, dict] = _load_personal_snapshot()
 
 
 async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
@@ -410,8 +426,15 @@ async def bz_rank_rev(bot: Bot, event: Event):
             position = r["position"]
             new_snapshot[account] = {"rating": rating, "position": position}
 
-            # 与上次快照对比（兼容旧格式：值为 int 的情况）
-            last = last_snapshot.get(account)
+            is_requester = (qq == requester_qq)
+
+            if is_requester:
+                # 发起者：与自己上次查询时的数据对比
+                last = _personal_snapshots.get(qq)
+            else:
+                # 其他人：与上次群排名查询时的数据对比（兼容旧格式）
+                last = last_snapshot.get(account)
+
             if isinstance(last, dict):
                 last_rating   = last.get("rating")
                 last_position = last.get("position")
@@ -424,15 +447,14 @@ async def bz_rank_rev(bot: Bot, event: Event):
 
             delta_rating   = (rating - last_rating)     if last_rating   is not None else None
             delta_position = (last_position - position) if (last_position is not None and position is not None) else None
-            # 排名数字越小越靠前，所以 last - current > 0 表示排名上升
 
             ranked.append({
-                "qq":            qq,
-                "account":       account,
-                "nick":          nick_map.get(qq, qq),
-                "rating":        rating,
-                "position":      position,
-                "delta_rating":  delta_rating,
+                "qq":             qq,
+                "account":        account,
+                "nick":           nick_map.get(qq, qq),
+                "rating":         rating,
+                "position":       position,
+                "delta_rating":   delta_rating,
                 "delta_position": delta_position,
             })
         else:
@@ -524,4 +546,14 @@ async def bz_rank_rev(bot: Bot, event: Event):
         messages.append(_node("\n".join(rest)))
 
     await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
+
+    # 更新发起者的个人快照（在发送后记录，下次作为对比基准）
+    if requester_account:
+        requester_result = results.get(requester_qq)
+        if requester_result:
+            _personal_snapshots[requester_qq] = {
+                "rating":   requester_result["rating"],
+                "position": requester_result["position"],
+            }
+            _save_personal_snapshot(_personal_snapshots)
 
