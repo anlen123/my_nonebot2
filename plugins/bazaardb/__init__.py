@@ -326,7 +326,7 @@ BASE_URL   = "https://bazaar.mrmao.life"
 SEASON_ID  = "14"
 MEDALS     = ["🥇", "🥈", "🥉"]
 
-# 上次排名快照持久化：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
+# 群排名快照（所有成员对比用）：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
 SNAPSHOT_FILE = Path(__file__).parent / "rank_snapshot.json"
 
 def _load_snapshot() -> Dict[str, Dict[str, dict]]:
@@ -341,6 +341,22 @@ def _save_snapshot(data: Dict[str, Dict[str, dict]]):
     SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 _snapshots: Dict[str, Dict[str, dict]] = _load_snapshot()
+
+# 个人快照（发起者自己上次查询时的数据）：{ "qq号": {"rating": int, "position": int|None} }
+PERSONAL_SNAPSHOT_FILE = Path(__file__).parent / "personal_snapshot.json"
+
+def _load_personal_snapshot() -> Dict[str, dict]:
+    if PERSONAL_SNAPSHOT_FILE.exists():
+        try:
+            return json.loads(PERSONAL_SNAPSHOT_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_personal_snapshot(data: Dict[str, dict]):
+    PERSONAL_SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+_personal_snapshots: Dict[str, dict] = _load_personal_snapshot()
 
 
 async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
@@ -410,8 +426,15 @@ async def bz_rank_rev(bot: Bot, event: Event):
             position = r["position"]
             new_snapshot[account] = {"rating": rating, "position": position}
 
-            # 与上次快照对比（兼容旧格式：值为 int 的情况）
-            last = last_snapshot.get(account)
+            is_requester = (qq == requester_qq)
+
+            if is_requester:
+                # 发起者：与自己上次查询时的数据对比
+                last = _personal_snapshots.get(qq)
+            else:
+                # 其他人：与上次群排名查询时的数据对比（兼容旧格式）
+                last = last_snapshot.get(account)
+
             if isinstance(last, dict):
                 last_rating   = last.get("rating")
                 last_position = last.get("position")
@@ -424,15 +447,14 @@ async def bz_rank_rev(bot: Bot, event: Event):
 
             delta_rating   = (rating - last_rating)     if last_rating   is not None else None
             delta_position = (last_position - position) if (last_position is not None and position is not None) else None
-            # 排名数字越小越靠前，所以 last - current > 0 表示排名上升
 
             ranked.append({
-                "qq":            qq,
-                "account":       account,
-                "nick":          nick_map.get(qq, qq),
-                "rating":        rating,
-                "position":      position,
-                "delta_rating":  delta_rating,
+                "qq":             qq,
+                "account":        account,
+                "nick":           nick_map.get(qq, qq),
+                "rating":         rating,
+                "position":       position,
+                "delta_rating":   delta_rating,
                 "delta_position": delta_position,
             })
         else:
@@ -441,6 +463,10 @@ async def bz_rank_rev(bot: Bot, event: Event):
     # 保存新快照
     _snapshots[group_id] = new_snapshot
     _save_snapshot(_snapshots)
+
+    # 发起者 QQ 和绑定账号
+    requester_qq      = str(event.user_id)
+    requester_account = group_map.get(requester_qq)
 
     # 按 rating 降序排列
     ranked.sort(key=lambda x: x["rating"], reverse=True)
@@ -455,7 +481,6 @@ async def bz_rank_rev(bot: Bot, event: Event):
         return f" ▼{d}分"
 
     def _fmt_delta_position(d) -> str:
-        # d = last_position - current_position，正数表示排名上升
         if d is None or d == 0: return ""
         if d > 0: return f" 📈+{d}"
         return f" 📉{d}"
@@ -470,27 +495,65 @@ async def bz_rank_rev(bot: Bot, event: Event):
         medal    = MEDALS[i] if i < 3 else f"{i + 1}."
         dr       = _fmt_delta_rating(item["delta_rating"])
         dp       = _fmt_delta_position(item["delta_position"])
-        detail_lines.append(
-            f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr})"
-        )
+        is_me    = item["qq"] == requester_qq
+        me_mark  = " 👤" if is_me else ""
+        detail_lines.append((
+            f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr}){me_mark}",
+            is_me,
+            i,   # 原始排名序号
+        ))
 
     # 用合并消息发送
-    def _node(text: str) -> dict:
+    def _node(content) -> dict:
         return {
             "type": "node",
-            "data": {
-                "name":    "巴扎排名",
-                "uin":     bot.self_id,
-                "content": text,
-            }
+            "data": {"name": "巴扎排名", "uin": bot.self_id, "content": content}
         }
 
-    # 前三名每人单独一个气泡，4名及以后合并成一个气泡
-    top3    = detail_lines[:3]
-    rest    = detail_lines[3:]
-    messages = [_node(header)]
+    messages = []
+
+    # 若发起者有绑定账号，先生成查分图片放最前面
+    if requester_account:
+        nonebot.logger.info(f"[bazaardb] 巴扎排名：为 {requester_account} 生成查分图")
+        try:
+            img_bytes = await asyncio.get_event_loop().run_in_executor(
+                None, _query_user_sync, requester_account
+            )
+            if img_bytes:
+                messages.append(_node(MessageSegment.image(f"base64://{base64.b64encode(img_bytes).decode()}")))
+        except Exception as e:
+            nonebot.logger.warning(f"[bazaardb] 查分图生成失败: {e}")
+
+    messages.append(_node(header))
+
+    # 若发起者在排名中，将其单独提到最前（header 后第一条）
+    requester_line = None
+    other_lines    = []
+    for text, is_me, _ in detail_lines:
+        if is_me:
+            requester_line = text
+        else:
+            other_lines.append(text)
+
+    if requester_line:
+        messages.append(_node(requester_line))
+
+    # 其余：前三名（排除发起者后的前三）每人单独气泡，之后合并
+    top3 = other_lines[:3]
+    rest = other_lines[3:]
     messages += [_node(line) for line in top3]
     if rest:
         messages.append(_node("\n".join(rest)))
+
     await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
+
+    # 更新发起者的个人快照（在发送后记录，下次作为对比基准）
+    if requester_account:
+        requester_result = results.get(requester_qq)
+        if requester_result:
+            _personal_snapshots[requester_qq] = {
+                "rating":   requester_result["rating"],
+                "position": requester_result["position"],
+            }
+            _save_personal_snapshot(_personal_snapshots)
 
