@@ -67,6 +67,72 @@ def calc_stats(history: list) -> dict:
     }
 
 
+def build_daily_detail(history: list) -> str:
+    """从历史记录提取每局变化，按日期分组，生成每日详情 HTML，最近5天"""
+    from collections import defaultdict
+
+    # 提取 rating 发生变化的点（每局）
+    games = []
+    for i in range(1, len(history)):
+        prev_r = history[i - 1]["rating"]
+        curr_r = history[i]["rating"]
+        delta  = curr_r - prev_r
+        if delta != 0:
+            ts    = history[i]["timestamp"]   # "2026-04-17 14:06:18"
+            date  = ts[:10]
+            time  = ts[11:16]                 # "14:06"
+            games.append({"date": date, "time": time, "delta": delta, "rating": curr_r})
+
+    # 按日期分组，取最近5天
+    by_date = defaultdict(list)
+    for g in games:
+        by_date[g["date"]].append(g)
+    dates = sorted(by_date.keys(), reverse=True)[:5]
+
+    rows_html = ""
+    for date in dates:
+        day_games = by_date[date]
+        wins      = sum(1 for g in day_games if g["delta"] > 0)
+        losses    = sum(1 for g in day_games if g["delta"] < 0)
+        total     = len(day_games)
+        day_delta = sum(g["delta"] for g in day_games)
+        end_rating = day_games[-1]["rating"]
+
+        delta_cls  = "dd-pos" if day_delta >= 0 else "dd-neg"
+        delta_str  = f"+{day_delta}" if day_delta > 0 else str(day_delta)
+
+        blocks_html = ""
+        for g in day_games:
+            cls  = "blk-win" if g["delta"] > 0 else "blk-lose"
+            val  = f"+{g['delta']}" if g["delta"] > 0 else str(g["delta"])
+            blocks_html += f"""
+            <div class="blk-wrap">
+              <div class="blk {cls}">{val}</div>
+              <div class="blk-time">{g['time']}</div>
+            </div>"""
+
+        rows_html += f"""
+    <div class="dd-row">
+      <div class="dd-meta">
+        <div class="dd-date">{date}</div>
+        <div class="dd-summary">
+          <span class="{delta_cls}">{delta_str}</span>
+          <span class="dd-info">（{total}局: {wins}胜{losses}负）</span>
+          <span class="dd-end">结算: {end_rating}</span>
+        </div>
+      </div>
+      <div class="dd-blocks">{blocks_html}
+      </div>
+    </div>"""
+
+    return f"""
+  <div class="daily-section">
+    <div class="chart-title" style="margin:20px 24px 12px">📋 近5日每局分数变化</div>
+    <div class="daily-wrap">{rows_html}
+    </div>
+  </div>"""
+
+
 def build_html(username: str, season_id: str, season_display: str,
                stats: dict, title_info: dict, history: list) -> str:
     """构建完整 HTML 页面（含 ECharts 图表）"""
@@ -169,6 +235,32 @@ def build_html(username: str, season_id: str, season_display: str,
   }}
   #chart {{ width: 100%; height: 420px; }}
 
+  /* ══ 每日详情 ══ */
+  .daily-wrap {{
+    margin: 0 24px 20px; display: flex; flex-direction: column; gap: 12px;
+  }}
+  .dd-row {{
+    background: #1e1e2e; border-radius: 8px; padding: 12px 16px;
+  }}
+  .dd-meta {{
+    display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+  }}
+  .dd-date  {{ font-size: 14px; font-weight: 700; color: #5b8dee; min-width: 90px; }}
+  .dd-pos   {{ font-size: 18px; font-weight: 700; color: #52c41a; }}
+  .dd-neg   {{ font-size: 18px; font-weight: 700; color: #ff4d4f; }}
+  .dd-info  {{ font-size: 12px; color: #888; }}
+  .dd-end   {{ font-size: 12px; color: #5b8dee; margin-left: 6px; }}
+  .dd-blocks {{ display: flex; flex-wrap: wrap; gap: 6px; }}
+  .blk-wrap {{ display: flex; flex-direction: column; align-items: center; gap: 3px; }}
+  .blk {{
+    width: 44px; height: 28px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+  }}
+  .blk-win  {{ background: #389e0d; }}
+  .blk-lose {{ background: #cf1322; }}
+  .blk-time {{ font-size: 10px; color: #666; }}
+
   /* ══ 底部信息 ══ */
   .footer {{
     text-align: center; padding: 14px; color: #666; font-size: 12px;
@@ -238,6 +330,9 @@ def build_html(username: str, season_id: str, season_display: str,
     <div class="chart-title">📈 用户排位分数历史</div>
     <div id="chart"></div>
   </div>
+
+  <!-- 每日详情 -->
+  {build_daily_detail(history)}
 
   <!-- 底部 -->
   <div class="footer">
