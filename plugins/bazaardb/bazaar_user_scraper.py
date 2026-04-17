@@ -87,7 +87,7 @@ def build_daily_detail(history: list) -> str:
     by_date = defaultdict(list)
     for g in games:
         by_date[g["date"]].append(g)
-    dates = sorted(by_date.keys(), reverse=True)[:5]
+    dates = sorted(by_date.keys(), reverse=True)[:14]
 
     rows_html = ""
     for date in dates:
@@ -127,7 +127,7 @@ def build_daily_detail(history: list) -> str:
 
     return f"""
   <div class="daily-section">
-    <div class="chart-title" style="margin:20px 24px 12px">📋 近5日每局分数变化</div>
+    <div class="chart-title" style="margin:20px 24px 12px">📋 近14日每局分数变化</div>
     <div class="daily-wrap">{rows_html}
     </div>
   </div>"""
