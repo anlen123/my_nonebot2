@@ -1,0 +1,86 @@
+[
+  {
+    "type": "item",
+    "name": "巨魔龙",
+    "hero_tag": "杜利",
+    "type_tags": [
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Dragon",
+      "Dinosaur",
+      "Weapon",
+      "Friend"
+    ],
+    "description": "首次有任意玩家的生命值降至一半时，摧毁一件小型物品。",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速2件物品2秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品1秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速2件物品2秒"
+      },
+      {
+        "name": "护盾",
+        "description": "获得护盾，等量于此物品伤害量"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品伤害"
+      },
+      {
+        "name": "毒素",
+        "description": "造成剧毒，等量于此物品伤害的10%"
+      },
+      {
+        "name": "炽焰",
+        "description": "此物品的灼烧翻倍。"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "黑曜",
+        "description": "此物品的伤害翻倍。"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品伤害的10%"
+      }
+    ],
+    "cooldowns": [
+      "9"
+    ],
+    "active_skills": [
+      "造成50 » 100 » 200伤害",
+      "造成灼烧，等量于此物品伤害的10%"
+    ],
+    "passive_skills": [
+      "首次有任意玩家的生命值降至一半时，摧毁一件小型物品。",
+      "当你摧毁一件物品时，自动使用此物品。"
+    ],
+    "url": "https://bazaardb.gg/card/13zdtx9wmnmgtmy5xh0c5zj55c2/Trollosaur",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/520e1e87cf88c327465f543981c6477b9a016a36@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRnIBAABXRUJQVlA4IGYBAABQCACdASoUABQAPl0qk0gCgNUAwLiOwAnTKEdXeZ8OWgD1AbYC7GufS9in9qvSAcAF0CyfM1fr6Fj94/FGgFjN3TIDscBzyN6d3QAA/uww+2Idaxn2cXtBvYts+XFTdXs7dIOPf7o3XZepAfmpTVvTeXS1Ngtl/INW5n8b3WHy8jts5+8UDT0ULYzxAkWfFW75e4lBHBblQ6ytCv0z0l9a0E6wP55aruWm3+o0eRWY69XLNh5OOvzQu6NPwXdBqm6A/f/IzZ0mc84dCKrCrfW6VfwVFtRn3NrRiZ2jRooNLJhGPimjNBFkPecfU2OYR139DXVZnP0J2IvSTRJPcLnzv6bQfNBhdllMsyfif5TWvC2mBR8zRAnlwq83hmigkru156Ad3LAi6Bw4qrE07h7EjottDfcWlViUc6Rpu8vnf6Z/Btw4qac3wbRzTQBMWS8V80NrkGT05NxH4LrPMMofbu3dCAAA"
+  }
+]

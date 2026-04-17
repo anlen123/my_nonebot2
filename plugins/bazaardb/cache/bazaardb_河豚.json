@@ -1,0 +1,241 @@
+[
+  {
+    "type": "item",
+    "name": "河豚",
+    "hero_tag": "凡妮莎",
+    "type_tags": [
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Aquatic",
+      "Friend"
+    ],
+    "description": "触发加速时，为此物品充能2秒。",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速一件物品1秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品0.5秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速一件物品1秒"
+      },
+      {
+        "name": "护盾",
+        "description": "获得护盾，等量于此物品剧毒的5倍"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品剧毒的5倍"
+      },
+      {
+        "name": "毒素",
+        "description": "此物品的剧毒翻倍。"
+      },
+      {
+        "name": "炽焰",
+        "description": "造成灼烧，等量于此物品的剧毒"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "黑曜",
+        "description": "造成伤害，等量于此物品剧毒的5倍"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品的剧毒"
+      }
+    ],
+    "cooldowns": [
+      "8",
+      "7",
+      "6",
+      "8"
+    ],
+    "active_skills": [
+      "造成10 » 20 » 30剧毒"
+    ],
+    "passive_skills": [
+      "触发加速时，为此物品充能2秒。"
+    ],
+    "url": "https://bazaardb.gg/card/qtl4ks17152btzk52ch0gkq5qm/Pufferfish",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/a7706f0174479e537cccba7bec80add3519247e6@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4IG4BAABQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEf4CCtWe2G0ImL2KuSn7yMSqzyMkbVrl9GWng/9R5VQ/i+Y2rvjc5cMAP6bgbVgqHrLh0Me2rz0I79Um9ZvMi25RURZDkrgQdoTkFJ/tnw49/aT/vWSSQ19S4DbNIKm1LPAhSJdCzE8NAriF64BbnCctQ81nq1K3ibx7Rb2B7sMPvkA1IvKj15818zWP/6c6AL/xOx/9e57LLn+Of/M5/7/L1y/P/hrIe/DMxetz6uPG4ZsbTptoVhsvgs2dppTNMpppan1YXWnqdhMEFktBRSa2NCsPurZ5Hwm8sscGTilz357f3fljsga1Q9/PV3adQrH/1Ei5NK+48p00ewVTzfVg5n13NpKga7Rgz0ajkl9CkiM1z78XFDmx/5p/tsI+EjXEv7Ruc/vNK33twVYv8et+fzceApkgvfgWIOqA01AbRZmLWs0K3l8srd8so7odKgAAAA="
+  },
+  {
+    "type": "monster",
+    "name": "巨龟托图加",
+    "tier": "",
+    "level_text": "Day 10+\nDay 10",
+    "hp": "3050",
+    "url": "https://bazaardb.gg/card/6t8zjf9zn2g6blq35hvns10nbm/Tortuga",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/e6252cd36d2d7dd4d069ec108746708734bddcc1@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRjQBAABXRUJQVlA4ICgBAAAwBwCdASoUABQAPl0slEiCgIAAwLiOQAnTLetP/mtxjMAP0A95nTVeeqWYC1atChfgI5mpTn75QKO/oCzv/5n1VYAA/vm7CvTizazWPmrPRVpiBfG42kMlk5XdJKuoSJqJieopN2zpngwHb94i0/Z8fW7TY/4ShV1DgV0ltTLZj0+KC9p4dJAsUyvxgvaRgPCiZ5Ui5tBJtrdmZYYfDRMzG83T37Yeh9Lj4bxLXjrAfplTfgClr+eJOX0bpdSdXF8grgxGVYXAqF85CJfMbHeaJN+G3u7mj6fITSbAaLOGNy8q31TvNM//i6lHzSbl6o7ynuuy2IWeSkZ5/Wk80oL4tiuhKTRw7eCpcEhtV7LBHw4szq+w1p/qVd8//GMJFv5zuarCZfwAAA==",
+    "items": [
+      {
+        "name": "巨龟托图加",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/cbf391efbb8ef02d1fc05aeeca957ef6e6e20428@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnwBAABXRUJQVlA4IHABAACwBgCdASoUABQAPl0slEiCgIAAwLiOoAnTKEen+O3K9tm1zFgHPjeyoRGYQS6p7m/vbv5MlVDbl7uThnlJAAD+/dEPNSeW8zexd8bwsNEMPwGa5fYUPvTfxnc91BoYeCBLvnfek0rQdN9fqNFAJEfEeLEEpIZanav2De3wfCnjPeCM3WoCxdO4MbANsYTxbEaHY02or20COAbp+5q2UEhy8BrkL0wHxp74xq5zKCXea64yv4X+gURfv1/6vYQBGOJ3yIT/6kvTvQAVdD160yGUnfJSBsz9Rgt8nf0HIlQ3FeLHLCg8UtEcWbYj1Nk86/cgadanUANUNxvp//VpBEIz7Hl8f6lqjZxLtDkquBZBYRrLShi5nq6jNkhhEa3a8saQKHRKrPhc0BPka9Fz4Gcmesa2pdYA/iZyPsjbfx8L/9MjS/Ezmv4FnoaQe/kDZcBPQ/Q0h0sCzgtF7totzZx7ebyuXj/H+/bzaPtqXEYAAA==",
+        "url": "https://bazaardb.gg/card/1905vptydc5nxjpdb6jv7xvtyjs/Tortuga"
+      },
+      {
+        "name": "鹦鹉皮特",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/fdaf650c34904439907094f8c2bf95ca8230e808@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnwBAABXRUJQVlA4IHABAAAwBwCdASoUABQAPl0qk0iCgKqAwLiOwAnTLjdXeZ3N9qI8AuwDnrfY8/aL0bmYAjqgjfQwC9RfnBarKSKcmXOdIcAA/qoFViqVJ/zbY1299nekwGic/nPwqYeu0G+8U2e3r3O0Qz+qjSewp3R0g/Db0FNSw+zTi7KXhkOoy0NO/H3rqjSYgnQd9PwgtaZPWSVER+dg41fLEAxCur3bifbi74VNMai7qEsOgOxQjh0TEZtu2a8DWcf7+VIUQE4evSBJThdYYj9lgokSn+zSvoWtTZaZBzv6GxX5rl7++Wai/igy2cM5Hs9v5KS2Myxp3f7t8ns5gygALnrYvcOuaf4dEpmKOW3//QoylX40O8/+ONOrzQKf+6Z1HX/xgW/+EH1S7aSw4gQDNY20cThBX1D2sbn51P/lL/d6pIGFx72vz2PwIfDp+cgDzYhN5q16a78mhQgiFobpwm8vaFrDtv+hk+am0nbKFQaf5E10dQAAAA==",
+        "url": "https://bazaardb.gg/card/zglq6xnbvbqqc5nzyf88pty9m8/Pesky-Pete"
+      },
+      {
+        "name": "绵鳚",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/6c63bf057b7f00a5b8a434912a6bb1b6cc4fc51e@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRkwBAABXRUJQVlA4IEABAABQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTLdbTmA3le4A3hjnwP2A+CoiNgy5r67p39PsaM6vtjste9G8fOZPYuv4AAP78t3jZDLskYxkXtYpJ01RnepXfcNZpz8YIQ9pv9ku65CkIidAbCq9wGkwg7rq2aCpeUA7ct8FnT5uwtDkH7qZYe251Z2mfkcK5HSCV61JEgiG5zYGx/Hz14joXiujTFCLcMzj7qvSvvUZliz7cvNCMY3nH2jb55H9xGWqPHpttmGkLTAawXwohvfi4PDWfDIgUorQAf8BUVgU9nxb/6V+450SuVjPlZ/tBp+b/P9jkia9P/x2cPahTh4bh/x8XPC//1ykNi+OP8j2dOXFjzUkt/XVVknKXyY8XNQiqK8iM5RtlJ28ZwkZjImstYo+pRXc0oF450/ChpJwAAA==",
+        "url": "https://bazaardb.gg/card/7s8w2k5b2yjlt8lswlxhsgj7w5/Zoarcid"
+      },
+      {
+        "name": "毒须鲶",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/b460e5552b7b37e47a8854c7d7ce5bd03701cb1c@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRhwBAABXRUJQVlA4IBABAAAwBgCdASoUABQAPl0slEiCgIAAwLiOgAnTKEdQCqqmOfjsjwiSAwUTSPzApvx/8jzBYQCO+fX8ZzoAAP7bqp+F3shIzKxw9JSakv7b2xa7p2jOpKCqwznnFaCljUTV7a+e2eEyhG9D+4wRH9stjqleg8hq/5bL+h/Q1d1B0/RsnrYmTri3tAhD7j3+bjyFYz9L8BSfB61NO/6x7/m1ByOuWyDkSP+n/WUOv7f5AaXSS9/33P+TU57qaOxsx+DVIlvbCn9ceIPt5xtb6Ovy6O/epqvZk89U63Gr1RPTXKu9YxG1ZAXNwpDHw3f1l4i2tOAL7znumEwNNqzoYLEqlY7KfDKoHETnxKjTK8/sTNdgAA==",
+        "url": "https://bazaardb.gg/card/y347s1jtn8n7vl0m40229st1vy/Catfish"
+      },
+      {
+        "name": "河豚",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/a7706f0174479e537cccba7bec80add3519247e6@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4IG4BAABQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEf4CCtWe2G0ImL2KuSn7yMSqzyMkbVrl9GWng/9R5VQ/i+Y2rvjc5cMAP6bgbVgqHrLh0Me2rz0I79Um9ZvMi25RURZDkrgQdoTkFJ/tnw49/aT/vWSSQ19S4DbNIKm1LPAhSJdCzE8NAriF64BbnCctQ81nq1K3ibx7Rb2B7sMPvkA1IvKj15818zWP/6c6AL/xOx/9e57LLn+Of/M5/7/L1y/P/hrIe/DMxetz6uPG4ZsbTptoVhsvgs2dppTNMpppan1YXWnqdhMEFktBRSa2NCsPurZ5Hwm8sscGTilz357f3fljsga1Q9/PV3adQrH/1Ei5NK+48p00ewVTzfVg5n13NpKga7Rgz0ajkl9CkiM1z78XFDmx/5p/tsI+EjXEv7Ruc/vNK33twVYv8et+fzceApkgvfgWIOqA01AbRZmLWs0K3l8srd8so7odKgAAAA=",
+        "url": "https://bazaardb.gg/card/qtl4ks17152btzk52ch0gkq5qm/Pufferfish"
+      },
+      {
+        "name": "水母",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/514c81a19588bdf95a1e1ade2084e5c7bdd979b7@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRhQBAABXRUJQVlA4IAgBAAAwBgCdASoUABQAPl0slEiCgIAAwLiOoAsR+QFpPPM+w35OhgAmfAsW3fIQoCZFsOtBOKT/5aZppDQAAPwApwMdXzvuUKCX4Oit91BArHGiaBzwLkxw93bKQlFTR3atpt6tIixxEX3XQF5iHOUBZxDWxFWWwvJeXMB6Qiw/sf5OBGU2Y2p/hll1WpYdU5HzYh1xp4S49CjQMLzl3AKuYP/8YtxQv7iw3L+uDNj54pEd7ov8AOhcem/1oOx3fX/PhBpt5evbv33aTA6a+zOEcwUzddkG65xtHvycrOY9Yb1z6awA56DeMbBudly1+BGLe5FUmTu3rCH0oRyyJv8+cxDEwDCAKpAAAAA=",
+        "url": "https://bazaardb.gg/card/ybxlx3c6l4xnqp53cvw5zvjqwg/Jellyfish"
+      },
+      {
+        "name": "盐钳海盗",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/eb40580cac83dd94aa98eef21229471dfae5a8e7@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnwBAABXRUJQVlA4IHABAAAQCACdASoUABQAPl0slEiCgIAAwLiOoAnTKEdJegUzHUl0AHmA/WP10dMA3kX9uCaH+Pd7oHR8wNurwIWd2qYoKibNu3t1JjrCAP7620ZcKpt3zT/6WPTcaed7D5qt9zMP4QEp2y8Lg1qyIioo8PwhV0iUV9kovXKAjq2k4jRgVPyVWgt74SyvqH+RnGengxPX4YDUlV/yZ8/ZknpnedMSuhuy6JQ62bOavKB1SbmErP2UpeLW57kedpNWVVDwC/E1/J95nTESgkPqIfl9EgeL7ggYOabHWSbBLzXP/D2TGl38z5QSCDn8wWLTbRb63A8GSCj1zN1sbitoOXG5o94NxW7nhjjcNz9W3M78yjPjM75r2nwzGTDoGutX/X/8v8CX0nwjKXJLtaVYziMq3bX4KBEvosX4s8sByNR6vEn/vU3OusZ6lvKIz4snkbQSPh0UGSfh5yUlWq2fgye2NFbJ+RFgYwgMDkDu8qpoqoAAAA==",
+        "url": "https://bazaardb.gg/card/c8fczk5fw247hncjxwh2x6dskw/Old-Saltclaw"
+      }
+    ]
+  },
+  {
+    "type": "monster",
+    "name": "流浪暗礁",
+    "tier": "",
+    "level_text": "Day 8+\nDay 8",
+    "hp": "2325",
+    "url": "https://bazaardb.gg/card/v4d6pdqd00xl5t9wyfvchmntl6/Wandering-Shoal",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/d69f4d52160e9bf89a98adf139127deb49553b36@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAgCdASoUABQAPl0slEiCgIAAwLiMAYG4LMu32VjoAP71w67QPs80vgkN/uj8mf5WrvkEO5MqcqIwh8PxzPzvKtwk7XZh2f7UlIAA",
+    "items": [
+      {
+        "name": "电鳗",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/0900f39aee4c0ef552415bd616757432212cc0d3@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRmIBAABXRUJQVlA4IFYBAADQBwCdASoUABQAPl0slEiCgIAAwLiOgAnTKEcCcEPAbcm7IPQA6SP9qv1g9pBPAhk3i5FNpeJx9EmUeuBHiVX/bvlFE/SUgAD6LikW5T7FIwljW72peV4Qxx6Py6dNqjn6KRHhogBZXmJwekt7rlalvw7Q8T+2R2A+vIN2N6d58MlJOyyxFtMfW22O46hWY3fT1+o6VfLGOzm8RhB5dGDb9TnnM4NBXfUzyyZ98F9ayfNHmUOL6WCVuNmj+967XydxrMuP5w+ktovZfsnZka19GwRnD4do5V0uGXrcySumMuc/5izgqJAmQvlerxYT5CwIFqPd+uCBggEpiSuAi6GtetYdW3neWS+KnIeovEBoYeLmUH/6oIgH4i7TZEzpPkH14F2LztyAhBSVzC5Fnk2etJ9XKHD99tRP2mhzRzndfn/oVpvufMMdsj3Ke9/ZqjDS0vBJiAA=",
+        "url": "https://bazaardb.gg/card/1150hlfxv2lhw8d1q3wy9jb500g/Electric-Eels"
+      },
+      {
+        "name": "毒须鲶",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/b460e5552b7b37e47a8854c7d7ce5bd03701cb1c@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRhwBAABXRUJQVlA4IBABAAAwBgCdASoUABQAPl0slEiCgIAAwLiOgAnTKEdQCqqmOfjsjwiSAwUTSPzApvx/8jzBYQCO+fX8ZzoAAP7bqp+F3shIzKxw9JSakv7b2xa7p2jOpKCqwznnFaCljUTV7a+e2eEyhG9D+4wRH9stjqleg8hq/5bL+h/Q1d1B0/RsnrYmTri3tAhD7j3+bjyFYz9L8BSfB61NO/6x7/m1ByOuWyDkSP+n/WUOv7f5AaXSS9/33P+TU57qaOxsx+DVIlvbCn9ceIPt5xtb6Ovy6O/epqvZk89U63Gr1RPTXKu9YxG1ZAXNwpDHw3f1l4i2tOAL7znumEwNNqzoYLEqlY7KfDKoHETnxKjTK8/sTNdgAA==",
+        "url": "https://bazaardb.gg/card/y347s1jtn8n7vl0m40229st1vy/Catfish"
+      },
+      {
+        "name": "水母",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/514c81a19588bdf95a1e1ade2084e5c7bdd979b7@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRhQBAABXRUJQVlA4IAgBAAAwBgCdASoUABQAPl0slEiCgIAAwLiOoAsR+QFpPPM+w35OhgAmfAsW3fIQoCZFsOtBOKT/5aZppDQAAPwApwMdXzvuUKCX4Oit91BArHGiaBzwLkxw93bKQlFTR3atpt6tIixxEX3XQF5iHOUBZxDWxFWWwvJeXMB6Qiw/sf5OBGU2Y2p/hll1WpYdU5HzYh1xp4S49CjQMLzl3AKuYP/8YtxQv7iw3L+uDNj54pEd7ov8AOhcem/1oOx3fX/PhBpt5evbv33aTA6a+zOEcwUzddkG65xtHvycrOY9Yb1z6awA56DeMbBudly1+BGLe5FUmTu3rCH0oRyyJv8+cxDEwDCAKpAAAAA=",
+        "url": "https://bazaardb.gg/card/ybxlx3c6l4xnqp53cvw5zvjqwg/Jellyfish"
+      },
+      {
+        "name": "食人鱼",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/a227e369b82abf10819950188ba1d1820ffc86c0@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRkABAABXRUJQVlA4IDQBAACwBgCdASoUABQAPl0qk0gCgNUAwLiOwAnTKEfhkM+fF0yvny/ZD8o4maQxUbtCDtUlGnpyUBKPK2ji1nNfgADOObFXvtCi2yni3K5OnpFZ5GOEDaklc2mKIMyNtc1qvN7FYanFRbeorvP8B62nMkm1H4t4TeSGrdhHQYZpW+gl0OHyYvxzoifRIYGmUySYxxQhXeoVJIeRX8Vko211tZQkLqVRcyaslFpUv/5jNWB/j/j3M/aiDk9shRrmkbfPFpXxT9ZDxSDvC6iz/oVqvSDT/FjT3ctM1C0hHts22b5kixxqEArGcUFBOH3+nrdspzRnrHuCqM/fRHac4+/HeP/3EiH8Dbi9nJClSps5CxlY/qeCMZwALf9o9Eh3Kz4BRBn2qlW9/S4WjICxhCUVWOKzGRgAAA==",
+        "url": "https://bazaardb.gg/card/npfmz76myy1gh4hxm4w1h8g3wl/Piranha"
+      },
+      {
+        "name": "琥珀",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/fe7e53d4fa13f4815979cb17203b34b05f37ef0a@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRkIBAABXRUJQVlA4IDYBAAAwBwCdASoUABQAPl0sk0iCgKqAwLiOoAnTKEdXem3c7IfQAc91pgG8ho0DaSkHZFPe3mO0xbeV8joKZYf9xDI01MAA/grVNDJDCkaoalpoJefoArVirTVTuVt92KnfWsOqmY6pittd/dGA41F5OOKAlwVVmjbS36r2jh3ouMu6TXvgmrIbDKSfflQCQGSN6C4DL4fvnGElaZj1EuDfR90mdlvEdfP8jYyZSiLnXbI3zs2nW/SWNJhOs7VcWwWfLB0Hr1z1nH5lHOXU7vj59tp48gx47kHbD0r8b5LosfN+6DqwO7D1IjcGaDQsE+dh/TZxhl9XyK91/R7nZk1vdLSLJ6ouL/zuINmlsdZsPjskV8QPTxOb9NYuROvg6IY6BiLsNqF8KNB8qdh9Mj4ZYhifqUATAAAA",
+        "url": "https://bazaardb.gg/card/62xltfbt99vhtlzhslb2mq8gkl/Amber"
+      },
+      {
+        "name": "水草",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/4d18a6908e9c1bee9403ae24a1dd3e19d76e3535@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRmIBAABXRUJQVlA4IFYBAADQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEdebM4w1tgPFJ6gHn/9RXz4Hsflez7liE/LI8a/E2BwbJm3q4Hv8vTlymDuAAD+ShzRRl1gnDVm+u36Ui3CfB4xY/EgIbLMoEUdNn89KtDTIwUYF69o48BiMHow2c88b/LkjW8RFz2n/BsTSoGx2QgSO7Vy46et/5RgMd9MJQCXG3uUAfUh/rrqF0sAf05ebGPxiyN5v/18F1egZztIdH8Y/rAcLdtH+ffvvX/XWTdiZ8r+KzNUJNi9XZzIGXdLp/SUwJwToV7hvLEMATjwN8eQf67YEIBO+swKk02ApJTg59zj6165dIjN5XnuWtYGDiq4vB2rK4uiCQmNyWkDXpdhLRxunol0UwVpavUUzx3fs2oAdLTT/x6o8cUYITs8zZXfwY2lt7lbu4qttMSSC80sMweBXO8OFGkAAAA=",
+        "url": "https://bazaardb.gg/card/pg95ktn9cwqhgd1qyst4fktbs3/Seaweed"
+      },
+      {
+        "name": "河豚",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/a7706f0174479e537cccba7bec80add3519247e6@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4IG4BAABQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEf4CCtWe2G0ImL2KuSn7yMSqzyMkbVrl9GWng/9R5VQ/i+Y2rvjc5cMAP6bgbVgqHrLh0Me2rz0I79Um9ZvMi25RURZDkrgQdoTkFJ/tnw49/aT/vWSSQ19S4DbNIKm1LPAhSJdCzE8NAriF64BbnCctQ81nq1K3ibx7Rb2B7sMPvkA1IvKj15818zWP/6c6AL/xOx/9e57LLn+Of/M5/7/L1y/P/hrIe/DMxetz6uPG4ZsbTptoVhsvgs2dppTNMpppan1YXWnqdhMEFktBRSa2NCsPurZ5Hwm8sscGTilz357f3fljsga1Q9/PV3adQrH/1Ei5NK+48p00ewVTzfVg5n13NpKga7Rgz0ajkl9CkiM1z78XFDmx/5p/tsI+EjXEv7Ruc/vNK33twVYv8et+fzceApkgvfgWIOqA01AbRZmLWs0K3l8srd8so7odKgAAAA=",
+        "url": "https://bazaardb.gg/card/qtl4ks17152btzk52ch0gkq5qm/Pufferfish"
+      }
+    ]
+  },
+  {
+    "type": "monster",
+    "name": "觉醒元初体",
+    "tier": "",
+    "level_text": "Day 10+\nDay 10",
+    "hp": "3600",
+    "url": "https://bazaardb.gg/card/15y57m9q9qm7g7h6l06wxbms76t/Awakened-Primordial",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/72e92b216050cf29c33df312819f2da2c4bfd399@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRiABAABXRUJQVlA4IBQBAADQBgCdASoUABQAPl0sk0iCgKqAwLiOwAnTKEfKf7zEqEBtgOeSsmIiPQv+KDk3PrHoS24Z31R6eAgms5isWFgA/vt89yt9h+pDKYlOS3OD9P4nufGBos+AiHWgRQBobIFKlyseh7fXvVpsznfIw/KNbQzYrLv5UisX5veL338DI6fy6IqClc+pr/78w5f9pW7t61ADJTRwYlKTixzK7tq0BjTQYIZxx2irBcztkBkjcr2XNtUu0kutE3Nzik5ATD5VrGfpIAF0pu2/uJdvnjT8kPQ6p56mQZY9yR0bj+qRZN/IAHgNsuNOH4S0R8uVFrS98Xv7cpHd4CC5j4HJfj5ZGWoPqu/OMKXaolYOYU+e/KhAAAA=",
+    "items": [
+      {
+        "name": "元素深水炸弹",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/8745a6e1e30d8f180b637183cdb4236351967635@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRmoBAABXRUJQVlA4IF4BAAAwBwCdASoUABQAPl0sk0iCgKqAwLiOwAnTKEfiLYfYDnitMA58v2Lv2jLQEz8Fjh4SnRQuhz6xlr0wJJ7lpauI5AAA/uKcW0Ox5IAVKwkdzo+QFNMSLUZKBfSMbmod7ZHOaKR+0I/Va8Kvlf3WuwnAd+KROuntSCDqAd06/y0Kx+7iHJFZi6T+I/qIohB6uSKqnjWfp1yuF5eHnR8HS/adOUFoqsGup8ygT4ZpcpsY5eK3Rdj/pediyxvfbfs1kvEuIeoSC/idjzQuqsr9kqIzi2+YYu2VR4T0WWdFTxr8aRvmsxOqQPdfzuNpcee8lYl+7eA4oOMcwW99+LFRHyoZQgCJ8rhWX2Bbc4xBZ+9Bfxe2QIL8/VcPD7WaNhWxzqCQR0ua97VmzNBGdsEkIXfIVuLDydyxtgBN74v6roCuBx8RjY16B2OJf+uD+/g30l5f9AR+MRpi5rN6zgiAAA==",
+        "url": "https://bazaardb.gg/card/xvmdl5k9184955xk080gc1lxlh/Elemental-Depth-Charge"
+      },
+      {
+        "name": "河豚",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/a7706f0174479e537cccba7bec80add3519247e6@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4IG4BAABQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEf4CCtWe2G0ImL2KuSn7yMSqzyMkbVrl9GWng/9R5VQ/i+Y2rvjc5cMAP6bgbVgqHrLh0Me2rz0I79Um9ZvMi25RURZDkrgQdoTkFJ/tnw49/aT/vWSSQ19S4DbNIKm1LPAhSJdCzE8NAriF64BbnCctQ81nq1K3ibx7Rb2B7sMPvkA1IvKj15818zWP/6c6AL/xOx/9e57LLn+Of/M5/7/L1y/P/hrIe/DMxetz6uPG4ZsbTptoVhsvgs2dppTNMpppan1YXWnqdhMEFktBRSa2NCsPurZ5Hwm8sscGTilz357f3fljsga1Q9/PV3adQrH/1Ei5NK+48p00ewVTzfVg5n13NpKga7Rgz0ajkl9CkiM1z78XFDmx/5p/tsI+EjXEv7Ruc/vNK33twVYv8et+fzceApkgvfgWIOqA01AbRZmLWs0K3l8srd8so7odKgAAAA=",
+        "url": "https://bazaardb.gg/card/qtl4ks17152btzk52ch0gkq5qm/Pufferfish"
+      },
+      {
+        "name": "潜水配重",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/f45e015c20b08e306510b68b930a6ab742bd814b@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRhABAABXRUJQVlA4IAQBAAAQBgCdASoUABQAPl0sk0iCgKqAwLiOQAnTKEfiLTyq2V4HuWIOwRW4skBXAHKM3iV8Qf44lfpkC+AA/v0OEPLV8dDzNYlu8dHxr/AwaZ8biKAvM/1dp1bNh5HhZZ9TAgRbGNi98fyDBdnhQgaI976sIweAAOqlntBRRB7TxjJRUNVGZPvY/kvG13nCMsumw1CkRBoewLAC/j7Unf0nPFMO7bZj4f+DC4/t+v5323o26s6jv4v5ehijLY7kqdFhs80d4UX+Nhy9qM23GHhszfPRrXEFVHLf5m3UO76hAZz9GcX0JJ+f1jnx8sLix4x5e1TZkYM/JbwoaZtIowIZtL6iZMuAAA==",
+        "url": "https://bazaardb.gg/card/12cdlp288b935dj9njzg224nqd3/Dive-Weights"
+      },
+      {
+        "name": "燃烧子弹",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/0017ae991fedd4b2a034ad3d5981dc4b16ca0130@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnYBAABXRUJQVlA4IGoBAADQBwCdASoUABQAPl0slEiCgIAAwLiOgAnTKEeZfwnime+GA88XTSeeq9kLygHi8x8L0iFy9OUFtsc5cUvImR2GdwmrsueQoAD+7Fu7fiFYnhQmMAr5JQ9YEQ/SrJX71VYl2I3leW+O4J2ZS48Y0zq+7oHzXLgIYaRRc6GSElUQb7xOd9QmjFvexc+/Yf2Tpcr+ZX91SfUqmvskh7r3k8I02vdKbDldytpWKKZLzAfsNJrtT/wP2Tg7j9ol/eOUIVCb0lKFICbmpjdag7NfqTVcS/4/blpER1l7+HiYb6PAqtj0XYz7WE7hXnXPifJ60YeAnnpkXspN/0nS3TllxtmwJWCtwFQoMI+/riZLrAHcP2Wlx5uKd8NBLy3k8E6w/9yK+U3pKNW+ryD8LaF88VNClcJQF8DQFtJ1nLyG6upHF0wEzlyFVmHAR1l7zCFnBNYKJpUvoe9yiYcbpB61vIgYxMCtEG4/FAAAAA==",
+        "url": "https://bazaardb.gg/card/37db8t5n2q5k09y7xhyd3jypsv/Incendiary-Rounds"
+      },
+      {
+        "name": "珍珠",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/164a0f2a160ee585f4c9e7c8414913c0af4442de@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRjIBAABXRUJQVlA4ICYBAABQBgCdASoUABQAPl0qk0gCgNUAwLiOwAnTKEZJub7VN4Bz0mmS7yiAxk7oi7Ya+XUrIMTtYlMc8HxJYAD+8KEFbLKX+ErSDYDUdDPE9drjUftyjzOzX+C+MBv9xwSsM+xJTpbxV+WRA9aRnLZI5WfMJtb0afLVsg8LhwVLAoptx6LHs2DcV39SY3AYcZi7gh+aKT/8gt++aDVIb3hR/8x6WipFXOSgz/HAf/leF3+jsm/TdzEtHLlUOmq3akCAqRZ6l2y+XS3+jeffJB1Yo/Glc0OvsyP49wn3J+LX5JHmTXWbchzNHpkgHUU5Db73HD81qNpRN1iApUvBU7Q5gQtLKQJvPHCMbckMxtWxHfoO8nmWumTTy55QvIvpz4QJBaWa9GAAAAA=",
+        "url": "https://bazaardb.gg/card/2zs0qmhclpv2j1789yd7ph6p6j/Pearl"
+      },
+      {
+        "name": "沉眠元初体",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/39de2f89e237a5c6dcb5bf30581fd0db43797dc5@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRj4BAABXRUJQVlA4IDIBAABwBwCdASoUABQAPl0sk0iCgKqAwLiOgAnTKEenjR7CvT4AG2A54DTa/2A4FdGgbPseECtoEywFgobpdX0s5A5As/MrgAD++czLMDX/R9C4f7VqDne6P4dDqGkw5+rHdHvWGuTProby5UY/7n+isxiAtG9G6Tl6R/xToza59kJEe7lnzJBP66brGsLsUB78ZZ0VEf6v1NdW4w1RAU/oL/8YFM+rLziUsrk/t4kzhkkGHOFpx0v1003Vq+zJxTeWXm+wrTNYQDewcu8kHuF8+G/BEuVC5fXCTx0J6uW2edUfntW5q8kGNZx3tfiks4Avt1exuOQy+8mNhQ09ej65t8hnaHGV/5CB5UvvP+SL8n6kgRaf2qE29EQyVUbCSKxzN68IkqnDXlYcpn82CD5zliAAAAA=",
+        "url": "https://bazaardb.gg/card/tcljffx9206yfpg7vlt51ckcyc/Slumbering-Primordial"
+      }
+    ]
+  }
+]

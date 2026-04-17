@@ -1,0 +1,5079 @@
+{
+  "username": "sukoshi",
+  "season_id": 14,
+  "season_display": "Season 13",
+  "title_info": {},
+  "stats": {
+    "current_rating": 681,
+    "current_rank": 7390,
+    "total_games": 28,
+    "up_games": 18,
+    "season_highest": 695,
+    "win_rate": 64.29,
+    "first_record": "2026-04-08 12:45:38",
+    "last_record": "2026-04-17 11:56:28",
+    "record_count": 1012
+  },
+  "history": [
+    {
+      "timestamp": "2026-04-08 12:45:38",
+      "rating": 500,
+      "position": 10616
+    },
+    {
+      "timestamp": "2026-04-08 13:05:35",
+      "rating": 500,
+      "position": 10652
+    },
+    {
+      "timestamp": "2026-04-08 13:25:35",
+      "rating": 500,
+      "position": 10682
+    },
+    {
+      "timestamp": "2026-04-08 13:55:34",
+      "rating": 500,
+      "position": 10720
+    },
+    {
+      "timestamp": "2026-04-08 14:15:38",
+      "rating": 500,
+      "position": 10752
+    },
+    {
+      "timestamp": "2026-04-08 14:26:14",
+      "rating": 500,
+      "position": 10766
+    },
+    {
+      "timestamp": "2026-04-08 14:35:40",
+      "rating": 500,
+      "position": 10778
+    },
+    {
+      "timestamp": "2026-04-08 14:55:38",
+      "rating": 500,
+      "position": 10803
+    },
+    {
+      "timestamp": "2026-04-08 15:16:17",
+      "rating": 500,
+      "position": 10829
+    },
+    {
+      "timestamp": "2026-04-08 15:25:39",
+      "rating": 500,
+      "position": 10845
+    },
+    {
+      "timestamp": "2026-04-08 15:35:34",
+      "rating": 500,
+      "position": 10855
+    },
+    {
+      "timestamp": "2026-04-08 15:46:47",
+      "rating": 500,
+      "position": 10865
+    },
+    {
+      "timestamp": "2026-04-08 16:15:32",
+      "rating": 500,
+      "position": 10889
+    },
+    {
+      "timestamp": "2026-04-08 17:15:41",
+      "rating": 500,
+      "position": 10988
+    },
+    {
+      "timestamp": "2026-04-08 17:25:45",
+      "rating": 500,
+      "position": 10996
+    },
+    {
+      "timestamp": "2026-04-08 17:35:35",
+      "rating": 500,
+      "position": 11008
+    },
+    {
+      "timestamp": "2026-04-08 17:45:29",
+      "rating": 500,
+      "position": 11021
+    },
+    {
+      "timestamp": "2026-04-08 17:55:49",
+      "rating": 500,
+      "position": 11039
+    },
+    {
+      "timestamp": "2026-04-08 18:05:54",
+      "rating": 500,
+      "position": 11047
+    },
+    {
+      "timestamp": "2026-04-08 18:15:42",
+      "rating": 500,
+      "position": 11067
+    },
+    {
+      "timestamp": "2026-04-08 18:25:41",
+      "rating": 500,
+      "position": 11089
+    },
+    {
+      "timestamp": "2026-04-08 18:35:47",
+      "rating": 500,
+      "position": 11106
+    },
+    {
+      "timestamp": "2026-04-08 18:45:30",
+      "rating": 500,
+      "position": 11122
+    },
+    {
+      "timestamp": "2026-04-08 18:55:45",
+      "rating": 500,
+      "position": 11142
+    },
+    {
+      "timestamp": "2026-04-08 19:05:36",
+      "rating": 500,
+      "position": 11161
+    },
+    {
+      "timestamp": "2026-04-08 19:16:39",
+      "rating": 500,
+      "position": 11174
+    },
+    {
+      "timestamp": "2026-04-08 19:25:31",
+      "rating": 500,
+      "position": 11186
+    },
+    {
+      "timestamp": "2026-04-08 19:36:23",
+      "rating": 500,
+      "position": 11209
+    },
+    {
+      "timestamp": "2026-04-08 19:46:11",
+      "rating": 500,
+      "position": 11218
+    },
+    {
+      "timestamp": "2026-04-08 20:06:14",
+      "rating": 500,
+      "position": 11263
+    },
+    {
+      "timestamp": "2026-04-08 20:16:28",
+      "rating": 500,
+      "position": 11295
+    },
+    {
+      "timestamp": "2026-04-08 20:25:52",
+      "rating": 500,
+      "position": 11323
+    },
+    {
+      "timestamp": "2026-04-08 20:45:58",
+      "rating": 500,
+      "position": 11359
+    },
+    {
+      "timestamp": "2026-04-08 21:05:43",
+      "rating": 500,
+      "position": 11412
+    },
+    {
+      "timestamp": "2026-04-08 21:15:45",
+      "rating": 500,
+      "position": 11432
+    },
+    {
+      "timestamp": "2026-04-08 21:25:44",
+      "rating": 500,
+      "position": 11467
+    },
+    {
+      "timestamp": "2026-04-08 21:37:19",
+      "rating": 500,
+      "position": 11496
+    },
+    {
+      "timestamp": "2026-04-08 21:46:07",
+      "rating": 500,
+      "position": 11522
+    },
+    {
+      "timestamp": "2026-04-08 22:06:41",
+      "rating": 500,
+      "position": 11546
+    },
+    {
+      "timestamp": "2026-04-08 22:16:55",
+      "rating": 500,
+      "position": 11577
+    },
+    {
+      "timestamp": "2026-04-08 22:36:03",
+      "rating": 500,
+      "position": 11625
+    },
+    {
+      "timestamp": "2026-04-08 22:55:52",
+      "rating": 500,
+      "position": 11670
+    },
+    {
+      "timestamp": "2026-04-08 23:05:47",
+      "rating": 500,
+      "position": 11702
+    },
+    {
+      "timestamp": "2026-04-08 23:25:55",
+      "rating": 500,
+      "position": 11759
+    },
+    {
+      "timestamp": "2026-04-08 23:35:40",
+      "rating": 500,
+      "position": 11789
+    },
+    {
+      "timestamp": "2026-04-08 23:46:16",
+      "rating": 500,
+      "position": 11811
+    },
+    {
+      "timestamp": "2026-04-08 23:55:44",
+      "rating": 500,
+      "position": 11837
+    },
+    {
+      "timestamp": "2026-04-09 00:05:41",
+      "rating": 500,
+      "position": 11856
+    },
+    {
+      "timestamp": "2026-04-09 00:15:36",
+      "rating": 500,
+      "position": 11874
+    },
+    {
+      "timestamp": "2026-04-09 00:25:46",
+      "rating": 500,
+      "position": 11910
+    },
+    {
+      "timestamp": "2026-04-09 00:36:21",
+      "rating": 500,
+      "position": 11939
+    },
+    {
+      "timestamp": "2026-04-09 00:45:44",
+      "rating": 500,
+      "position": 11957
+    },
+    {
+      "timestamp": "2026-04-09 00:55:29",
+      "rating": 500,
+      "position": 11981
+    },
+    {
+      "timestamp": "2026-04-09 01:05:52",
+      "rating": 500,
+      "position": 11995
+    },
+    {
+      "timestamp": "2026-04-09 01:16:03",
+      "rating": 500,
+      "position": 12011
+    },
+    {
+      "timestamp": "2026-04-09 01:25:36",
+      "rating": 500,
+      "position": 12026
+    },
+    {
+      "timestamp": "2026-04-09 01:55:09",
+      "rating": 500,
+      "position": 12081
+    },
+    {
+      "timestamp": "2026-04-09 02:05:09",
+      "rating": 500,
+      "position": 12098
+    },
+    {
+      "timestamp": "2026-04-09 02:25:02",
+      "rating": 500,
+      "position": 12122
+    },
+    {
+      "timestamp": "2026-04-09 02:45:09",
+      "rating": 500,
+      "position": 12155
+    },
+    {
+      "timestamp": "2026-04-09 02:55:08",
+      "rating": 500,
+      "position": 12170
+    },
+    {
+      "timestamp": "2026-04-09 03:05:04",
+      "rating": 500,
+      "position": 12182
+    },
+    {
+      "timestamp": "2026-04-09 03:15:08",
+      "rating": 500,
+      "position": 12191
+    },
+    {
+      "timestamp": "2026-04-09 03:35:02",
+      "rating": 500,
+      "position": 12216
+    },
+    {
+      "timestamp": "2026-04-09 03:45:02",
+      "rating": 500,
+      "position": 12230
+    },
+    {
+      "timestamp": "2026-04-09 03:55:08",
+      "rating": 500,
+      "position": 12237
+    },
+    {
+      "timestamp": "2026-04-09 04:05:10",
+      "rating": 500,
+      "position": 12244
+    },
+    {
+      "timestamp": "2026-04-09 04:25:09",
+      "rating": 500,
+      "position": 12266
+    },
+    {
+      "timestamp": "2026-04-09 04:35:08",
+      "rating": 500,
+      "position": 12277
+    },
+    {
+      "timestamp": "2026-04-09 05:35:08",
+      "rating": 500,
+      "position": 12337
+    },
+    {
+      "timestamp": "2026-04-09 05:45:09",
+      "rating": 500,
+      "position": 12344
+    },
+    {
+      "timestamp": "2026-04-09 06:05:08",
+      "rating": 500,
+      "position": 12370
+    },
+    {
+      "timestamp": "2026-04-09 06:35:08",
+      "rating": 500,
+      "position": 12390
+    },
+    {
+      "timestamp": "2026-04-09 06:55:08",
+      "rating": 500,
+      "position": 12405
+    },
+    {
+      "timestamp": "2026-04-09 07:05:10",
+      "rating": 500,
+      "position": 12412
+    },
+    {
+      "timestamp": "2026-04-09 08:15:19",
+      "rating": 500,
+      "position": 12471
+    },
+    {
+      "timestamp": "2026-04-09 08:25:03",
+      "rating": 500,
+      "position": 12473
+    },
+    {
+      "timestamp": "2026-04-09 08:35:12",
+      "rating": 500,
+      "position": 12477
+    },
+    {
+      "timestamp": "2026-04-09 08:45:09",
+      "rating": 500,
+      "position": 12482
+    },
+    {
+      "timestamp": "2026-04-09 09:15:26",
+      "rating": 500,
+      "position": 12505
+    },
+    {
+      "timestamp": "2026-04-09 09:25:21",
+      "rating": 500,
+      "position": 12515
+    },
+    {
+      "timestamp": "2026-04-09 09:35:46",
+      "rating": 500,
+      "position": 12530
+    },
+    {
+      "timestamp": "2026-04-09 09:45:31",
+      "rating": 500,
+      "position": 12537
+    },
+    {
+      "timestamp": "2026-04-09 09:55:38",
+      "rating": 500,
+      "position": 12549
+    },
+    {
+      "timestamp": "2026-04-09 10:05:32",
+      "rating": 500,
+      "position": 12554
+    },
+    {
+      "timestamp": "2026-04-09 10:26:16",
+      "rating": 500,
+      "position": 12577
+    },
+    {
+      "timestamp": "2026-04-09 10:35:31",
+      "rating": 490,
+      "position": 14469
+    },
+    {
+      "timestamp": "2026-04-09 10:45:09",
+      "rating": 490,
+      "position": 14473
+    },
+    {
+      "timestamp": "2026-04-09 10:56:08",
+      "rating": 490,
+      "position": 14487
+    },
+    {
+      "timestamp": "2026-04-09 11:15:38",
+      "rating": 521,
+      "position": 11200
+    },
+    {
+      "timestamp": "2026-04-09 11:25:21",
+      "rating": 521,
+      "position": 11207
+    },
+    {
+      "timestamp": "2026-04-09 11:35:29",
+      "rating": 521,
+      "position": 11219
+    },
+    {
+      "timestamp": "2026-04-09 11:45:29",
+      "rating": 521,
+      "position": 11241
+    },
+    {
+      "timestamp": "2026-04-09 12:05:30",
+      "rating": 550,
+      "position": 9169
+    },
+    {
+      "timestamp": "2026-04-09 12:15:35",
+      "rating": 550,
+      "position": 9177
+    },
+    {
+      "timestamp": "2026-04-09 12:25:40",
+      "rating": 550,
+      "position": 9189
+    },
+    {
+      "timestamp": "2026-04-09 12:45:36",
+      "rating": 550,
+      "position": 9212
+    },
+    {
+      "timestamp": "2026-04-09 12:56:08",
+      "rating": 578,
+      "position": 7571
+    },
+    {
+      "timestamp": "2026-04-09 13:15:50",
+      "rating": 578,
+      "position": 7591
+    },
+    {
+      "timestamp": "2026-04-09 13:25:39",
+      "rating": 579,
+      "position": 7561
+    },
+    {
+      "timestamp": "2026-04-09 13:36:17",
+      "rating": 579,
+      "position": 7561
+    },
+    {
+      "timestamp": "2026-04-09 13:46:32",
+      "rating": 579,
+      "position": 7578
+    },
+    {
+      "timestamp": "2026-04-09 13:55:39",
+      "rating": 579,
+      "position": 7584
+    },
+    {
+      "timestamp": "2026-04-09 14:06:22",
+      "rating": 579,
+      "position": 7593
+    },
+    {
+      "timestamp": "2026-04-09 14:15:46",
+      "rating": 595,
+      "position": 6751
+    },
+    {
+      "timestamp": "2026-04-09 14:36:09",
+      "rating": 595,
+      "position": 6750
+    },
+    {
+      "timestamp": "2026-04-09 14:46:03",
+      "rating": 595,
+      "position": 6760
+    },
+    {
+      "timestamp": "2026-04-09 14:55:55",
+      "rating": 590,
+      "position": 7020
+    },
+    {
+      "timestamp": "2026-04-09 15:06:17",
+      "rating": 590,
+      "position": 7026
+    },
+    {
+      "timestamp": "2026-04-09 15:15:50",
+      "rating": 590,
+      "position": 7040
+    },
+    {
+      "timestamp": "2026-04-09 15:25:41",
+      "rating": 590,
+      "position": 7050
+    },
+    {
+      "timestamp": "2026-04-09 15:36:03",
+      "rating": 616,
+      "position": 5812
+    },
+    {
+      "timestamp": "2026-04-09 15:46:50",
+      "rating": 616,
+      "position": 5808
+    },
+    {
+      "timestamp": "2026-04-09 15:56:23",
+      "rating": 616,
+      "position": 5813
+    },
+    {
+      "timestamp": "2026-04-09 16:06:09",
+      "rating": 616,
+      "position": 5820
+    },
+    {
+      "timestamp": "2026-04-09 16:16:14",
+      "rating": 616,
+      "position": 5828
+    },
+    {
+      "timestamp": "2026-04-09 16:25:37",
+      "rating": 620,
+      "position": 5660
+    },
+    {
+      "timestamp": "2026-04-09 16:36:00",
+      "rating": 620,
+      "position": 5669
+    },
+    {
+      "timestamp": "2026-04-09 16:45:32",
+      "rating": 620,
+      "position": 5670
+    },
+    {
+      "timestamp": "2026-04-09 16:55:37",
+      "rating": 620,
+      "position": 5675
+    },
+    {
+      "timestamp": "2026-04-09 17:05:53",
+      "rating": 644,
+      "position": 4755
+    },
+    {
+      "timestamp": "2026-04-09 17:15:42",
+      "rating": 644,
+      "position": 4762
+    },
+    {
+      "timestamp": "2026-04-09 17:25:33",
+      "rating": 644,
+      "position": 4779
+    },
+    {
+      "timestamp": "2026-04-09 17:45:52",
+      "rating": 644,
+      "position": 4812
+    },
+    {
+      "timestamp": "2026-04-09 17:55:53",
+      "rating": 644,
+      "position": 4823
+    },
+    {
+      "timestamp": "2026-04-09 18:05:25",
+      "rating": 644,
+      "position": 4826
+    },
+    {
+      "timestamp": "2026-04-09 18:15:30",
+      "rating": 644,
+      "position": 4827
+    },
+    {
+      "timestamp": "2026-04-09 18:25:48",
+      "rating": 644,
+      "position": 4826
+    },
+    {
+      "timestamp": "2026-04-09 18:36:00",
+      "rating": 644,
+      "position": 4836
+    },
+    {
+      "timestamp": "2026-04-09 18:45:57",
+      "rating": 644,
+      "position": 4842
+    },
+    {
+      "timestamp": "2026-04-09 18:55:46",
+      "rating": 644,
+      "position": 4845
+    },
+    {
+      "timestamp": "2026-04-09 19:05:58",
+      "rating": 644,
+      "position": 4846
+    },
+    {
+      "timestamp": "2026-04-09 19:25:50",
+      "rating": 644,
+      "position": 4859
+    },
+    {
+      "timestamp": "2026-04-09 19:45:41",
+      "rating": 644,
+      "position": 4859
+    },
+    {
+      "timestamp": "2026-04-09 20:05:50",
+      "rating": 644,
+      "position": 4875
+    },
+    {
+      "timestamp": "2026-04-09 20:15:38",
+      "rating": 644,
+      "position": 4878
+    },
+    {
+      "timestamp": "2026-04-09 20:25:57",
+      "rating": 644,
+      "position": 4891
+    },
+    {
+      "timestamp": "2026-04-09 20:35:55",
+      "rating": 644,
+      "position": 4891
+    },
+    {
+      "timestamp": "2026-04-09 20:55:54",
+      "rating": 644,
+      "position": 4916
+    },
+    {
+      "timestamp": "2026-04-09 21:17:10",
+      "rating": 644,
+      "position": 4936
+    },
+    {
+      "timestamp": "2026-04-09 21:25:53",
+      "rating": 644,
+      "position": 4950
+    },
+    {
+      "timestamp": "2026-04-09 21:35:51",
+      "rating": 644,
+      "position": 4959
+    },
+    {
+      "timestamp": "2026-04-09 21:45:45",
+      "rating": 644,
+      "position": 4969
+    },
+    {
+      "timestamp": "2026-04-09 21:56:10",
+      "rating": 644,
+      "position": 4981
+    },
+    {
+      "timestamp": "2026-04-09 22:15:52",
+      "rating": 644,
+      "position": 4992
+    },
+    {
+      "timestamp": "2026-04-09 22:25:41",
+      "rating": 644,
+      "position": 4999
+    },
+    {
+      "timestamp": "2026-04-09 22:36:24",
+      "rating": 644,
+      "position": 5007
+    },
+    {
+      "timestamp": "2026-04-09 22:45:39",
+      "rating": 644,
+      "position": 5020
+    },
+    {
+      "timestamp": "2026-04-09 23:06:25",
+      "rating": 644,
+      "position": 5041
+    },
+    {
+      "timestamp": "2026-04-09 23:16:05",
+      "rating": 644,
+      "position": 5050
+    },
+    {
+      "timestamp": "2026-04-09 23:35:51",
+      "rating": 644,
+      "position": 5063
+    },
+    {
+      "timestamp": "2026-04-09 23:47:10",
+      "rating": 644,
+      "position": 5079
+    },
+    {
+      "timestamp": "2026-04-10 00:05:39",
+      "rating": 644,
+      "position": 5091
+    },
+    {
+      "timestamp": "2026-04-10 00:17:24",
+      "rating": 644,
+      "position": 5100
+    },
+    {
+      "timestamp": "2026-04-10 00:25:40",
+      "rating": 644,
+      "position": 5116
+    },
+    {
+      "timestamp": "2026-04-10 00:35:40",
+      "rating": 644,
+      "position": 5115
+    },
+    {
+      "timestamp": "2026-04-10 00:46:01",
+      "rating": 644,
+      "position": 5117
+    },
+    {
+      "timestamp": "2026-04-10 00:55:51",
+      "rating": 644,
+      "position": 5125
+    },
+    {
+      "timestamp": "2026-04-10 01:05:23",
+      "rating": 644,
+      "position": 5129
+    },
+    {
+      "timestamp": "2026-04-10 01:15:17",
+      "rating": 644,
+      "position": 5136
+    },
+    {
+      "timestamp": "2026-04-10 01:25:35",
+      "rating": 644,
+      "position": 5150
+    },
+    {
+      "timestamp": "2026-04-10 01:35:11",
+      "rating": 644,
+      "position": 5155
+    },
+    {
+      "timestamp": "2026-04-10 01:55:10",
+      "rating": 644,
+      "position": 5160
+    },
+    {
+      "timestamp": "2026-04-10 02:15:02",
+      "rating": 644,
+      "position": 5175
+    },
+    {
+      "timestamp": "2026-04-10 02:25:09",
+      "rating": 644,
+      "position": 5178
+    },
+    {
+      "timestamp": "2026-04-10 02:35:09",
+      "rating": 644,
+      "position": 5182
+    },
+    {
+      "timestamp": "2026-04-10 03:15:09",
+      "rating": 644,
+      "position": 5203
+    },
+    {
+      "timestamp": "2026-04-10 03:25:10",
+      "rating": 644,
+      "position": 5210
+    },
+    {
+      "timestamp": "2026-04-10 03:55:09",
+      "rating": 644,
+      "position": 5219
+    },
+    {
+      "timestamp": "2026-04-10 04:05:11",
+      "rating": 644,
+      "position": 5225
+    },
+    {
+      "timestamp": "2026-04-10 04:15:10",
+      "rating": 644,
+      "position": 5224
+    },
+    {
+      "timestamp": "2026-04-10 04:25:02",
+      "rating": 644,
+      "position": 5223
+    },
+    {
+      "timestamp": "2026-04-10 04:35:09",
+      "rating": 644,
+      "position": 5224
+    },
+    {
+      "timestamp": "2026-04-10 04:55:10",
+      "rating": 644,
+      "position": 5232
+    },
+    {
+      "timestamp": "2026-04-10 05:05:02",
+      "rating": 644,
+      "position": 5237
+    },
+    {
+      "timestamp": "2026-04-10 05:15:02",
+      "rating": 644,
+      "position": 5237
+    },
+    {
+      "timestamp": "2026-04-10 05:25:09",
+      "rating": 644,
+      "position": 5239
+    },
+    {
+      "timestamp": "2026-04-10 05:35:09",
+      "rating": 644,
+      "position": 5242
+    },
+    {
+      "timestamp": "2026-04-10 05:45:02",
+      "rating": 644,
+      "position": 5245
+    },
+    {
+      "timestamp": "2026-04-10 05:55:09",
+      "rating": 644,
+      "position": 5247
+    },
+    {
+      "timestamp": "2026-04-10 06:15:09",
+      "rating": 644,
+      "position": 5244
+    },
+    {
+      "timestamp": "2026-04-10 06:25:10",
+      "rating": 644,
+      "position": 5242
+    },
+    {
+      "timestamp": "2026-04-10 06:35:09",
+      "rating": 644,
+      "position": 5244
+    },
+    {
+      "timestamp": "2026-04-10 06:45:09",
+      "rating": 644,
+      "position": 5248
+    },
+    {
+      "timestamp": "2026-04-10 06:55:15",
+      "rating": 644,
+      "position": 5249
+    },
+    {
+      "timestamp": "2026-04-10 07:05:11",
+      "rating": 644,
+      "position": 5252
+    },
+    {
+      "timestamp": "2026-04-10 07:15:13",
+      "rating": 644,
+      "position": 5253
+    },
+    {
+      "timestamp": "2026-04-10 07:25:09",
+      "rating": 644,
+      "position": 5255
+    },
+    {
+      "timestamp": "2026-04-10 07:35:09",
+      "rating": 644,
+      "position": 5259
+    },
+    {
+      "timestamp": "2026-04-10 07:45:02",
+      "rating": 644,
+      "position": 5266
+    },
+    {
+      "timestamp": "2026-04-10 07:55:08",
+      "rating": 644,
+      "position": 5265
+    },
+    {
+      "timestamp": "2026-04-10 08:15:14",
+      "rating": 644,
+      "position": 5266
+    },
+    {
+      "timestamp": "2026-04-10 08:45:02",
+      "rating": 644,
+      "position": 5281
+    },
+    {
+      "timestamp": "2026-04-10 09:05:11",
+      "rating": 644,
+      "position": 5294
+    },
+    {
+      "timestamp": "2026-04-10 09:15:09",
+      "rating": 644,
+      "position": 5299
+    },
+    {
+      "timestamp": "2026-04-10 09:25:10",
+      "rating": 644,
+      "position": 5294
+    },
+    {
+      "timestamp": "2026-04-10 09:35:12",
+      "rating": 644,
+      "position": 5297
+    },
+    {
+      "timestamp": "2026-04-10 09:45:32",
+      "rating": 644,
+      "position": 5300
+    },
+    {
+      "timestamp": "2026-04-10 09:55:09",
+      "rating": 644,
+      "position": 5296
+    },
+    {
+      "timestamp": "2026-04-10 10:05:22",
+      "rating": 644,
+      "position": 5304
+    },
+    {
+      "timestamp": "2026-04-10 10:35:10",
+      "rating": 644,
+      "position": 5326
+    },
+    {
+      "timestamp": "2026-04-10 10:45:48",
+      "rating": 644,
+      "position": 5332
+    },
+    {
+      "timestamp": "2026-04-10 10:55:03",
+      "rating": 644,
+      "position": 5334
+    },
+    {
+      "timestamp": "2026-04-10 11:05:37",
+      "rating": 644,
+      "position": 5345
+    },
+    {
+      "timestamp": "2026-04-10 11:15:09",
+      "rating": 644,
+      "position": 5347
+    },
+    {
+      "timestamp": "2026-04-10 11:25:09",
+      "rating": 644,
+      "position": 5350
+    },
+    {
+      "timestamp": "2026-04-10 11:35:09",
+      "rating": 644,
+      "position": 5350
+    },
+    {
+      "timestamp": "2026-04-10 11:45:22",
+      "rating": 644,
+      "position": 5351
+    },
+    {
+      "timestamp": "2026-04-10 11:56:07",
+      "rating": 644,
+      "position": 5360
+    },
+    {
+      "timestamp": "2026-04-10 12:05:23",
+      "rating": 644,
+      "position": 5364
+    },
+    {
+      "timestamp": "2026-04-10 12:16:01",
+      "rating": 644,
+      "position": 5368
+    },
+    {
+      "timestamp": "2026-04-10 12:26:51",
+      "rating": 644,
+      "position": 5373
+    },
+    {
+      "timestamp": "2026-04-10 12:35:39",
+      "rating": 644,
+      "position": 5375
+    },
+    {
+      "timestamp": "2026-04-10 12:46:01",
+      "rating": 644,
+      "position": 5386
+    },
+    {
+      "timestamp": "2026-04-10 13:05:40",
+      "rating": 644,
+      "position": 5407
+    },
+    {
+      "timestamp": "2026-04-10 13:15:50",
+      "rating": 644,
+      "position": 5409
+    },
+    {
+      "timestamp": "2026-04-10 13:26:43",
+      "rating": 644,
+      "position": 5421
+    },
+    {
+      "timestamp": "2026-04-10 13:35:43",
+      "rating": 644,
+      "position": 5437
+    },
+    {
+      "timestamp": "2026-04-10 13:46:05",
+      "rating": 644,
+      "position": 5442
+    },
+    {
+      "timestamp": "2026-04-10 13:55:40",
+      "rating": 644,
+      "position": 5442
+    },
+    {
+      "timestamp": "2026-04-10 14:06:46",
+      "rating": 644,
+      "position": 5445
+    },
+    {
+      "timestamp": "2026-04-10 14:16:04",
+      "rating": 644,
+      "position": 5443
+    },
+    {
+      "timestamp": "2026-04-10 14:25:48",
+      "rating": 644,
+      "position": 5443
+    },
+    {
+      "timestamp": "2026-04-10 14:36:16",
+      "rating": 644,
+      "position": 5452
+    },
+    {
+      "timestamp": "2026-04-10 14:45:52",
+      "rating": 644,
+      "position": 5467
+    },
+    {
+      "timestamp": "2026-04-10 14:56:04",
+      "rating": 644,
+      "position": 5474
+    },
+    {
+      "timestamp": "2026-04-10 15:05:33",
+      "rating": 644,
+      "position": 5475
+    },
+    {
+      "timestamp": "2026-04-10 15:15:45",
+      "rating": 644,
+      "position": 5480
+    },
+    {
+      "timestamp": "2026-04-10 15:26:59",
+      "rating": 644,
+      "position": 5484
+    },
+    {
+      "timestamp": "2026-04-10 15:37:09",
+      "rating": 644,
+      "position": 5495
+    },
+    {
+      "timestamp": "2026-04-10 15:45:58",
+      "rating": 644,
+      "position": 5499
+    },
+    {
+      "timestamp": "2026-04-10 15:55:31",
+      "rating": 644,
+      "position": 5493
+    },
+    {
+      "timestamp": "2026-04-10 16:06:20",
+      "rating": 644,
+      "position": 5494
+    },
+    {
+      "timestamp": "2026-04-10 16:16:00",
+      "rating": 644,
+      "position": 5500
+    },
+    {
+      "timestamp": "2026-04-10 16:25:29",
+      "rating": 644,
+      "position": 5501
+    },
+    {
+      "timestamp": "2026-04-10 16:35:40",
+      "rating": 644,
+      "position": 5506
+    },
+    {
+      "timestamp": "2026-04-10 16:45:36",
+      "rating": 644,
+      "position": 5513
+    },
+    {
+      "timestamp": "2026-04-10 16:55:53",
+      "rating": 644,
+      "position": 5515
+    },
+    {
+      "timestamp": "2026-04-10 17:15:48",
+      "rating": 644,
+      "position": 5529
+    },
+    {
+      "timestamp": "2026-04-10 17:26:01",
+      "rating": 644,
+      "position": 5537
+    },
+    {
+      "timestamp": "2026-04-10 17:35:24",
+      "rating": 644,
+      "position": 5545
+    },
+    {
+      "timestamp": "2026-04-10 17:55:25",
+      "rating": 644,
+      "position": 5555
+    },
+    {
+      "timestamp": "2026-04-10 18:05:33",
+      "rating": 644,
+      "position": 5559
+    },
+    {
+      "timestamp": "2026-04-10 18:15:26",
+      "rating": 644,
+      "position": 5570
+    },
+    {
+      "timestamp": "2026-04-10 18:25:59",
+      "rating": 644,
+      "position": 5574
+    },
+    {
+      "timestamp": "2026-04-10 18:35:42",
+      "rating": 644,
+      "position": 5580
+    },
+    {
+      "timestamp": "2026-04-10 18:45:51",
+      "rating": 644,
+      "position": 5589
+    },
+    {
+      "timestamp": "2026-04-10 18:55:57",
+      "rating": 644,
+      "position": 5593
+    },
+    {
+      "timestamp": "2026-04-10 19:06:01",
+      "rating": 644,
+      "position": 5605
+    },
+    {
+      "timestamp": "2026-04-10 19:25:11",
+      "rating": 644,
+      "position": 5625
+    },
+    {
+      "timestamp": "2026-04-10 19:35:41",
+      "rating": 644,
+      "position": 5628
+    },
+    {
+      "timestamp": "2026-04-10 19:45:30",
+      "rating": 644,
+      "position": 5635
+    },
+    {
+      "timestamp": "2026-04-10 19:47:10",
+      "rating": 644,
+      "position": 5636
+    },
+    {
+      "timestamp": "2026-04-10 19:55:54",
+      "rating": 644,
+      "position": 5642
+    },
+    {
+      "timestamp": "2026-04-10 20:05:39",
+      "rating": 644,
+      "position": 5639
+    },
+    {
+      "timestamp": "2026-04-10 20:26:26",
+      "rating": 644,
+      "position": 5645
+    },
+    {
+      "timestamp": "2026-04-10 20:36:39",
+      "rating": 644,
+      "position": 5650
+    },
+    {
+      "timestamp": "2026-04-10 20:47:14",
+      "rating": 644,
+      "position": 5661
+    },
+    {
+      "timestamp": "2026-04-10 20:57:12",
+      "rating": 644,
+      "position": 5683
+    },
+    {
+      "timestamp": "2026-04-10 21:05:57",
+      "rating": 644,
+      "position": 5695
+    },
+    {
+      "timestamp": "2026-04-10 21:16:01",
+      "rating": 644,
+      "position": 5703
+    },
+    {
+      "timestamp": "2026-04-10 21:26:23",
+      "rating": 644,
+      "position": 5706
+    },
+    {
+      "timestamp": "2026-04-10 21:36:16",
+      "rating": 644,
+      "position": 5704
+    },
+    {
+      "timestamp": "2026-04-10 21:46:53",
+      "rating": 644,
+      "position": 5713
+    },
+    {
+      "timestamp": "2026-04-10 21:56:05",
+      "rating": 644,
+      "position": 5719
+    },
+    {
+      "timestamp": "2026-04-10 22:05:56",
+      "rating": 644,
+      "position": 5720
+    },
+    {
+      "timestamp": "2026-04-10 22:16:02",
+      "rating": 644,
+      "position": 5736
+    },
+    {
+      "timestamp": "2026-04-10 22:26:20",
+      "rating": 644,
+      "position": 5740
+    },
+    {
+      "timestamp": "2026-04-10 22:37:42",
+      "rating": 644,
+      "position": 5752
+    },
+    {
+      "timestamp": "2026-04-10 22:56:01",
+      "rating": 644,
+      "position": 5773
+    },
+    {
+      "timestamp": "2026-04-10 23:05:59",
+      "rating": 644,
+      "position": 5786
+    },
+    {
+      "timestamp": "2026-04-10 23:15:59",
+      "rating": 644,
+      "position": 5801
+    },
+    {
+      "timestamp": "2026-04-10 23:26:24",
+      "rating": 644,
+      "position": 5810
+    },
+    {
+      "timestamp": "2026-04-10 23:35:57",
+      "rating": 644,
+      "position": 5808
+    },
+    {
+      "timestamp": "2026-04-10 23:46:00",
+      "rating": 644,
+      "position": 5816
+    },
+    {
+      "timestamp": "2026-04-10 23:55:51",
+      "rating": 644,
+      "position": 5834
+    },
+    {
+      "timestamp": "2026-04-11 00:05:52",
+      "rating": 644,
+      "position": 5846
+    },
+    {
+      "timestamp": "2026-04-11 00:15:49",
+      "rating": 644,
+      "position": 5858
+    },
+    {
+      "timestamp": "2026-04-11 00:25:56",
+      "rating": 644,
+      "position": 5872
+    },
+    {
+      "timestamp": "2026-04-11 00:36:40",
+      "rating": 644,
+      "position": 5884
+    },
+    {
+      "timestamp": "2026-04-11 00:46:07",
+      "rating": 644,
+      "position": 5899
+    },
+    {
+      "timestamp": "2026-04-11 00:55:45",
+      "rating": 644,
+      "position": 5908
+    },
+    {
+      "timestamp": "2026-04-11 01:05:43",
+      "rating": 644,
+      "position": 5910
+    },
+    {
+      "timestamp": "2026-04-11 01:15:16",
+      "rating": 644,
+      "position": 5921
+    },
+    {
+      "timestamp": "2026-04-11 01:25:10",
+      "rating": 644,
+      "position": 5935
+    },
+    {
+      "timestamp": "2026-04-11 01:35:10",
+      "rating": 644,
+      "position": 5939
+    },
+    {
+      "timestamp": "2026-04-11 01:45:40",
+      "rating": 644,
+      "position": 5942
+    },
+    {
+      "timestamp": "2026-04-11 01:55:11",
+      "rating": 644,
+      "position": 5946
+    },
+    {
+      "timestamp": "2026-04-11 02:05:10",
+      "rating": 644,
+      "position": 5951
+    },
+    {
+      "timestamp": "2026-04-11 02:15:22",
+      "rating": 644,
+      "position": 5958
+    },
+    {
+      "timestamp": "2026-04-11 02:25:14",
+      "rating": 644,
+      "position": 5969
+    },
+    {
+      "timestamp": "2026-04-11 02:35:11",
+      "rating": 644,
+      "position": 5978
+    },
+    {
+      "timestamp": "2026-04-11 02:45:10",
+      "rating": 644,
+      "position": 5978
+    },
+    {
+      "timestamp": "2026-04-11 02:55:11",
+      "rating": 644,
+      "position": 5978
+    },
+    {
+      "timestamp": "2026-04-11 03:05:04",
+      "rating": 644,
+      "position": 5985
+    },
+    {
+      "timestamp": "2026-04-11 03:15:10",
+      "rating": 644,
+      "position": 5992
+    },
+    {
+      "timestamp": "2026-04-11 03:25:11",
+      "rating": 644,
+      "position": 5996
+    },
+    {
+      "timestamp": "2026-04-11 03:35:11",
+      "rating": 644,
+      "position": 6002
+    },
+    {
+      "timestamp": "2026-04-11 03:45:17",
+      "rating": 644,
+      "position": 5998
+    },
+    {
+      "timestamp": "2026-04-11 03:55:02",
+      "rating": 644,
+      "position": 6002
+    },
+    {
+      "timestamp": "2026-04-11 04:05:12",
+      "rating": 644,
+      "position": 6010
+    },
+    {
+      "timestamp": "2026-04-11 04:15:10",
+      "rating": 644,
+      "position": 6011
+    },
+    {
+      "timestamp": "2026-04-11 04:25:10",
+      "rating": 644,
+      "position": 6014
+    },
+    {
+      "timestamp": "2026-04-11 04:45:11",
+      "rating": 644,
+      "position": 6015
+    },
+    {
+      "timestamp": "2026-04-11 04:55:11",
+      "rating": 644,
+      "position": 6028
+    },
+    {
+      "timestamp": "2026-04-11 05:05:12",
+      "rating": 644,
+      "position": 6032
+    },
+    {
+      "timestamp": "2026-04-11 05:15:11",
+      "rating": 644,
+      "position": 6031
+    },
+    {
+      "timestamp": "2026-04-11 05:25:11",
+      "rating": 644,
+      "position": 6035
+    },
+    {
+      "timestamp": "2026-04-11 05:35:02",
+      "rating": 644,
+      "position": 6034
+    },
+    {
+      "timestamp": "2026-04-11 05:45:11",
+      "rating": 644,
+      "position": 6040
+    },
+    {
+      "timestamp": "2026-04-11 05:55:10",
+      "rating": 644,
+      "position": 6044
+    },
+    {
+      "timestamp": "2026-04-11 06:05:11",
+      "rating": 644,
+      "position": 6044
+    },
+    {
+      "timestamp": "2026-04-11 06:15:11",
+      "rating": 644,
+      "position": 6044
+    },
+    {
+      "timestamp": "2026-04-11 06:25:02",
+      "rating": 644,
+      "position": 6046
+    },
+    {
+      "timestamp": "2026-04-11 06:35:10",
+      "rating": 644,
+      "position": 6050
+    },
+    {
+      "timestamp": "2026-04-11 06:45:03",
+      "rating": 644,
+      "position": 6053
+    },
+    {
+      "timestamp": "2026-04-11 06:55:03",
+      "rating": 644,
+      "position": 6054
+    },
+    {
+      "timestamp": "2026-04-11 07:05:11",
+      "rating": 644,
+      "position": 6055
+    },
+    {
+      "timestamp": "2026-04-11 07:15:10",
+      "rating": 644,
+      "position": 6056
+    },
+    {
+      "timestamp": "2026-04-11 07:25:10",
+      "rating": 644,
+      "position": 6056
+    },
+    {
+      "timestamp": "2026-04-11 07:35:10",
+      "rating": 644,
+      "position": 6064
+    },
+    {
+      "timestamp": "2026-04-11 07:45:16",
+      "rating": 644,
+      "position": 6067
+    },
+    {
+      "timestamp": "2026-04-11 07:55:11",
+      "rating": 644,
+      "position": 6068
+    },
+    {
+      "timestamp": "2026-04-11 08:05:14",
+      "rating": 644,
+      "position": 6065
+    },
+    {
+      "timestamp": "2026-04-11 08:15:11",
+      "rating": 644,
+      "position": 6066
+    },
+    {
+      "timestamp": "2026-04-11 08:25:10",
+      "rating": 644,
+      "position": 6070
+    },
+    {
+      "timestamp": "2026-04-11 08:35:19",
+      "rating": 644,
+      "position": 6071
+    },
+    {
+      "timestamp": "2026-04-11 08:45:13",
+      "rating": 644,
+      "position": 6072
+    },
+    {
+      "timestamp": "2026-04-11 08:55:11",
+      "rating": 644,
+      "position": 6067
+    },
+    {
+      "timestamp": "2026-04-11 09:05:16",
+      "rating": 644,
+      "position": 6068
+    },
+    {
+      "timestamp": "2026-04-11 09:15:11",
+      "rating": 644,
+      "position": 6067
+    },
+    {
+      "timestamp": "2026-04-11 09:25:10",
+      "rating": 644,
+      "position": 6068
+    },
+    {
+      "timestamp": "2026-04-11 09:35:06",
+      "rating": 644,
+      "position": 6068
+    },
+    {
+      "timestamp": "2026-04-11 09:45:48",
+      "rating": 644,
+      "position": 6073
+    },
+    {
+      "timestamp": "2026-04-11 09:55:25",
+      "rating": 644,
+      "position": 6082
+    },
+    {
+      "timestamp": "2026-04-11 10:05:10",
+      "rating": 644,
+      "position": 6091
+    },
+    {
+      "timestamp": "2026-04-11 10:25:11",
+      "rating": 644,
+      "position": 6100
+    },
+    {
+      "timestamp": "2026-04-11 10:45:15",
+      "rating": 644,
+      "position": 6117
+    },
+    {
+      "timestamp": "2026-04-11 10:55:44",
+      "rating": 644,
+      "position": 6121
+    },
+    {
+      "timestamp": "2026-04-11 11:05:40",
+      "rating": 644,
+      "position": 6119
+    },
+    {
+      "timestamp": "2026-04-11 11:15:44",
+      "rating": 644,
+      "position": 6121
+    },
+    {
+      "timestamp": "2026-04-11 11:26:17",
+      "rating": 644,
+      "position": 6125
+    },
+    {
+      "timestamp": "2026-04-11 11:35:41",
+      "rating": 644,
+      "position": 6137
+    },
+    {
+      "timestamp": "2026-04-11 11:45:33",
+      "rating": 644,
+      "position": 6140
+    },
+    {
+      "timestamp": "2026-04-11 11:55:53",
+      "rating": 644,
+      "position": 6141
+    },
+    {
+      "timestamp": "2026-04-11 12:06:00",
+      "rating": 644,
+      "position": 6139
+    },
+    {
+      "timestamp": "2026-04-11 12:16:12",
+      "rating": 644,
+      "position": 6148
+    },
+    {
+      "timestamp": "2026-04-11 12:25:45",
+      "rating": 644,
+      "position": 6150
+    },
+    {
+      "timestamp": "2026-04-11 12:45:48",
+      "rating": 644,
+      "position": 6148
+    },
+    {
+      "timestamp": "2026-04-11 12:56:13",
+      "rating": 644,
+      "position": 6153
+    },
+    {
+      "timestamp": "2026-04-11 13:05:49",
+      "rating": 644,
+      "position": 6160
+    },
+    {
+      "timestamp": "2026-04-11 13:15:54",
+      "rating": 644,
+      "position": 6165
+    },
+    {
+      "timestamp": "2026-04-11 13:27:04",
+      "rating": 644,
+      "position": 6160
+    },
+    {
+      "timestamp": "2026-04-11 13:35:58",
+      "rating": 644,
+      "position": 6173
+    },
+    {
+      "timestamp": "2026-04-11 13:46:17",
+      "rating": 644,
+      "position": 6179
+    },
+    {
+      "timestamp": "2026-04-11 14:05:38",
+      "rating": 644,
+      "position": 6183
+    },
+    {
+      "timestamp": "2026-04-11 14:25:42",
+      "rating": 644,
+      "position": 6191
+    },
+    {
+      "timestamp": "2026-04-11 14:35:57",
+      "rating": 644,
+      "position": 6202
+    },
+    {
+      "timestamp": "2026-04-11 14:45:50",
+      "rating": 644,
+      "position": 6207
+    },
+    {
+      "timestamp": "2026-04-11 14:56:43",
+      "rating": 644,
+      "position": 6213
+    },
+    {
+      "timestamp": "2026-04-11 15:06:07",
+      "rating": 644,
+      "position": 6218
+    },
+    {
+      "timestamp": "2026-04-11 15:16:12",
+      "rating": 644,
+      "position": 6217
+    },
+    {
+      "timestamp": "2026-04-11 15:25:59",
+      "rating": 644,
+      "position": 6230
+    },
+    {
+      "timestamp": "2026-04-11 15:35:44",
+      "rating": 644,
+      "position": 6239
+    },
+    {
+      "timestamp": "2026-04-11 15:46:05",
+      "rating": 644,
+      "position": 6242
+    },
+    {
+      "timestamp": "2026-04-11 15:55:42",
+      "rating": 644,
+      "position": 6250
+    },
+    {
+      "timestamp": "2026-04-11 16:06:17",
+      "rating": 644,
+      "position": 6252
+    },
+    {
+      "timestamp": "2026-04-11 16:16:18",
+      "rating": 644,
+      "position": 6249
+    },
+    {
+      "timestamp": "2026-04-11 16:26:06",
+      "rating": 644,
+      "position": 6258
+    },
+    {
+      "timestamp": "2026-04-11 16:35:50",
+      "rating": 644,
+      "position": 6266
+    },
+    {
+      "timestamp": "2026-04-11 16:45:55",
+      "rating": 644,
+      "position": 6272
+    },
+    {
+      "timestamp": "2026-04-11 16:56:02",
+      "rating": 644,
+      "position": 6289
+    },
+    {
+      "timestamp": "2026-04-11 17:06:22",
+      "rating": 644,
+      "position": 6291
+    },
+    {
+      "timestamp": "2026-04-11 17:15:59",
+      "rating": 644,
+      "position": 6302
+    },
+    {
+      "timestamp": "2026-04-11 17:25:38",
+      "rating": 644,
+      "position": 6307
+    },
+    {
+      "timestamp": "2026-04-11 17:36:03",
+      "rating": 644,
+      "position": 6320
+    },
+    {
+      "timestamp": "2026-04-11 17:45:41",
+      "rating": 644,
+      "position": 6334
+    },
+    {
+      "timestamp": "2026-04-11 17:55:40",
+      "rating": 644,
+      "position": 6341
+    },
+    {
+      "timestamp": "2026-04-11 18:05:55",
+      "rating": 644,
+      "position": 6348
+    },
+    {
+      "timestamp": "2026-04-11 18:15:42",
+      "rating": 644,
+      "position": 6351
+    },
+    {
+      "timestamp": "2026-04-11 18:26:03",
+      "rating": 644,
+      "position": 6364
+    },
+    {
+      "timestamp": "2026-04-11 18:36:17",
+      "rating": 644,
+      "position": 6377
+    },
+    {
+      "timestamp": "2026-04-11 18:45:36",
+      "rating": 644,
+      "position": 6381
+    },
+    {
+      "timestamp": "2026-04-11 18:56:22",
+      "rating": 644,
+      "position": 6390
+    },
+    {
+      "timestamp": "2026-04-11 19:06:15",
+      "rating": 644,
+      "position": 6395
+    },
+    {
+      "timestamp": "2026-04-11 19:27:03",
+      "rating": 644,
+      "position": 6415
+    },
+    {
+      "timestamp": "2026-04-11 19:35:57",
+      "rating": 644,
+      "position": 6417
+    },
+    {
+      "timestamp": "2026-04-11 19:46:29",
+      "rating": 644,
+      "position": 6421
+    },
+    {
+      "timestamp": "2026-04-11 19:55:59",
+      "rating": 644,
+      "position": 6435
+    },
+    {
+      "timestamp": "2026-04-11 20:06:09",
+      "rating": 644,
+      "position": 6437
+    },
+    {
+      "timestamp": "2026-04-11 20:15:40",
+      "rating": 644,
+      "position": 6444
+    },
+    {
+      "timestamp": "2026-04-11 20:26:11",
+      "rating": 644,
+      "position": 6435
+    },
+    {
+      "timestamp": "2026-04-11 20:37:17",
+      "rating": 644,
+      "position": 6446
+    },
+    {
+      "timestamp": "2026-04-11 20:46:13",
+      "rating": 644,
+      "position": 6457
+    },
+    {
+      "timestamp": "2026-04-11 20:56:39",
+      "rating": 644,
+      "position": 6459
+    },
+    {
+      "timestamp": "2026-04-11 21:06:19",
+      "rating": 644,
+      "position": 6475
+    },
+    {
+      "timestamp": "2026-04-11 21:25:57",
+      "rating": 644,
+      "position": 6500
+    },
+    {
+      "timestamp": "2026-04-11 21:36:04",
+      "rating": 644,
+      "position": 6505
+    },
+    {
+      "timestamp": "2026-04-11 21:46:04",
+      "rating": 644,
+      "position": 6508
+    },
+    {
+      "timestamp": "2026-04-11 21:57:27",
+      "rating": 644,
+      "position": 6522
+    },
+    {
+      "timestamp": "2026-04-11 22:05:57",
+      "rating": 644,
+      "position": 6535
+    },
+    {
+      "timestamp": "2026-04-11 22:16:28",
+      "rating": 644,
+      "position": 6554
+    },
+    {
+      "timestamp": "2026-04-11 22:26:14",
+      "rating": 644,
+      "position": 6562
+    },
+    {
+      "timestamp": "2026-04-11 22:36:18",
+      "rating": 644,
+      "position": 6563
+    },
+    {
+      "timestamp": "2026-04-11 22:46:06",
+      "rating": 644,
+      "position": 6565
+    },
+    {
+      "timestamp": "2026-04-11 22:56:00",
+      "rating": 644,
+      "position": 6570
+    },
+    {
+      "timestamp": "2026-04-11 23:08:42",
+      "rating": 644,
+      "position": 6577
+    },
+    {
+      "timestamp": "2026-04-11 23:16:05",
+      "rating": 644,
+      "position": 6583
+    },
+    {
+      "timestamp": "2026-04-11 23:26:03",
+      "rating": 644,
+      "position": 6597
+    },
+    {
+      "timestamp": "2026-04-11 23:36:47",
+      "rating": 644,
+      "position": 6610
+    },
+    {
+      "timestamp": "2026-04-11 23:46:01",
+      "rating": 644,
+      "position": 6628
+    },
+    {
+      "timestamp": "2026-04-11 23:55:59",
+      "rating": 644,
+      "position": 6633
+    },
+    {
+      "timestamp": "2026-04-12 00:06:17",
+      "rating": 644,
+      "position": 6639
+    },
+    {
+      "timestamp": "2026-04-12 00:15:50",
+      "rating": 644,
+      "position": 6650
+    },
+    {
+      "timestamp": "2026-04-12 00:25:54",
+      "rating": 644,
+      "position": 6666
+    },
+    {
+      "timestamp": "2026-04-12 00:35:51",
+      "rating": 644,
+      "position": 6677
+    },
+    {
+      "timestamp": "2026-04-12 00:45:58",
+      "rating": 644,
+      "position": 6688
+    },
+    {
+      "timestamp": "2026-04-12 00:55:55",
+      "rating": 644,
+      "position": 6704
+    },
+    {
+      "timestamp": "2026-04-12 01:05:46",
+      "rating": 644,
+      "position": 6704
+    },
+    {
+      "timestamp": "2026-04-12 01:16:40",
+      "rating": 644,
+      "position": 6714
+    },
+    {
+      "timestamp": "2026-04-12 01:25:47",
+      "rating": 644,
+      "position": 6715
+    },
+    {
+      "timestamp": "2026-04-12 01:35:57",
+      "rating": 644,
+      "position": 6718
+    },
+    {
+      "timestamp": "2026-04-12 01:45:49",
+      "rating": 644,
+      "position": 6725
+    },
+    {
+      "timestamp": "2026-04-12 01:55:58",
+      "rating": 644,
+      "position": 6731
+    },
+    {
+      "timestamp": "2026-04-12 02:05:40",
+      "rating": 644,
+      "position": 6729
+    },
+    {
+      "timestamp": "2026-04-12 02:15:14",
+      "rating": 644,
+      "position": 6738
+    },
+    {
+      "timestamp": "2026-04-12 02:25:12",
+      "rating": 644,
+      "position": 6746
+    },
+    {
+      "timestamp": "2026-04-12 02:35:14",
+      "rating": 644,
+      "position": 6750
+    },
+    {
+      "timestamp": "2026-04-12 02:45:11",
+      "rating": 644,
+      "position": 6757
+    },
+    {
+      "timestamp": "2026-04-12 02:55:12",
+      "rating": 644,
+      "position": 6766
+    },
+    {
+      "timestamp": "2026-04-12 03:05:13",
+      "rating": 644,
+      "position": 6769
+    },
+    {
+      "timestamp": "2026-04-12 03:15:11",
+      "rating": 644,
+      "position": 6774
+    },
+    {
+      "timestamp": "2026-04-12 03:25:12",
+      "rating": 644,
+      "position": 6778
+    },
+    {
+      "timestamp": "2026-04-12 03:45:12",
+      "rating": 644,
+      "position": 6773
+    },
+    {
+      "timestamp": "2026-04-12 03:55:10",
+      "rating": 644,
+      "position": 6774
+    },
+    {
+      "timestamp": "2026-04-12 04:05:11",
+      "rating": 644,
+      "position": 6782
+    },
+    {
+      "timestamp": "2026-04-12 04:15:11",
+      "rating": 644,
+      "position": 6787
+    },
+    {
+      "timestamp": "2026-04-12 04:25:19",
+      "rating": 644,
+      "position": 6789
+    },
+    {
+      "timestamp": "2026-04-12 04:35:13",
+      "rating": 644,
+      "position": 6789
+    },
+    {
+      "timestamp": "2026-04-12 04:45:11",
+      "rating": 644,
+      "position": 6791
+    },
+    {
+      "timestamp": "2026-04-12 04:55:11",
+      "rating": 644,
+      "position": 6803
+    },
+    {
+      "timestamp": "2026-04-12 05:05:04",
+      "rating": 644,
+      "position": 6804
+    },
+    {
+      "timestamp": "2026-04-12 05:15:11",
+      "rating": 644,
+      "position": 6808
+    },
+    {
+      "timestamp": "2026-04-12 05:25:11",
+      "rating": 644,
+      "position": 6814
+    },
+    {
+      "timestamp": "2026-04-12 05:35:11",
+      "rating": 644,
+      "position": 6823
+    },
+    {
+      "timestamp": "2026-04-12 05:45:11",
+      "rating": 644,
+      "position": 6823
+    },
+    {
+      "timestamp": "2026-04-12 05:55:11",
+      "rating": 644,
+      "position": 6829
+    },
+    {
+      "timestamp": "2026-04-12 06:05:11",
+      "rating": 644,
+      "position": 6830
+    },
+    {
+      "timestamp": "2026-04-12 06:15:11",
+      "rating": 644,
+      "position": 6833
+    },
+    {
+      "timestamp": "2026-04-12 06:25:02",
+      "rating": 644,
+      "position": 6836
+    },
+    {
+      "timestamp": "2026-04-12 06:35:11",
+      "rating": 644,
+      "position": 6845
+    },
+    {
+      "timestamp": "2026-04-12 06:45:12",
+      "rating": 644,
+      "position": 6851
+    },
+    {
+      "timestamp": "2026-04-12 06:55:12",
+      "rating": 644,
+      "position": 6849
+    },
+    {
+      "timestamp": "2026-04-12 07:05:20",
+      "rating": 644,
+      "position": 6847
+    },
+    {
+      "timestamp": "2026-04-12 07:15:11",
+      "rating": 644,
+      "position": 6849
+    },
+    {
+      "timestamp": "2026-04-12 07:25:12",
+      "rating": 644,
+      "position": 6848
+    },
+    {
+      "timestamp": "2026-04-12 07:45:12",
+      "rating": 644,
+      "position": 6854
+    },
+    {
+      "timestamp": "2026-04-12 07:55:11",
+      "rating": 644,
+      "position": 6855
+    },
+    {
+      "timestamp": "2026-04-12 08:05:14",
+      "rating": 644,
+      "position": 6864
+    },
+    {
+      "timestamp": "2026-04-12 08:15:11",
+      "rating": 644,
+      "position": 6866
+    },
+    {
+      "timestamp": "2026-04-12 08:25:11",
+      "rating": 644,
+      "position": 6872
+    },
+    {
+      "timestamp": "2026-04-12 08:35:16",
+      "rating": 644,
+      "position": 6874
+    },
+    {
+      "timestamp": "2026-04-12 08:45:11",
+      "rating": 644,
+      "position": 6879
+    },
+    {
+      "timestamp": "2026-04-12 08:55:39",
+      "rating": 644,
+      "position": 6880
+    },
+    {
+      "timestamp": "2026-04-12 09:05:11",
+      "rating": 644,
+      "position": 6887
+    },
+    {
+      "timestamp": "2026-04-12 09:25:11",
+      "rating": 644,
+      "position": 6892
+    },
+    {
+      "timestamp": "2026-04-12 09:35:35",
+      "rating": 644,
+      "position": 6896
+    },
+    {
+      "timestamp": "2026-04-12 09:45:49",
+      "rating": 644,
+      "position": 6894
+    },
+    {
+      "timestamp": "2026-04-12 09:55:49",
+      "rating": 644,
+      "position": 6898
+    },
+    {
+      "timestamp": "2026-04-12 10:05:54",
+      "rating": 644,
+      "position": 6895
+    },
+    {
+      "timestamp": "2026-04-12 10:16:01",
+      "rating": 644,
+      "position": 6895
+    },
+    {
+      "timestamp": "2026-04-12 10:35:39",
+      "rating": 644,
+      "position": 6904
+    },
+    {
+      "timestamp": "2026-04-12 10:45:57",
+      "rating": 644,
+      "position": 6913
+    },
+    {
+      "timestamp": "2026-04-12 10:56:15",
+      "rating": 644,
+      "position": 6919
+    },
+    {
+      "timestamp": "2026-04-12 11:06:09",
+      "rating": 644,
+      "position": 6921
+    },
+    {
+      "timestamp": "2026-04-12 11:15:54",
+      "rating": 644,
+      "position": 6921
+    },
+    {
+      "timestamp": "2026-04-12 11:25:50",
+      "rating": 644,
+      "position": 6922
+    },
+    {
+      "timestamp": "2026-04-12 11:35:59",
+      "rating": 644,
+      "position": 6932
+    },
+    {
+      "timestamp": "2026-04-12 11:55:43",
+      "rating": 644,
+      "position": 6954
+    },
+    {
+      "timestamp": "2026-04-12 12:05:55",
+      "rating": 644,
+      "position": 6959
+    },
+    {
+      "timestamp": "2026-04-12 12:16:08",
+      "rating": 644,
+      "position": 6966
+    },
+    {
+      "timestamp": "2026-04-12 12:26:08",
+      "rating": 644,
+      "position": 6961
+    },
+    {
+      "timestamp": "2026-04-12 12:36:05",
+      "rating": 652,
+      "position": 6594
+    },
+    {
+      "timestamp": "2026-04-12 12:46:40",
+      "rating": 652,
+      "position": 6598
+    },
+    {
+      "timestamp": "2026-04-12 12:56:21",
+      "rating": 652,
+      "position": 6605
+    },
+    {
+      "timestamp": "2026-04-12 13:07:16",
+      "rating": 652,
+      "position": 6607
+    },
+    {
+      "timestamp": "2026-04-12 13:27:55",
+      "rating": 652,
+      "position": 6608
+    },
+    {
+      "timestamp": "2026-04-12 13:36:28",
+      "rating": 652,
+      "position": 6613
+    },
+    {
+      "timestamp": "2026-04-12 13:46:00",
+      "rating": 652,
+      "position": 6622
+    },
+    {
+      "timestamp": "2026-04-12 13:55:55",
+      "rating": 652,
+      "position": 6630
+    },
+    {
+      "timestamp": "2026-04-12 14:07:31",
+      "rating": 652,
+      "position": 6630
+    },
+    {
+      "timestamp": "2026-04-12 14:15:58",
+      "rating": 652,
+      "position": 6635
+    },
+    {
+      "timestamp": "2026-04-12 14:26:20",
+      "rating": 652,
+      "position": 6636
+    },
+    {
+      "timestamp": "2026-04-12 14:36:06",
+      "rating": 652,
+      "position": 6641
+    },
+    {
+      "timestamp": "2026-04-12 14:45:42",
+      "rating": 652,
+      "position": 6648
+    },
+    {
+      "timestamp": "2026-04-12 14:55:55",
+      "rating": 652,
+      "position": 6647
+    },
+    {
+      "timestamp": "2026-04-12 15:06:14",
+      "rating": 652,
+      "position": 6639
+    },
+    {
+      "timestamp": "2026-04-12 15:17:39",
+      "rating": 652,
+      "position": 6643
+    },
+    {
+      "timestamp": "2026-04-12 15:26:02",
+      "rating": 652,
+      "position": 6651
+    },
+    {
+      "timestamp": "2026-04-12 15:36:05",
+      "rating": 652,
+      "position": 6649
+    },
+    {
+      "timestamp": "2026-04-12 15:46:36",
+      "rating": 652,
+      "position": 6655
+    },
+    {
+      "timestamp": "2026-04-12 15:56:05",
+      "rating": 652,
+      "position": 6661
+    },
+    {
+      "timestamp": "2026-04-12 16:06:27",
+      "rating": 652,
+      "position": 6669
+    },
+    {
+      "timestamp": "2026-04-12 16:16:10",
+      "rating": 652,
+      "position": 6672
+    },
+    {
+      "timestamp": "2026-04-12 16:26:02",
+      "rating": 652,
+      "position": 6672
+    },
+    {
+      "timestamp": "2026-04-12 16:46:34",
+      "rating": 652,
+      "position": 6687
+    },
+    {
+      "timestamp": "2026-04-12 16:55:56",
+      "rating": 652,
+      "position": 6692
+    },
+    {
+      "timestamp": "2026-04-12 17:05:51",
+      "rating": 652,
+      "position": 6686
+    },
+    {
+      "timestamp": "2026-04-12 17:15:56",
+      "rating": 652,
+      "position": 6682
+    },
+    {
+      "timestamp": "2026-04-12 17:26:02",
+      "rating": 652,
+      "position": 6685
+    },
+    {
+      "timestamp": "2026-04-12 17:35:50",
+      "rating": 652,
+      "position": 6691
+    },
+    {
+      "timestamp": "2026-04-12 17:45:43",
+      "rating": 652,
+      "position": 6699
+    },
+    {
+      "timestamp": "2026-04-12 17:55:59",
+      "rating": 652,
+      "position": 6710
+    },
+    {
+      "timestamp": "2026-04-12 18:05:53",
+      "rating": 652,
+      "position": 6722
+    },
+    {
+      "timestamp": "2026-04-12 18:15:47",
+      "rating": 652,
+      "position": 6732
+    },
+    {
+      "timestamp": "2026-04-12 18:25:44",
+      "rating": 652,
+      "position": 6743
+    },
+    {
+      "timestamp": "2026-04-12 18:35:52",
+      "rating": 652,
+      "position": 6745
+    },
+    {
+      "timestamp": "2026-04-12 18:46:26",
+      "rating": 652,
+      "position": 6752
+    },
+    {
+      "timestamp": "2026-04-12 18:56:00",
+      "rating": 652,
+      "position": 6755
+    },
+    {
+      "timestamp": "2026-04-12 19:06:20",
+      "rating": 652,
+      "position": 6750
+    },
+    {
+      "timestamp": "2026-04-12 19:15:48",
+      "rating": 652,
+      "position": 6749
+    },
+    {
+      "timestamp": "2026-04-12 19:26:07",
+      "rating": 652,
+      "position": 6753
+    },
+    {
+      "timestamp": "2026-04-12 19:36:10",
+      "rating": 652,
+      "position": 6751
+    },
+    {
+      "timestamp": "2026-04-12 19:46:07",
+      "rating": 652,
+      "position": 6750
+    },
+    {
+      "timestamp": "2026-04-12 19:56:09",
+      "rating": 652,
+      "position": 6760
+    },
+    {
+      "timestamp": "2026-04-12 20:06:29",
+      "rating": 652,
+      "position": 6777
+    },
+    {
+      "timestamp": "2026-04-12 20:15:58",
+      "rating": 652,
+      "position": 6788
+    },
+    {
+      "timestamp": "2026-04-12 20:26:10",
+      "rating": 652,
+      "position": 6796
+    },
+    {
+      "timestamp": "2026-04-12 20:36:09",
+      "rating": 652,
+      "position": 6798
+    },
+    {
+      "timestamp": "2026-04-12 20:46:28",
+      "rating": 652,
+      "position": 6803
+    },
+    {
+      "timestamp": "2026-04-12 20:56:40",
+      "rating": 652,
+      "position": 6807
+    },
+    {
+      "timestamp": "2026-04-12 21:06:09",
+      "rating": 652,
+      "position": 6809
+    },
+    {
+      "timestamp": "2026-04-12 21:16:09",
+      "rating": 652,
+      "position": 6820
+    },
+    {
+      "timestamp": "2026-04-12 21:26:00",
+      "rating": 652,
+      "position": 6820
+    },
+    {
+      "timestamp": "2026-04-12 21:36:49",
+      "rating": 652,
+      "position": 6824
+    },
+    {
+      "timestamp": "2026-04-12 21:46:18",
+      "rating": 652,
+      "position": 6841
+    },
+    {
+      "timestamp": "2026-04-12 21:55:58",
+      "rating": 652,
+      "position": 6846
+    },
+    {
+      "timestamp": "2026-04-12 22:06:43",
+      "rating": 652,
+      "position": 6855
+    },
+    {
+      "timestamp": "2026-04-12 22:15:59",
+      "rating": 652,
+      "position": 6859
+    },
+    {
+      "timestamp": "2026-04-12 22:27:48",
+      "rating": 652,
+      "position": 6866
+    },
+    {
+      "timestamp": "2026-04-12 22:38:09",
+      "rating": 652,
+      "position": 6870
+    },
+    {
+      "timestamp": "2026-04-12 22:56:24",
+      "rating": 652,
+      "position": 6890
+    },
+    {
+      "timestamp": "2026-04-12 23:06:07",
+      "rating": 652,
+      "position": 6894
+    },
+    {
+      "timestamp": "2026-04-12 23:17:08",
+      "rating": 652,
+      "position": 6897
+    },
+    {
+      "timestamp": "2026-04-12 23:26:53",
+      "rating": 652,
+      "position": 6906
+    },
+    {
+      "timestamp": "2026-04-12 23:36:27",
+      "rating": 652,
+      "position": 6919
+    },
+    {
+      "timestamp": "2026-04-12 23:47:38",
+      "rating": 652,
+      "position": 6932
+    },
+    {
+      "timestamp": "2026-04-12 23:56:22",
+      "rating": 652,
+      "position": 6940
+    },
+    {
+      "timestamp": "2026-04-13 00:05:56",
+      "rating": 652,
+      "position": 6949
+    },
+    {
+      "timestamp": "2026-04-13 00:15:51",
+      "rating": 652,
+      "position": 6967
+    },
+    {
+      "timestamp": "2026-04-13 00:25:56",
+      "rating": 652,
+      "position": 6974
+    },
+    {
+      "timestamp": "2026-04-13 00:35:42",
+      "rating": 652,
+      "position": 6979
+    },
+    {
+      "timestamp": "2026-04-13 00:45:39",
+      "rating": 652,
+      "position": 6987
+    },
+    {
+      "timestamp": "2026-04-13 00:55:50",
+      "rating": 652,
+      "position": 6995
+    },
+    {
+      "timestamp": "2026-04-13 01:06:11",
+      "rating": 652,
+      "position": 7010
+    },
+    {
+      "timestamp": "2026-04-13 01:15:03",
+      "rating": 652,
+      "position": 7016
+    },
+    {
+      "timestamp": "2026-04-13 01:25:50",
+      "rating": 652,
+      "position": 7018
+    },
+    {
+      "timestamp": "2026-04-13 01:35:03",
+      "rating": 652,
+      "position": 7017
+    },
+    {
+      "timestamp": "2026-04-13 01:45:12",
+      "rating": 652,
+      "position": 7024
+    },
+    {
+      "timestamp": "2026-04-13 01:55:12",
+      "rating": 652,
+      "position": 7030
+    },
+    {
+      "timestamp": "2026-04-13 02:05:14",
+      "rating": 652,
+      "position": 7033
+    },
+    {
+      "timestamp": "2026-04-13 02:15:11",
+      "rating": 652,
+      "position": 7044
+    },
+    {
+      "timestamp": "2026-04-13 02:25:11",
+      "rating": 652,
+      "position": 7049
+    },
+    {
+      "timestamp": "2026-04-13 02:35:12",
+      "rating": 652,
+      "position": 7058
+    },
+    {
+      "timestamp": "2026-04-13 02:45:14",
+      "rating": 652,
+      "position": 7063
+    },
+    {
+      "timestamp": "2026-04-13 02:55:12",
+      "rating": 652,
+      "position": 7068
+    },
+    {
+      "timestamp": "2026-04-13 03:05:13",
+      "rating": 652,
+      "position": 7069
+    },
+    {
+      "timestamp": "2026-04-13 03:35:12",
+      "rating": 652,
+      "position": 7083
+    },
+    {
+      "timestamp": "2026-04-13 03:55:13",
+      "rating": 652,
+      "position": 7086
+    },
+    {
+      "timestamp": "2026-04-13 04:55:13",
+      "rating": 652,
+      "position": 7102
+    },
+    {
+      "timestamp": "2026-04-13 05:15:20",
+      "rating": 652,
+      "position": 7111
+    },
+    {
+      "timestamp": "2026-04-13 05:25:12",
+      "rating": 652,
+      "position": 7111
+    },
+    {
+      "timestamp": "2026-04-13 05:35:11",
+      "rating": 652,
+      "position": 7115
+    },
+    {
+      "timestamp": "2026-04-13 05:45:12",
+      "rating": 652,
+      "position": 7122
+    },
+    {
+      "timestamp": "2026-04-13 06:15:12",
+      "rating": 652,
+      "position": 7129
+    },
+    {
+      "timestamp": "2026-04-13 06:25:20",
+      "rating": 652,
+      "position": 7137
+    },
+    {
+      "timestamp": "2026-04-13 06:35:12",
+      "rating": 652,
+      "position": 7134
+    },
+    {
+      "timestamp": "2026-04-13 06:45:15",
+      "rating": 652,
+      "position": 7138
+    },
+    {
+      "timestamp": "2026-04-13 06:55:12",
+      "rating": 652,
+      "position": 7141
+    },
+    {
+      "timestamp": "2026-04-13 07:05:13",
+      "rating": 652,
+      "position": 7143
+    },
+    {
+      "timestamp": "2026-04-13 07:15:12",
+      "rating": 652,
+      "position": 7144
+    },
+    {
+      "timestamp": "2026-04-13 07:25:13",
+      "rating": 652,
+      "position": 7147
+    },
+    {
+      "timestamp": "2026-04-13 07:35:11",
+      "rating": 652,
+      "position": 7149
+    },
+    {
+      "timestamp": "2026-04-13 07:45:14",
+      "rating": 652,
+      "position": 7146
+    },
+    {
+      "timestamp": "2026-04-13 07:55:13",
+      "rating": 652,
+      "position": 7149
+    },
+    {
+      "timestamp": "2026-04-13 08:05:14",
+      "rating": 652,
+      "position": 7151
+    },
+    {
+      "timestamp": "2026-04-13 08:15:14",
+      "rating": 652,
+      "position": 7155
+    },
+    {
+      "timestamp": "2026-04-13 08:35:12",
+      "rating": 652,
+      "position": 7160
+    },
+    {
+      "timestamp": "2026-04-13 08:55:42",
+      "rating": 652,
+      "position": 7161
+    },
+    {
+      "timestamp": "2026-04-13 09:15:21",
+      "rating": 652,
+      "position": 7161
+    },
+    {
+      "timestamp": "2026-04-13 09:25:13",
+      "rating": 652,
+      "position": 7160
+    },
+    {
+      "timestamp": "2026-04-13 09:35:36",
+      "rating": 652,
+      "position": 7162
+    },
+    {
+      "timestamp": "2026-04-13 09:45:32",
+      "rating": 652,
+      "position": 7168
+    },
+    {
+      "timestamp": "2026-04-13 10:05:49",
+      "rating": 652,
+      "position": 7169
+    },
+    {
+      "timestamp": "2026-04-13 10:15:57",
+      "rating": 652,
+      "position": 7168
+    },
+    {
+      "timestamp": "2026-04-13 10:25:39",
+      "rating": 652,
+      "position": 7172
+    },
+    {
+      "timestamp": "2026-04-13 10:35:45",
+      "rating": 652,
+      "position": 7175
+    },
+    {
+      "timestamp": "2026-04-13 11:06:24",
+      "rating": 652,
+      "position": 7174
+    },
+    {
+      "timestamp": "2026-04-13 11:15:47",
+      "rating": 652,
+      "position": 7176
+    },
+    {
+      "timestamp": "2026-04-13 11:26:12",
+      "rating": 652,
+      "position": 7182
+    },
+    {
+      "timestamp": "2026-04-13 11:45:43",
+      "rating": 652,
+      "position": 7182
+    },
+    {
+      "timestamp": "2026-04-13 11:55:48",
+      "rating": 652,
+      "position": 7189
+    },
+    {
+      "timestamp": "2026-04-13 12:46:41",
+      "rating": 652,
+      "position": 7201
+    },
+    {
+      "timestamp": "2026-04-13 13:26:25",
+      "rating": 652,
+      "position": 7232
+    },
+    {
+      "timestamp": "2026-04-13 13:36:03",
+      "rating": 652,
+      "position": 7235
+    },
+    {
+      "timestamp": "2026-04-13 13:46:00",
+      "rating": 652,
+      "position": 7240
+    },
+    {
+      "timestamp": "2026-04-13 13:55:56",
+      "rating": 652,
+      "position": 7244
+    },
+    {
+      "timestamp": "2026-04-13 14:06:34",
+      "rating": 652,
+      "position": 7246
+    },
+    {
+      "timestamp": "2026-04-13 14:35:55",
+      "rating": 652,
+      "position": 7260
+    },
+    {
+      "timestamp": "2026-04-13 14:46:02",
+      "rating": 652,
+      "position": 7268
+    },
+    {
+      "timestamp": "2026-04-13 15:36:39",
+      "rating": 652,
+      "position": 7293
+    },
+    {
+      "timestamp": "2026-04-13 16:16:01",
+      "rating": 652,
+      "position": 7311
+    },
+    {
+      "timestamp": "2026-04-13 16:35:55",
+      "rating": 652,
+      "position": 7308
+    },
+    {
+      "timestamp": "2026-04-13 16:55:57",
+      "rating": 652,
+      "position": 7314
+    },
+    {
+      "timestamp": "2026-04-13 17:05:15",
+      "rating": 652,
+      "position": 7314
+    },
+    {
+      "timestamp": "2026-04-13 17:26:08",
+      "rating": 652,
+      "position": 7329
+    },
+    {
+      "timestamp": "2026-04-13 17:35:50",
+      "rating": 652,
+      "position": 7336
+    },
+    {
+      "timestamp": "2026-04-13 17:46:12",
+      "rating": 652,
+      "position": 7342
+    },
+    {
+      "timestamp": "2026-04-13 17:55:53",
+      "rating": 652,
+      "position": 7344
+    },
+    {
+      "timestamp": "2026-04-13 18:05:42",
+      "rating": 652,
+      "position": 7347
+    },
+    {
+      "timestamp": "2026-04-13 18:15:51",
+      "rating": 652,
+      "position": 7353
+    },
+    {
+      "timestamp": "2026-04-13 18:25:51",
+      "rating": 652,
+      "position": 7358
+    },
+    {
+      "timestamp": "2026-04-13 18:36:13",
+      "rating": 652,
+      "position": 7364
+    },
+    {
+      "timestamp": "2026-04-13 18:56:12",
+      "rating": 652,
+      "position": 7382
+    },
+    {
+      "timestamp": "2026-04-13 19:16:07",
+      "rating": 652,
+      "position": 7393
+    },
+    {
+      "timestamp": "2026-04-13 19:37:44",
+      "rating": 652,
+      "position": 7417
+    },
+    {
+      "timestamp": "2026-04-13 19:56:49",
+      "rating": 652,
+      "position": 7424
+    },
+    {
+      "timestamp": "2026-04-13 20:06:03",
+      "rating": 652,
+      "position": 7436
+    },
+    {
+      "timestamp": "2026-04-13 20:26:21",
+      "rating": 652,
+      "position": 7457
+    },
+    {
+      "timestamp": "2026-04-13 20:36:36",
+      "rating": 652,
+      "position": 7468
+    },
+    {
+      "timestamp": "2026-04-13 20:48:18",
+      "rating": 652,
+      "position": 7476
+    },
+    {
+      "timestamp": "2026-04-13 21:06:52",
+      "rating": 652,
+      "position": 7466
+    },
+    {
+      "timestamp": "2026-04-13 21:17:26",
+      "rating": 652,
+      "position": 7473
+    },
+    {
+      "timestamp": "2026-04-13 21:36:31",
+      "rating": 652,
+      "position": 7495
+    },
+    {
+      "timestamp": "2026-04-13 21:56:41",
+      "rating": 652,
+      "position": 7506
+    },
+    {
+      "timestamp": "2026-04-13 22:06:23",
+      "rating": 652,
+      "position": 7520
+    },
+    {
+      "timestamp": "2026-04-13 22:16:33",
+      "rating": 652,
+      "position": 7528
+    },
+    {
+      "timestamp": "2026-04-13 22:25:59",
+      "rating": 652,
+      "position": 7533
+    },
+    {
+      "timestamp": "2026-04-13 22:56:58",
+      "rating": 652,
+      "position": 7560
+    },
+    {
+      "timestamp": "2026-04-13 23:07:28",
+      "rating": 652,
+      "position": 7562
+    },
+    {
+      "timestamp": "2026-04-13 23:26:21",
+      "rating": 652,
+      "position": 7570
+    },
+    {
+      "timestamp": "2026-04-13 23:36:54",
+      "rating": 652,
+      "position": 7575
+    },
+    {
+      "timestamp": "2026-04-13 23:58:35",
+      "rating": 652,
+      "position": 7601
+    },
+    {
+      "timestamp": "2026-04-14 00:27:53",
+      "rating": 652,
+      "position": 7617
+    },
+    {
+      "timestamp": "2026-04-14 00:36:19",
+      "rating": 652,
+      "position": 7622
+    },
+    {
+      "timestamp": "2026-04-14 01:25:52",
+      "rating": 652,
+      "position": 7668
+    },
+    {
+      "timestamp": "2026-04-14 01:35:17",
+      "rating": 652,
+      "position": 7666
+    },
+    {
+      "timestamp": "2026-04-14 02:05:35",
+      "rating": 652,
+      "position": 7679
+    },
+    {
+      "timestamp": "2026-04-14 02:55:13",
+      "rating": 652,
+      "position": 7689
+    },
+    {
+      "timestamp": "2026-04-14 03:05:16",
+      "rating": 652,
+      "position": 7694
+    },
+    {
+      "timestamp": "2026-04-14 03:15:03",
+      "rating": 652,
+      "position": 7699
+    },
+    {
+      "timestamp": "2026-04-14 03:45:13",
+      "rating": 652,
+      "position": 7724
+    },
+    {
+      "timestamp": "2026-04-14 03:55:13",
+      "rating": 652,
+      "position": 7722
+    },
+    {
+      "timestamp": "2026-04-14 04:05:13",
+      "rating": 652,
+      "position": 7719
+    },
+    {
+      "timestamp": "2026-04-14 04:25:02",
+      "rating": 652,
+      "position": 7721
+    },
+    {
+      "timestamp": "2026-04-14 04:55:14",
+      "rating": 652,
+      "position": 7728
+    },
+    {
+      "timestamp": "2026-04-14 05:05:15",
+      "rating": 652,
+      "position": 7730
+    },
+    {
+      "timestamp": "2026-04-14 05:15:13",
+      "rating": 652,
+      "position": 7736
+    },
+    {
+      "timestamp": "2026-04-14 05:55:12",
+      "rating": 652,
+      "position": 7749
+    },
+    {
+      "timestamp": "2026-04-14 06:05:14",
+      "rating": 652,
+      "position": 7747
+    },
+    {
+      "timestamp": "2026-04-14 06:15:13",
+      "rating": 652,
+      "position": 7753
+    },
+    {
+      "timestamp": "2026-04-14 06:25:12",
+      "rating": 652,
+      "position": 7758
+    },
+    {
+      "timestamp": "2026-04-14 06:45:13",
+      "rating": 652,
+      "position": 7766
+    },
+    {
+      "timestamp": "2026-04-14 06:55:14",
+      "rating": 652,
+      "position": 7767
+    },
+    {
+      "timestamp": "2026-04-14 07:15:13",
+      "rating": 652,
+      "position": 7763
+    },
+    {
+      "timestamp": "2026-04-14 07:25:13",
+      "rating": 652,
+      "position": 7759
+    },
+    {
+      "timestamp": "2026-04-14 07:35:13",
+      "rating": 652,
+      "position": 7756
+    },
+    {
+      "timestamp": "2026-04-14 07:45:13",
+      "rating": 652,
+      "position": 7758
+    },
+    {
+      "timestamp": "2026-04-14 07:55:13",
+      "rating": 652,
+      "position": 7765
+    },
+    {
+      "timestamp": "2026-04-14 08:05:17",
+      "rating": 652,
+      "position": 7769
+    },
+    {
+      "timestamp": "2026-04-14 08:15:13",
+      "rating": 652,
+      "position": 7770
+    },
+    {
+      "timestamp": "2026-04-14 08:35:24",
+      "rating": 652,
+      "position": 7774
+    },
+    {
+      "timestamp": "2026-04-14 08:46:05",
+      "rating": 652,
+      "position": 7777
+    },
+    {
+      "timestamp": "2026-04-14 08:55:34",
+      "rating": 652,
+      "position": 7779
+    },
+    {
+      "timestamp": "2026-04-14 09:16:00",
+      "rating": 674,
+      "position": 6568
+    },
+    {
+      "timestamp": "2026-04-14 09:36:22",
+      "rating": 674,
+      "position": 6574
+    },
+    {
+      "timestamp": "2026-04-14 09:45:49",
+      "rating": 674,
+      "position": 6574
+    },
+    {
+      "timestamp": "2026-04-14 09:56:13",
+      "rating": 695,
+      "position": 5608
+    },
+    {
+      "timestamp": "2026-04-14 10:05:54",
+      "rating": 695,
+      "position": 5602
+    },
+    {
+      "timestamp": "2026-04-14 10:15:57",
+      "rating": 695,
+      "position": 5608
+    },
+    {
+      "timestamp": "2026-04-14 10:25:53",
+      "rating": 695,
+      "position": 5611
+    },
+    {
+      "timestamp": "2026-04-14 10:36:19",
+      "rating": 695,
+      "position": 5617
+    },
+    {
+      "timestamp": "2026-04-14 10:45:59",
+      "rating": 695,
+      "position": 5617
+    },
+    {
+      "timestamp": "2026-04-14 10:56:18",
+      "rating": 695,
+      "position": 5617
+    },
+    {
+      "timestamp": "2026-04-14 11:05:52",
+      "rating": 695,
+      "position": 5618
+    },
+    {
+      "timestamp": "2026-04-14 11:15:58",
+      "rating": 695,
+      "position": 5624
+    },
+    {
+      "timestamp": "2026-04-14 11:26:31",
+      "rating": 695,
+      "position": 5635
+    },
+    {
+      "timestamp": "2026-04-14 11:36:04",
+      "rating": 695,
+      "position": 5640
+    },
+    {
+      "timestamp": "2026-04-14 11:46:43",
+      "rating": 695,
+      "position": 5650
+    },
+    {
+      "timestamp": "2026-04-14 11:56:04",
+      "rating": 695,
+      "position": 5651
+    },
+    {
+      "timestamp": "2026-04-14 12:06:21",
+      "rating": 695,
+      "position": 5658
+    },
+    {
+      "timestamp": "2026-04-14 12:16:35",
+      "rating": 695,
+      "position": 5665
+    },
+    {
+      "timestamp": "2026-04-14 12:26:22",
+      "rating": 695,
+      "position": 5663
+    },
+    {
+      "timestamp": "2026-04-14 12:36:04",
+      "rating": 695,
+      "position": 5665
+    },
+    {
+      "timestamp": "2026-04-14 12:46:12",
+      "rating": 695,
+      "position": 5663
+    },
+    {
+      "timestamp": "2026-04-14 13:07:08",
+      "rating": 695,
+      "position": 5672
+    },
+    {
+      "timestamp": "2026-04-14 13:26:47",
+      "rating": 695,
+      "position": 5681
+    },
+    {
+      "timestamp": "2026-04-14 13:46:05",
+      "rating": 695,
+      "position": 5683
+    },
+    {
+      "timestamp": "2026-04-14 13:56:29",
+      "rating": 695,
+      "position": 5687
+    },
+    {
+      "timestamp": "2026-04-14 14:07:19",
+      "rating": 695,
+      "position": 5687
+    },
+    {
+      "timestamp": "2026-04-14 14:17:01",
+      "rating": 695,
+      "position": 5699
+    },
+    {
+      "timestamp": "2026-04-14 14:36:06",
+      "rating": 695,
+      "position": 5695
+    },
+    {
+      "timestamp": "2026-04-14 14:46:46",
+      "rating": 695,
+      "position": 5698
+    },
+    {
+      "timestamp": "2026-04-14 14:56:42",
+      "rating": 695,
+      "position": 5698
+    },
+    {
+      "timestamp": "2026-04-14 15:07:51",
+      "rating": 695,
+      "position": 5695
+    },
+    {
+      "timestamp": "2026-04-14 15:15:58",
+      "rating": 695,
+      "position": 5697
+    },
+    {
+      "timestamp": "2026-04-14 15:26:40",
+      "rating": 695,
+      "position": 5697
+    },
+    {
+      "timestamp": "2026-04-14 15:36:30",
+      "rating": 695,
+      "position": 5703
+    },
+    {
+      "timestamp": "2026-04-14 16:17:01",
+      "rating": 695,
+      "position": 5705
+    },
+    {
+      "timestamp": "2026-04-14 16:26:14",
+      "rating": 695,
+      "position": 5705
+    },
+    {
+      "timestamp": "2026-04-14 16:57:08",
+      "rating": 695,
+      "position": 5725
+    },
+    {
+      "timestamp": "2026-04-14 17:06:24",
+      "rating": 695,
+      "position": 5724
+    },
+    {
+      "timestamp": "2026-04-14 17:16:00",
+      "rating": 695,
+      "position": 5724
+    },
+    {
+      "timestamp": "2026-04-14 17:26:09",
+      "rating": 695,
+      "position": 5729
+    },
+    {
+      "timestamp": "2026-04-14 17:36:18",
+      "rating": 695,
+      "position": 5739
+    },
+    {
+      "timestamp": "2026-04-14 17:45:59",
+      "rating": 695,
+      "position": 5740
+    },
+    {
+      "timestamp": "2026-04-14 18:06:42",
+      "rating": 695,
+      "position": 5747
+    },
+    {
+      "timestamp": "2026-04-14 18:16:26",
+      "rating": 695,
+      "position": 5744
+    },
+    {
+      "timestamp": "2026-04-14 18:26:07",
+      "rating": 695,
+      "position": 5741
+    },
+    {
+      "timestamp": "2026-04-14 18:56:02",
+      "rating": 695,
+      "position": 5744
+    },
+    {
+      "timestamp": "2026-04-14 19:06:12",
+      "rating": 695,
+      "position": 5747
+    },
+    {
+      "timestamp": "2026-04-14 19:16:41",
+      "rating": 695,
+      "position": 5746
+    },
+    {
+      "timestamp": "2026-04-14 19:36:31",
+      "rating": 695,
+      "position": 5762
+    },
+    {
+      "timestamp": "2026-04-14 19:47:33",
+      "rating": 695,
+      "position": 5764
+    },
+    {
+      "timestamp": "2026-04-14 19:56:36",
+      "rating": 695,
+      "position": 5774
+    },
+    {
+      "timestamp": "2026-04-14 20:06:13",
+      "rating": 695,
+      "position": 5778
+    },
+    {
+      "timestamp": "2026-04-14 20:16:43",
+      "rating": 695,
+      "position": 5789
+    },
+    {
+      "timestamp": "2026-04-14 20:26:47",
+      "rating": 695,
+      "position": 5794
+    },
+    {
+      "timestamp": "2026-04-14 20:36:46",
+      "rating": 695,
+      "position": 5795
+    },
+    {
+      "timestamp": "2026-04-14 20:56:20",
+      "rating": 695,
+      "position": 5805
+    },
+    {
+      "timestamp": "2026-04-14 21:06:30",
+      "rating": 695,
+      "position": 5807
+    },
+    {
+      "timestamp": "2026-04-14 21:18:19",
+      "rating": 695,
+      "position": 5812
+    },
+    {
+      "timestamp": "2026-04-14 21:26:33",
+      "rating": 695,
+      "position": 5828
+    },
+    {
+      "timestamp": "2026-04-14 21:36:30",
+      "rating": 695,
+      "position": 5837
+    },
+    {
+      "timestamp": "2026-04-14 21:48:41",
+      "rating": 695,
+      "position": 5842
+    },
+    {
+      "timestamp": "2026-04-14 21:56:23",
+      "rating": 695,
+      "position": 5843
+    },
+    {
+      "timestamp": "2026-04-14 22:06:34",
+      "rating": 695,
+      "position": 5839
+    },
+    {
+      "timestamp": "2026-04-14 22:17:53",
+      "rating": 695,
+      "position": 5840
+    },
+    {
+      "timestamp": "2026-04-14 22:49:52",
+      "rating": 695,
+      "position": 5862
+    },
+    {
+      "timestamp": "2026-04-14 22:57:21",
+      "rating": 695,
+      "position": 5868
+    },
+    {
+      "timestamp": "2026-04-14 23:06:33",
+      "rating": 695,
+      "position": 5863
+    },
+    {
+      "timestamp": "2026-04-14 23:16:31",
+      "rating": 695,
+      "position": 5867
+    },
+    {
+      "timestamp": "2026-04-14 23:26:43",
+      "rating": 695,
+      "position": 5873
+    },
+    {
+      "timestamp": "2026-04-14 23:36:31",
+      "rating": 695,
+      "position": 5878
+    },
+    {
+      "timestamp": "2026-04-14 23:58:20",
+      "rating": 695,
+      "position": 5890
+    },
+    {
+      "timestamp": "2026-04-15 00:08:11",
+      "rating": 695,
+      "position": 5896
+    },
+    {
+      "timestamp": "2026-04-15 00:17:45",
+      "rating": 695,
+      "position": 5908
+    },
+    {
+      "timestamp": "2026-04-15 00:26:10",
+      "rating": 695,
+      "position": 5902
+    },
+    {
+      "timestamp": "2026-04-15 00:36:34",
+      "rating": 695,
+      "position": 5909
+    },
+    {
+      "timestamp": "2026-04-15 00:56:00",
+      "rating": 695,
+      "position": 5918
+    },
+    {
+      "timestamp": "2026-04-15 01:06:10",
+      "rating": 695,
+      "position": 5920
+    },
+    {
+      "timestamp": "2026-04-15 01:16:10",
+      "rating": 695,
+      "position": 5928
+    },
+    {
+      "timestamp": "2026-04-15 01:35:58",
+      "rating": 695,
+      "position": 5933
+    },
+    {
+      "timestamp": "2026-04-15 01:46:19",
+      "rating": 695,
+      "position": 5934
+    },
+    {
+      "timestamp": "2026-04-15 02:05:13",
+      "rating": 695,
+      "position": 5941
+    },
+    {
+      "timestamp": "2026-04-15 02:15:13",
+      "rating": 695,
+      "position": 5942
+    },
+    {
+      "timestamp": "2026-04-15 02:25:19",
+      "rating": 695,
+      "position": 5947
+    },
+    {
+      "timestamp": "2026-04-15 02:35:17",
+      "rating": 695,
+      "position": 5948
+    },
+    {
+      "timestamp": "2026-04-15 02:55:15",
+      "rating": 695,
+      "position": 5953
+    },
+    {
+      "timestamp": "2026-04-15 03:05:16",
+      "rating": 695,
+      "position": 5952
+    },
+    {
+      "timestamp": "2026-04-15 03:15:14",
+      "rating": 695,
+      "position": 5958
+    },
+    {
+      "timestamp": "2026-04-15 03:25:13",
+      "rating": 695,
+      "position": 5962
+    },
+    {
+      "timestamp": "2026-04-15 03:35:21",
+      "rating": 695,
+      "position": 5969
+    },
+    {
+      "timestamp": "2026-04-15 03:45:15",
+      "rating": 695,
+      "position": 5971
+    },
+    {
+      "timestamp": "2026-04-15 04:05:16",
+      "rating": 695,
+      "position": 5976
+    },
+    {
+      "timestamp": "2026-04-15 04:15:15",
+      "rating": 695,
+      "position": 5977
+    },
+    {
+      "timestamp": "2026-04-15 04:25:13",
+      "rating": 695,
+      "position": 5977
+    },
+    {
+      "timestamp": "2026-04-15 04:35:14",
+      "rating": 695,
+      "position": 5980
+    },
+    {
+      "timestamp": "2026-04-15 04:45:13",
+      "rating": 695,
+      "position": 5982
+    },
+    {
+      "timestamp": "2026-04-15 04:55:14",
+      "rating": 695,
+      "position": 5986
+    },
+    {
+      "timestamp": "2026-04-15 05:15:15",
+      "rating": 695,
+      "position": 5990
+    },
+    {
+      "timestamp": "2026-04-15 05:25:14",
+      "rating": 695,
+      "position": 5995
+    },
+    {
+      "timestamp": "2026-04-15 05:35:14",
+      "rating": 695,
+      "position": 5992
+    },
+    {
+      "timestamp": "2026-04-15 05:45:14",
+      "rating": 695,
+      "position": 5997
+    },
+    {
+      "timestamp": "2026-04-15 05:55:13",
+      "rating": 695,
+      "position": 6000
+    },
+    {
+      "timestamp": "2026-04-15 06:05:10",
+      "rating": 695,
+      "position": 5998
+    },
+    {
+      "timestamp": "2026-04-15 06:15:14",
+      "rating": 695,
+      "position": 5994
+    },
+    {
+      "timestamp": "2026-04-15 06:25:13",
+      "rating": 695,
+      "position": 5995
+    },
+    {
+      "timestamp": "2026-04-15 06:55:13",
+      "rating": 695,
+      "position": 5996
+    },
+    {
+      "timestamp": "2026-04-15 07:25:14",
+      "rating": 695,
+      "position": 5996
+    },
+    {
+      "timestamp": "2026-04-15 07:35:15",
+      "rating": 695,
+      "position": 5998
+    },
+    {
+      "timestamp": "2026-04-15 07:45:13",
+      "rating": 695,
+      "position": 6000
+    },
+    {
+      "timestamp": "2026-04-15 07:55:13",
+      "rating": 695,
+      "position": 6001
+    },
+    {
+      "timestamp": "2026-04-15 08:05:16",
+      "rating": 695,
+      "position": 6004
+    },
+    {
+      "timestamp": "2026-04-15 08:15:46",
+      "rating": 695,
+      "position": 6002
+    },
+    {
+      "timestamp": "2026-04-15 08:25:14",
+      "rating": 695,
+      "position": 6002
+    },
+    {
+      "timestamp": "2026-04-15 08:35:15",
+      "rating": 695,
+      "position": 6009
+    },
+    {
+      "timestamp": "2026-04-15 08:45:14",
+      "rating": 695,
+      "position": 6008
+    },
+    {
+      "timestamp": "2026-04-15 08:55:15",
+      "rating": 695,
+      "position": 6015
+    },
+    {
+      "timestamp": "2026-04-15 09:06:06",
+      "rating": 695,
+      "position": 6015
+    },
+    {
+      "timestamp": "2026-04-15 09:26:35",
+      "rating": 695,
+      "position": 6023
+    },
+    {
+      "timestamp": "2026-04-15 09:35:57",
+      "rating": 695,
+      "position": 6023
+    },
+    {
+      "timestamp": "2026-04-15 09:45:50",
+      "rating": 695,
+      "position": 6026
+    },
+    {
+      "timestamp": "2026-04-15 09:56:17",
+      "rating": 695,
+      "position": 6027
+    },
+    {
+      "timestamp": "2026-04-15 10:05:47",
+      "rating": 695,
+      "position": 6028
+    },
+    {
+      "timestamp": "2026-04-15 10:16:12",
+      "rating": 695,
+      "position": 6030
+    },
+    {
+      "timestamp": "2026-04-15 10:26:23",
+      "rating": 695,
+      "position": 6033
+    },
+    {
+      "timestamp": "2026-04-15 10:36:27",
+      "rating": 695,
+      "position": 6033
+    },
+    {
+      "timestamp": "2026-04-15 10:46:27",
+      "rating": 695,
+      "position": 6030
+    },
+    {
+      "timestamp": "2026-04-15 10:56:13",
+      "rating": 695,
+      "position": 6025
+    },
+    {
+      "timestamp": "2026-04-15 11:06:08",
+      "rating": 695,
+      "position": 6026
+    },
+    {
+      "timestamp": "2026-04-15 11:26:22",
+      "rating": 695,
+      "position": 6030
+    },
+    {
+      "timestamp": "2026-04-15 11:36:36",
+      "rating": 695,
+      "position": 6034
+    },
+    {
+      "timestamp": "2026-04-15 11:46:59",
+      "rating": 695,
+      "position": 6034
+    },
+    {
+      "timestamp": "2026-04-15 11:56:00",
+      "rating": 695,
+      "position": 6037
+    },
+    {
+      "timestamp": "2026-04-15 12:06:57",
+      "rating": 695,
+      "position": 6036
+    },
+    {
+      "timestamp": "2026-04-15 12:16:11",
+      "rating": 690,
+      "position": 6310
+    },
+    {
+      "timestamp": "2026-04-15 12:26:16",
+      "rating": 690,
+      "position": 6315
+    },
+    {
+      "timestamp": "2026-04-15 12:36:43",
+      "rating": 690,
+      "position": 6317
+    },
+    {
+      "timestamp": "2026-04-15 12:46:11",
+      "rating": 690,
+      "position": 6317
+    },
+    {
+      "timestamp": "2026-04-15 12:56:10",
+      "rating": 676,
+      "position": 6999
+    },
+    {
+      "timestamp": "2026-04-15 13:16:24",
+      "rating": 642,
+      "position": 9020
+    },
+    {
+      "timestamp": "2026-04-15 13:28:36",
+      "rating": 642,
+      "position": 9023
+    },
+    {
+      "timestamp": "2026-04-15 13:36:05",
+      "rating": 642,
+      "position": 9028
+    },
+    {
+      "timestamp": "2026-04-15 13:46:31",
+      "rating": 645,
+      "position": 8835
+    },
+    {
+      "timestamp": "2026-04-15 13:56:25",
+      "rating": 645,
+      "position": 8847
+    },
+    {
+      "timestamp": "2026-04-15 14:06:46",
+      "rating": 645,
+      "position": 8844
+    },
+    {
+      "timestamp": "2026-04-15 14:16:16",
+      "rating": 645,
+      "position": 8843
+    },
+    {
+      "timestamp": "2026-04-15 14:28:52",
+      "rating": 645,
+      "position": 8852
+    },
+    {
+      "timestamp": "2026-04-15 14:36:14",
+      "rating": 645,
+      "position": 8853
+    },
+    {
+      "timestamp": "2026-04-15 14:46:18",
+      "rating": 645,
+      "position": 8854
+    },
+    {
+      "timestamp": "2026-04-15 14:59:09",
+      "rating": 645,
+      "position": 8862
+    },
+    {
+      "timestamp": "2026-04-15 15:07:03",
+      "rating": 645,
+      "position": 8872
+    },
+    {
+      "timestamp": "2026-04-15 15:16:52",
+      "rating": 645,
+      "position": 8866
+    },
+    {
+      "timestamp": "2026-04-15 15:48:32",
+      "rating": 645,
+      "position": 8876
+    },
+    {
+      "timestamp": "2026-04-15 16:06:32",
+      "rating": 645,
+      "position": 8875
+    },
+    {
+      "timestamp": "2026-04-15 16:16:24",
+      "rating": 645,
+      "position": 8889
+    },
+    {
+      "timestamp": "2026-04-15 16:27:14",
+      "rating": 645,
+      "position": 8892
+    },
+    {
+      "timestamp": "2026-04-15 16:36:36",
+      "rating": 645,
+      "position": 8898
+    },
+    {
+      "timestamp": "2026-04-15 16:46:23",
+      "rating": 645,
+      "position": 8902
+    },
+    {
+      "timestamp": "2026-04-15 16:56:05",
+      "rating": 645,
+      "position": 8906
+    },
+    {
+      "timestamp": "2026-04-15 17:05:58",
+      "rating": 645,
+      "position": 8901
+    },
+    {
+      "timestamp": "2026-04-15 17:16:00",
+      "rating": 645,
+      "position": 8908
+    },
+    {
+      "timestamp": "2026-04-15 17:26:23",
+      "rating": 645,
+      "position": 8903
+    },
+    {
+      "timestamp": "2026-04-15 17:36:04",
+      "rating": 645,
+      "position": 8899
+    },
+    {
+      "timestamp": "2026-04-15 17:45:59",
+      "rating": 645,
+      "position": 8909
+    },
+    {
+      "timestamp": "2026-04-15 17:57:07",
+      "rating": 645,
+      "position": 8910
+    },
+    {
+      "timestamp": "2026-04-15 18:06:37",
+      "rating": 645,
+      "position": 8919
+    },
+    {
+      "timestamp": "2026-04-15 18:16:31",
+      "rating": 645,
+      "position": 8923
+    },
+    {
+      "timestamp": "2026-04-15 18:36:46",
+      "rating": 645,
+      "position": 8924
+    },
+    {
+      "timestamp": "2026-04-15 18:46:07",
+      "rating": 645,
+      "position": 8929
+    },
+    {
+      "timestamp": "2026-04-15 18:56:18",
+      "rating": 645,
+      "position": 8933
+    },
+    {
+      "timestamp": "2026-04-15 19:06:22",
+      "rating": 645,
+      "position": 8948
+    },
+    {
+      "timestamp": "2026-04-15 19:28:00",
+      "rating": 645,
+      "position": 8952
+    },
+    {
+      "timestamp": "2026-04-15 19:36:57",
+      "rating": 645,
+      "position": 8959
+    },
+    {
+      "timestamp": "2026-04-15 19:50:53",
+      "rating": 645,
+      "position": 8969
+    },
+    {
+      "timestamp": "2026-04-15 19:56:24",
+      "rating": 645,
+      "position": 8975
+    },
+    {
+      "timestamp": "2026-04-15 20:09:14",
+      "rating": 645,
+      "position": 8982
+    },
+    {
+      "timestamp": "2026-04-15 20:16:30",
+      "rating": 645,
+      "position": 8984
+    },
+    {
+      "timestamp": "2026-04-15 20:29:06",
+      "rating": 645,
+      "position": 8985
+    },
+    {
+      "timestamp": "2026-04-15 20:36:32",
+      "rating": 645,
+      "position": 8996
+    },
+    {
+      "timestamp": "2026-04-15 20:47:15",
+      "rating": 645,
+      "position": 8992
+    },
+    {
+      "timestamp": "2026-04-15 20:56:34",
+      "rating": 645,
+      "position": 8998
+    },
+    {
+      "timestamp": "2026-04-15 21:07:57",
+      "rating": 645,
+      "position": 8994
+    },
+    {
+      "timestamp": "2026-04-15 21:17:35",
+      "rating": 645,
+      "position": 9006
+    },
+    {
+      "timestamp": "2026-04-15 21:26:33",
+      "rating": 645,
+      "position": 9011
+    },
+    {
+      "timestamp": "2026-04-15 22:07:04",
+      "rating": 645,
+      "position": 9027
+    },
+    {
+      "timestamp": "2026-04-15 22:16:29",
+      "rating": 645,
+      "position": 9027
+    },
+    {
+      "timestamp": "2026-04-15 22:36:20",
+      "rating": 645,
+      "position": 9028
+    },
+    {
+      "timestamp": "2026-04-15 22:47:30",
+      "rating": 645,
+      "position": 9027
+    },
+    {
+      "timestamp": "2026-04-15 22:58:26",
+      "rating": 645,
+      "position": 9036
+    },
+    {
+      "timestamp": "2026-04-15 23:36:49",
+      "rating": 645,
+      "position": 9062
+    },
+    {
+      "timestamp": "2026-04-15 23:56:33",
+      "rating": 645,
+      "position": 9074
+    },
+    {
+      "timestamp": "2026-04-16 00:06:28",
+      "rating": 645,
+      "position": 9070
+    },
+    {
+      "timestamp": "2026-04-16 00:16:24",
+      "rating": 645,
+      "position": 9069
+    },
+    {
+      "timestamp": "2026-04-16 00:26:35",
+      "rating": 645,
+      "position": 9064
+    },
+    {
+      "timestamp": "2026-04-16 00:36:35",
+      "rating": 645,
+      "position": 9069
+    },
+    {
+      "timestamp": "2026-04-16 00:56:20",
+      "rating": 645,
+      "position": 9092
+    },
+    {
+      "timestamp": "2026-04-16 01:06:08",
+      "rating": 645,
+      "position": 9098
+    },
+    {
+      "timestamp": "2026-04-16 01:15:57",
+      "rating": 645,
+      "position": 9101
+    },
+    {
+      "timestamp": "2026-04-16 01:25:47",
+      "rating": 645,
+      "position": 9103
+    },
+    {
+      "timestamp": "2026-04-16 01:35:32",
+      "rating": 645,
+      "position": 9105
+    },
+    {
+      "timestamp": "2026-04-16 01:45:51",
+      "rating": 645,
+      "position": 9105
+    },
+    {
+      "timestamp": "2026-04-16 01:55:23",
+      "rating": 645,
+      "position": 9115
+    },
+    {
+      "timestamp": "2026-04-16 02:06:23",
+      "rating": 645,
+      "position": 9115
+    },
+    {
+      "timestamp": "2026-04-16 02:15:55",
+      "rating": 645,
+      "position": 9122
+    },
+    {
+      "timestamp": "2026-04-16 02:25:18",
+      "rating": 645,
+      "position": 9131
+    },
+    {
+      "timestamp": "2026-04-16 02:45:14",
+      "rating": 645,
+      "position": 9151
+    },
+    {
+      "timestamp": "2026-04-16 02:55:15",
+      "rating": 645,
+      "position": 9151
+    },
+    {
+      "timestamp": "2026-04-16 03:05:15",
+      "rating": 645,
+      "position": 9159
+    },
+    {
+      "timestamp": "2026-04-16 03:15:15",
+      "rating": 645,
+      "position": 9169
+    },
+    {
+      "timestamp": "2026-04-16 03:25:15",
+      "rating": 645,
+      "position": 9179
+    },
+    {
+      "timestamp": "2026-04-16 03:35:16",
+      "rating": 645,
+      "position": 9187
+    },
+    {
+      "timestamp": "2026-04-16 03:55:15",
+      "rating": 645,
+      "position": 9189
+    },
+    {
+      "timestamp": "2026-04-16 04:25:16",
+      "rating": 645,
+      "position": 9203
+    },
+    {
+      "timestamp": "2026-04-16 04:35:15",
+      "rating": 645,
+      "position": 9209
+    },
+    {
+      "timestamp": "2026-04-16 04:45:15",
+      "rating": 645,
+      "position": 9210
+    },
+    {
+      "timestamp": "2026-04-16 05:05:16",
+      "rating": 645,
+      "position": 9222
+    },
+    {
+      "timestamp": "2026-04-16 05:15:16",
+      "rating": 645,
+      "position": 9225
+    },
+    {
+      "timestamp": "2026-04-16 05:25:15",
+      "rating": 645,
+      "position": 9233
+    },
+    {
+      "timestamp": "2026-04-16 05:35:15",
+      "rating": 645,
+      "position": 9233
+    },
+    {
+      "timestamp": "2026-04-16 05:55:15",
+      "rating": 645,
+      "position": 9236
+    },
+    {
+      "timestamp": "2026-04-16 06:05:16",
+      "rating": 645,
+      "position": 9240
+    },
+    {
+      "timestamp": "2026-04-16 06:15:15",
+      "rating": 645,
+      "position": 9238
+    },
+    {
+      "timestamp": "2026-04-16 06:25:14",
+      "rating": 645,
+      "position": 9246
+    },
+    {
+      "timestamp": "2026-04-16 06:45:15",
+      "rating": 645,
+      "position": 9242
+    },
+    {
+      "timestamp": "2026-04-16 06:55:03",
+      "rating": 645,
+      "position": 9246
+    },
+    {
+      "timestamp": "2026-04-16 07:05:16",
+      "rating": 645,
+      "position": 9246
+    },
+    {
+      "timestamp": "2026-04-16 07:25:15",
+      "rating": 645,
+      "position": 9251
+    },
+    {
+      "timestamp": "2026-04-16 07:35:15",
+      "rating": 645,
+      "position": 9251
+    },
+    {
+      "timestamp": "2026-04-16 07:45:15",
+      "rating": 645,
+      "position": 9252
+    },
+    {
+      "timestamp": "2026-04-16 07:55:15",
+      "rating": 645,
+      "position": 9254
+    },
+    {
+      "timestamp": "2026-04-16 08:16:07",
+      "rating": 645,
+      "position": 9259
+    },
+    {
+      "timestamp": "2026-04-16 08:25:14",
+      "rating": 645,
+      "position": 9260
+    },
+    {
+      "timestamp": "2026-04-16 08:45:15",
+      "rating": 645,
+      "position": 9266
+    },
+    {
+      "timestamp": "2026-04-16 08:56:44",
+      "rating": 645,
+      "position": 9272
+    },
+    {
+      "timestamp": "2026-04-16 09:05:43",
+      "rating": 645,
+      "position": 9271
+    },
+    {
+      "timestamp": "2026-04-16 09:16:03",
+      "rating": 645,
+      "position": 9270
+    },
+    {
+      "timestamp": "2026-04-16 09:46:36",
+      "rating": 645,
+      "position": 9277
+    },
+    {
+      "timestamp": "2026-04-16 10:36:37",
+      "rating": 645,
+      "position": 9284
+    },
+    {
+      "timestamp": "2026-04-16 10:46:48",
+      "rating": 645,
+      "position": 9288
+    },
+    {
+      "timestamp": "2026-04-16 11:06:49",
+      "rating": 645,
+      "position": 9275
+    },
+    {
+      "timestamp": "2026-04-16 11:16:09",
+      "rating": 645,
+      "position": 9277
+    },
+    {
+      "timestamp": "2026-04-16 11:37:14",
+      "rating": 645,
+      "position": 9285
+    },
+    {
+      "timestamp": "2026-04-16 11:46:47",
+      "rating": 645,
+      "position": 9292
+    },
+    {
+      "timestamp": "2026-04-16 11:56:34",
+      "rating": 645,
+      "position": 9297
+    },
+    {
+      "timestamp": "2026-04-16 12:06:18",
+      "rating": 645,
+      "position": 9300
+    },
+    {
+      "timestamp": "2026-04-16 12:16:28",
+      "rating": 645,
+      "position": 9306
+    },
+    {
+      "timestamp": "2026-04-16 12:36:22",
+      "rating": 645,
+      "position": 9316
+    },
+    {
+      "timestamp": "2026-04-16 12:47:28",
+      "rating": 645,
+      "position": 9319
+    },
+    {
+      "timestamp": "2026-04-16 13:06:25",
+      "rating": 645,
+      "position": 9315
+    },
+    {
+      "timestamp": "2026-04-16 13:18:12",
+      "rating": 645,
+      "position": 9317
+    },
+    {
+      "timestamp": "2026-04-16 13:26:53",
+      "rating": 645,
+      "position": 9327
+    },
+    {
+      "timestamp": "2026-04-16 13:36:08",
+      "rating": 645,
+      "position": 9324
+    },
+    {
+      "timestamp": "2026-04-16 13:57:04",
+      "rating": 645,
+      "position": 9338
+    },
+    {
+      "timestamp": "2026-04-16 14:06:15",
+      "rating": 645,
+      "position": 9339
+    },
+    {
+      "timestamp": "2026-04-16 14:26:18",
+      "rating": 645,
+      "position": 9349
+    },
+    {
+      "timestamp": "2026-04-16 14:36:23",
+      "rating": 645,
+      "position": 9347
+    },
+    {
+      "timestamp": "2026-04-16 14:58:34",
+      "rating": 645,
+      "position": 9346
+    },
+    {
+      "timestamp": "2026-04-16 15:06:27",
+      "rating": 645,
+      "position": 9348
+    },
+    {
+      "timestamp": "2026-04-16 15:29:23",
+      "rating": 645,
+      "position": 9351
+    },
+    {
+      "timestamp": "2026-04-16 15:46:32",
+      "rating": 645,
+      "position": 9351
+    },
+    {
+      "timestamp": "2026-04-16 16:17:09",
+      "rating": 645,
+      "position": 9363
+    },
+    {
+      "timestamp": "2026-04-16 16:26:48",
+      "rating": 645,
+      "position": 9365
+    },
+    {
+      "timestamp": "2026-04-16 16:37:16",
+      "rating": 645,
+      "position": 9364
+    },
+    {
+      "timestamp": "2026-04-16 16:46:51",
+      "rating": 645,
+      "position": 9369
+    },
+    {
+      "timestamp": "2026-04-16 17:16:07",
+      "rating": 645,
+      "position": 9379
+    },
+    {
+      "timestamp": "2026-04-16 17:26:19",
+      "rating": 645,
+      "position": 9380
+    },
+    {
+      "timestamp": "2026-04-16 17:37:16",
+      "rating": 645,
+      "position": 9386
+    },
+    {
+      "timestamp": "2026-04-16 17:46:15",
+      "rating": 645,
+      "position": 9390
+    },
+    {
+      "timestamp": "2026-04-16 17:56:51",
+      "rating": 645,
+      "position": 9393
+    },
+    {
+      "timestamp": "2026-04-16 18:06:46",
+      "rating": 645,
+      "position": 9401
+    },
+    {
+      "timestamp": "2026-04-16 18:16:51",
+      "rating": 645,
+      "position": 9394
+    },
+    {
+      "timestamp": "2026-04-16 18:46:35",
+      "rating": 645,
+      "position": 9409
+    },
+    {
+      "timestamp": "2026-04-16 19:18:28",
+      "rating": 645,
+      "position": 9415
+    },
+    {
+      "timestamp": "2026-04-16 19:28:32",
+      "rating": 645,
+      "position": 9418
+    },
+    {
+      "timestamp": "2026-04-16 19:37:50",
+      "rating": 645,
+      "position": 9414
+    },
+    {
+      "timestamp": "2026-04-16 19:46:25",
+      "rating": 645,
+      "position": 9416
+    },
+    {
+      "timestamp": "2026-04-16 20:26:20",
+      "rating": 633,
+      "position": 10354
+    },
+    {
+      "timestamp": "2026-04-16 20:49:16",
+      "rating": 633,
+      "position": 10353
+    },
+    {
+      "timestamp": "2026-04-16 20:57:00",
+      "rating": 636,
+      "position": 10143
+    },
+    {
+      "timestamp": "2026-04-16 21:26:38",
+      "rating": 624,
+      "position": 10999
+    },
+    {
+      "timestamp": "2026-04-16 21:46:51",
+      "rating": 608,
+      "position": 12301
+    },
+    {
+      "timestamp": "2026-04-16 21:56:59",
+      "rating": 608,
+      "position": 12303
+    },
+    {
+      "timestamp": "2026-04-16 22:06:34",
+      "rating": 608,
+      "position": 12306
+    },
+    {
+      "timestamp": "2026-04-16 22:18:36",
+      "rating": 633,
+      "position": 10402
+    },
+    {
+      "timestamp": "2026-04-16 22:29:20",
+      "rating": 633,
+      "position": 10412
+    },
+    {
+      "timestamp": "2026-04-16 22:37:35",
+      "rating": 633,
+      "position": 10420
+    },
+    {
+      "timestamp": "2026-04-16 22:46:48",
+      "rating": 656,
+      "position": 8744
+    },
+    {
+      "timestamp": "2026-04-16 22:56:54",
+      "rating": 656,
+      "position": 8751
+    },
+    {
+      "timestamp": "2026-04-16 23:27:51",
+      "rating": 643,
+      "position": 9654
+    },
+    {
+      "timestamp": "2026-04-16 23:36:44",
+      "rating": 643,
+      "position": 9665
+    },
+    {
+      "timestamp": "2026-04-16 23:57:18",
+      "rating": 666,
+      "position": 8159
+    },
+    {
+      "timestamp": "2026-04-17 00:06:43",
+      "rating": 666,
+      "position": 8161
+    },
+    {
+      "timestamp": "2026-04-17 00:36:41",
+      "rating": 666,
+      "position": 8174
+    },
+    {
+      "timestamp": "2026-04-17 00:46:25",
+      "rating": 666,
+      "position": 8180
+    },
+    {
+      "timestamp": "2026-04-17 00:56:24",
+      "rating": 666,
+      "position": 8189
+    },
+    {
+      "timestamp": "2026-04-17 01:16:48",
+      "rating": 666,
+      "position": 8190
+    },
+    {
+      "timestamp": "2026-04-17 01:26:17",
+      "rating": 666,
+      "position": 8195
+    },
+    {
+      "timestamp": "2026-04-17 01:36:20",
+      "rating": 666,
+      "position": 8195
+    },
+    {
+      "timestamp": "2026-04-17 01:55:41",
+      "rating": 666,
+      "position": 8189
+    },
+    {
+      "timestamp": "2026-04-17 02:05:18",
+      "rating": 666,
+      "position": 8195
+    },
+    {
+      "timestamp": "2026-04-17 02:25:15",
+      "rating": 666,
+      "position": 8199
+    },
+    {
+      "timestamp": "2026-04-17 02:35:16",
+      "rating": 666,
+      "position": 8200
+    },
+    {
+      "timestamp": "2026-04-17 02:45:15",
+      "rating": 666,
+      "position": 8210
+    },
+    {
+      "timestamp": "2026-04-17 02:55:27",
+      "rating": 666,
+      "position": 8208
+    },
+    {
+      "timestamp": "2026-04-17 03:15:16",
+      "rating": 666,
+      "position": 8210
+    },
+    {
+      "timestamp": "2026-04-17 03:25:14",
+      "rating": 666,
+      "position": 8216
+    },
+    {
+      "timestamp": "2026-04-17 03:55:16",
+      "rating": 666,
+      "position": 8219
+    },
+    {
+      "timestamp": "2026-04-17 04:05:03",
+      "rating": 666,
+      "position": 8223
+    },
+    {
+      "timestamp": "2026-04-17 04:15:23",
+      "rating": 666,
+      "position": 8224
+    },
+    {
+      "timestamp": "2026-04-17 04:25:16",
+      "rating": 666,
+      "position": 8225
+    },
+    {
+      "timestamp": "2026-04-17 04:35:15",
+      "rating": 666,
+      "position": 8227
+    },
+    {
+      "timestamp": "2026-04-17 04:55:15",
+      "rating": 666,
+      "position": 8236
+    },
+    {
+      "timestamp": "2026-04-17 05:05:19",
+      "rating": 666,
+      "position": 8238
+    },
+    {
+      "timestamp": "2026-04-17 05:15:15",
+      "rating": 666,
+      "position": 8239
+    },
+    {
+      "timestamp": "2026-04-17 05:35:15",
+      "rating": 666,
+      "position": 8238
+    },
+    {
+      "timestamp": "2026-04-17 05:45:15",
+      "rating": 666,
+      "position": 8235
+    },
+    {
+      "timestamp": "2026-04-17 06:05:16",
+      "rating": 666,
+      "position": 8238
+    },
+    {
+      "timestamp": "2026-04-17 06:35:24",
+      "rating": 666,
+      "position": 8241
+    },
+    {
+      "timestamp": "2026-04-17 07:05:15",
+      "rating": 666,
+      "position": 8242
+    },
+    {
+      "timestamp": "2026-04-17 07:35:15",
+      "rating": 666,
+      "position": 8243
+    },
+    {
+      "timestamp": "2026-04-17 07:45:15",
+      "rating": 666,
+      "position": 8240
+    },
+    {
+      "timestamp": "2026-04-17 07:55:16",
+      "rating": 666,
+      "position": 8238
+    },
+    {
+      "timestamp": "2026-04-17 08:15:15",
+      "rating": 666,
+      "position": 8241
+    },
+    {
+      "timestamp": "2026-04-17 08:35:16",
+      "rating": 666,
+      "position": 8236
+    },
+    {
+      "timestamp": "2026-04-17 08:46:27",
+      "rating": 666,
+      "position": 8234
+    },
+    {
+      "timestamp": "2026-04-17 09:06:39",
+      "rating": 666,
+      "position": 8237
+    },
+    {
+      "timestamp": "2026-04-17 09:25:54",
+      "rating": 666,
+      "position": 8245
+    },
+    {
+      "timestamp": "2026-04-17 09:36:25",
+      "rating": 666,
+      "position": 8248
+    },
+    {
+      "timestamp": "2026-04-17 09:56:45",
+      "rating": 678,
+      "position": 7520
+    },
+    {
+      "timestamp": "2026-04-17 10:06:18",
+      "rating": 678,
+      "position": 7519
+    },
+    {
+      "timestamp": "2026-04-17 10:16:08",
+      "rating": 678,
+      "position": 7517
+    },
+    {
+      "timestamp": "2026-04-17 10:26:31",
+      "rating": 678,
+      "position": 7512
+    },
+    {
+      "timestamp": "2026-04-17 10:35:59",
+      "rating": 678,
+      "position": 7512
+    },
+    {
+      "timestamp": "2026-04-17 10:56:33",
+      "rating": 678,
+      "position": 7523
+    },
+    {
+      "timestamp": "2026-04-17 11:06:29",
+      "rating": 678,
+      "position": 7524
+    },
+    {
+      "timestamp": "2026-04-17 11:16:08",
+      "rating": 678,
+      "position": 7525
+    },
+    {
+      "timestamp": "2026-04-17 11:27:32",
+      "rating": 659,
+      "position": 8693
+    },
+    {
+      "timestamp": "2026-04-17 11:37:02",
+      "rating": 659,
+      "position": 8699
+    },
+    {
+      "timestamp": "2026-04-17 11:46:32",
+      "rating": 659,
+      "position": 8696
+    },
+    {
+      "timestamp": "2026-04-17 11:56:28",
+      "rating": 681,
+      "position": 7390
+    }
+  ]
+}

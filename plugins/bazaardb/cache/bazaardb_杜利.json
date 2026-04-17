@@ -1,0 +1,81 @@
+[
+  {
+    "type": "item",
+    "name": "杜利的围巾",
+    "hero_tag": "杜利",
+    "type_tags": [
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Apparel"
+    ],
+    "description": "此物品及其相邻物品免疫冻结。",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速2件物品1秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品1秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速2件物品1秒"
+      },
+      {
+        "name": "护盾",
+        "description": "此物品的护盾值翻倍。"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品护盾值"
+      },
+      {
+        "name": "毒素",
+        "description": "造成剧毒，等量于此物品护盾值的10%"
+      },
+      {
+        "name": "炽焰",
+        "description": "造成灼烧，等量于此物品护盾值的10%"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "黑曜",
+        "description": "造成伤害，等量于此物品护盾"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品护盾值的10%"
+      }
+    ],
+    "cooldowns": [
+      "5"
+    ],
+    "active_skills": [
+      "获得75 » 150 » 300护盾"
+    ],
+    "passive_skills": [
+      "此物品及其相邻物品免疫冻结。"
+    ],
+    "url": "https://bazaardb.gg/card/1828qtjqzyjl3kshg2dlxj4dsf4/Dooley's-Scarf",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/8cdbcc79589d39a9e382091234bc03b7aed99220@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRloBAABXRUJQVlA4IE4BAACQBwCdASoUABQAPl0sk0iCgKqAwLiOwAnTKEe1jgNs2wrwG2AzzPrGPQl/VX0x/ZaIiwLyQEY/MMcYSApLMJAe8IFNN0AA/vS0cckjuEozMqmpZXY9+wQEdcPh+UY2d5nDEpVxyHvr9H6mmRyaNC17kC3c1vHC2tIf1VmR3SooQ03tlBIdaxHDCGJ6AgJF4GGBldaRaGgKsXdpOiksWeAav3FiDdLFa+WvrTpety2dBn6Vl5Ezf6ztAmPuVUEA5m4pea53l6Pxv3/4bqvGDrwFnxr7kk1gLOON3SEPwdLjMka8SpiyWRez5NsQ8aLH4wwWhXT5bKXYbsvggyjbzSNgtsiOBX0X/XrIKZYPQNNeDf9V4BZLjqU/DUesiKQW8IFtiQ9EQGJ8dbJ30XKw+8v1Ac7Cbdp6vZX9yMOJqoljN7O0JCBhSnX229JKAAAA"
+  }
+]

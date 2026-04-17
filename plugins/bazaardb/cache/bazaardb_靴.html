@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>BazaarDB 卡片</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a1a;
+    font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    padding: 20px;
+    display: inline-block;
+    min-width: 980px;
+  }
+
+  /* ══ 通用卡片 ══ */
+  .card {
+    border-radius: 10px;
+    overflow: hidden;
+    width: 980px;
+    margin-bottom: 20px;
+  }
+  .card:last-child { margin-bottom: 0; }
+
+  /* ══ 物品卡片 ══ */
+  .item-card {
+    background: #252218;
+    border: 1px solid #3a3520;
+  }
+  .card-header {
+    display: flex; align-items: center;
+    background: #2a2518;
+    border-bottom: 1px solid #3a3520;
+    padding: 14px 18px; gap: 16px;
+  }
+  .item-image-wrap {
+    flex-shrink: 0; width: 220px; height: 220px;
+    border-radius: 6px;
+    background: linear-gradient(135deg,#5a4a1a,#3a2e10);
+    border: 2px solid #c8a84b;
+    position: relative; overflow: hidden;
+  }
+  .item-image-wrap .img-blur {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; filter: blur(8px); transform: scale(1.1);
+  }
+  .item-image-wrap .img-main {
+    position: relative; z-index: 10;
+    width: 100%; height: 100%; object-fit: contain;
+  }
+  .item-meta { display: flex; flex-direction: column; gap: 7px; min-width: 130px; }
+  .item-name-row { display: flex; align-items: center; gap: 10px; }
+  .item-name { font-size: 22px; font-weight: 700; color: #f0e6c0; letter-spacing: 0.5px; }
+  .hero-tag {
+    background: #3d2e5a; color: #b89de0;
+    border: 1px solid #6a4fa0; border-radius: 4px;
+    font-size: 11px; font-weight: 700; padding: 2px 7px; letter-spacing: 1px;
+  }
+  .type-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag-tier { background:#3a2e08; color:#d4a820; border:1px solid #8a6a10; border-radius:4px; font-size:12px; font-weight:600; padding:2px 9px; }
+  .tag-type { background:#1a2e3a; color:#4ab8e0; border:1px solid #2a6a8a; border-radius:4px; font-size:12px; font-weight:600; padding:2px 9px; }
+  .item-desc { flex:1; font-size:14px; color:#c8bfa0; line-height:1.6; padding-left:4px; }
+
+  /* 冷却时间 */
+  .item-cooldown {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(60,160,220,0.12);
+    border: 1px solid rgba(60,160,220,0.30);
+    border-radius: 5px; padding: 3px 10px;
+    margin-top: 4px; align-self: flex-start;
+  }
+  .cd-icon { font-size: 13px; color: #60b8e8; }
+  .cd-val  { font-size: 14px; font-weight: 700; color: #80d0f8; letter-spacing: 0.5px; }
+  .cd-unit { font-size: 12px; color: #60a0c0; }
+
+  /* 技能描述区 */
+  .item-skills {
+    flex: 1; display: flex; flex-direction: column; gap: 5px;
+    padding-left: 4px; justify-content: center;
+  }
+  .skill-line {
+    font-size: 13px; line-height: 1.55;
+    padding: 4px 10px; border-radius: 5px;
+  }
+  .skill-active {
+    background: rgba(220,160,40,0.10);
+    border-left: 3px solid #d4a820;
+    color: #e0d0a0;
+  }
+  .skill-passive {
+    background: rgba(100,160,220,0.08);
+    border-left: 3px solid #5090d0;
+    color: #c0cce0;
+  }
+
+  /* 词条网格 */
+  .enchantments-grid { display:grid; grid-template-columns:repeat(6,1fr); }
+  .enchant-cell { padding:10px 12px; border-right:1px solid #3a3520; border-bottom:1px solid #3a3520; }
+  .enchant-cell:nth-child(6n) { border-right:none; }
+  .enchant-cell:nth-last-child(-n+6) { border-bottom:none; }
+  .enc-golden   { background:rgba(200,168,40,.08); }
+  .enc-slow     { background:rgba(100,80,180,.10); }
+  .enc-freeze   { background:rgba(60,160,220,.10); }
+  .enc-haste    { background:rgba(60,200,120,.10); }
+  .enc-shield   { background:rgba(80,140,220,.10); }
+  .enc-heal     { background:rgba(60,200,100,.10); }
+  .enc-poison   { background:rgba(100,200,60,.10); }
+  .enc-burn     { background:rgba(220,100,40,.10); }
+  .enc-charge   { background:rgba(220,180,40,.10); }
+  .enc-crit     { background:rgba(220,60,60,.10); }
+  .enc-radiant  { background:rgba(220,200,80,.10); }
+  .enc-obsidian { background:rgba(80,60,120,.10); }
+  .enc-evergreen{ background:rgba(60,180,80,.10); }
+  .enc-default  { background:rgba(100,100,100,.08); }
+  .enchant-name { font-size:12px; font-weight:700; margin-bottom:5px; }
+  .enc-golden   .enchant-name { color:#d4a820; }
+  .enc-slow     .enchant-name { color:#9070d0; }
+  .enc-freeze   .enchant-name { color:#40b0e0; }
+  .enc-haste    .enchant-name { color:#40d080; }
+  .enc-shield   .enchant-name { color:#5090e0; }
+  .enc-heal     .enchant-name { color:#40c870; }
+  .enc-poison   .enchant-name { color:#80c840; }
+  .enc-burn     .enchant-name { color:#e06030; }
+  .enc-charge   .enchant-name { color:#e0b830; }
+  .enc-crit     .enchant-name { color:#e04040; }
+  .enc-radiant  .enchant-name { color:#e0c840; }
+  .enc-obsidian .enchant-name { color:#a080e0; }
+  .enc-evergreen .enchant-name { color:#40c060; }
+  .enc-default  .enchant-name { color:#a0a0a0; }
+  .enchant-desc { font-size:10px; color:#a09880; line-height:1.5; }
+  .kw-slow     { color:#9070d0; font-weight:600; }
+  .kw-freeze   { color:#40b0e0; font-weight:600; }
+  .kw-haste    { color:#40d080; font-weight:600; }
+  .kw-shield   { color:#5090e0; font-weight:600; }
+  .kw-heal     { color:#40c870; font-weight:600; }
+  .kw-poison   { color:#80c840; font-weight:600; }
+  .kw-burn     { color:#e06030; font-weight:600; }
+  .kw-charge   { color:#e0b830; font-weight:600; }
+  .kw-crit     { color:#e04040; font-weight:600; }
+  .kw-dmg      { color:#e04040; font-weight:600; }
+  .kw-life     { color:#40c060; font-weight:600; }
+  .kw-val      { color:#f0c040; font-weight:700; }
+
+  /* ══ 怪物卡片 ══ */
+  .monster-card {
+    background: #1e2018;
+    border: 1px solid #3a4020;
+  }
+  .monster-header {
+    display: flex; align-items: center;
+    padding: 14px 18px; gap: 20px;
+  }
+
+  .monster-left {
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0; min-width: 220px;
+  }
+  .monster-portrait-wrap {
+    width: 80px; height: 80px;
+    border-radius: 8px;
+    border: 2px solid #c8a84b;
+    position: relative; overflow: hidden;
+    background: #2a2a18;
+    flex-shrink: 0;
+  }
+  .monster-portrait-wrap .img-blur {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; filter: blur(6px); transform: scale(1.15);
+  }
+  .monster-portrait-wrap .img-main {
+    position: relative; z-index: 10;
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .monster-meta { display: flex; flex-direction: column; gap: 5px; }
+  .monster-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .monster-name { font-size: 20px; font-weight: 700; color: #f0e6c0; }
+  .tier-tag {
+    font-size: 11px; font-weight: 700; padding: 2px 8px;
+    border-radius: 4px; border: 1px solid; background: rgba(255,255,255,0.05);
+  }
+  .monster-level { font-size: 12px; color: #888; }
+  .monster-rewards { display: flex; gap: 12px; margin-top: 2px; }
+  .reward-gold { font-size: 12px; font-weight: 700; color: #d4a820; }
+  .reward-xp   { font-size: 12px; font-weight: 700; color: #60a8e0; }
+
+  .monster-right {
+    flex: 1; display: flex; flex-direction: column; gap: 10px; justify-content: center;
+  }
+  .monster-hp {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(60,200,100,0.12);
+    border: 1px solid rgba(60,200,100,0.25);
+    border-radius: 6px; padding: 4px 14px;
+    align-self: flex-start;
+  }
+  .hp-icon { color: #40c870; font-size: 14px; }
+  .hp-value { font-size: 16px; font-weight: 700; color: #40c870; }
+
+  .monster-items-row {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start;
+  }
+  .monster-item-slot {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    width: 64px;
+  }
+  .monster-item-img-wrap {
+    width: 56px; height: 56px;
+    border-radius: 6px;
+    border: 2px solid #c8a84b;
+    position: relative; overflow: hidden;
+    background: #2a2a18;
+  }
+  .monster-item-img-wrap .img-blur {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; filter: blur(6px); transform: scale(1.1);
+  }
+  .monster-item-img-wrap .img-main {
+    position: relative; z-index: 10;
+    width: 100%; height: 100%; object-fit: contain;
+  }
+  .monster-item-name {
+    font-size: 10px; color: #999; text-align: center;
+    line-height: 1.3; max-width: 64px;
+    overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card item-card">
+    <div class="card-header">
+      <div class="item-image-wrap">
+        <img class="img-blur" src="data:image/webp;base64,UklGRiABAABXRUJQVlA4IBQBAACwBgCdASoUABQAPl0slEiCgIAAwLiOQAnTKEdeDR7B1MOfV9AG8AbyqRHgX4B+MK5grV36pwKsoVYhI30YsAD+8SPAyKJBV3UoGL0U4EU9In1LhvzDZPj71Mif6NzUGOEYh7cVinxGJGLKbuc4064n6xlv/DIHCVvLtce8cdDGnJ7JbMMZKUEomjhWLxNUnlUlCPiyJKlGUzUrhNDMOpi5SsJb9hq/9l+1lqB/KOfj5SZXoZh8mS+HY0n/PHWoycyim46zB+x4CLfrWAM1h32xChp7/naYwmZwFMzhu+pXVNeF+fR3W5PLfrV/794nXjRiUoveJU4RmNQHRb5g5FfrkQLoiRDkwFy+KrLUc8sR528AAAA=" alt="">
+        <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/bc00b840cc28444bd52882e266bb15eb39f089c9@256.webp?v=6" alt="靴里剑">
+      </div>
+      <div class="item-meta">
+        <div class="item-name-row">
+          <span class="item-name">靴里剑</span>
+          <span class="hero-tag">凡妮莎</span>
+        </div>
+        <div class="type-tags"><span class="tag-tier">青铜+</span><span class="tag-tier">白银+</span><span class="tag-tier">黄金+</span><span class="tag-tier">钻石+</span><span class="tag-tier">传奇+</span><span class="tag-type">Weapon</span><span class="tag-type">Apparel</span></div>
+        <div class="item-cooldown"><span class="cd-icon">⏱</span><span class="cd-val">6</span><span class="cd-unit">秒</span></div>
+      </div>
+      <div class="item-skills"><div class="skill-line skill-active">造成<span class="kw-val">25</span> » <span class="kw-val">50</span> » <span class="kw-val">100</span> » <span class="kw-val">200</span><span class="kw-dmg">伤害</span></div><div class="skill-line skill-passive">每场战斗首次使用此物品时，此物品+<span class="kw-val">100%</span><span class="kw-crit">暴击率</span>。</div></div>
+    </div>
+    <div class="enchantments-grid">
+        <div class="enchant-cell enc-golden">
+          <div class="enchant-name">黄金</div>
+          <div class="enchant-desc">此物品的价值翻倍。</div>
+        </div>
+        <div class="enchant-cell enc-slow">
+          <div class="enchant-name">沉重</div>
+          <div class="enchant-desc"><span class="kw-slow">减速</span>一件物品<span class="kw-val">3</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-freeze">
+          <div class="enchant-name">寒冰</div>
+          <div class="enchant-desc"><span class="kw-freeze">冻结</span>一件物品<span class="kw-val">0.5</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-haste">
+          <div class="enchant-name">疾速</div>
+          <div class="enchant-desc"><span class="kw-haste">加速</span>一件物品<span class="kw-val">3</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-shield">
+          <div class="enchant-name">护盾</div>
+          <div class="enchant-desc">获得<span class="kw-shield">护盾</span>，等量于此物品<span class="kw-dmg">伤害</span>量</div>
+        </div>
+        <div class="enchant-cell enc-heal">
+          <div class="enchant-name">回复</div>
+          <div class="enchant-desc">获得<span class="kw-heal">治疗</span>，等量于此物品<span class="kw-dmg">伤害</span></div>
+        </div>
+        <div class="enchant-cell enc-poison">
+          <div class="enchant-name">毒素</div>
+          <div class="enchant-desc">造成<span class="kw-poison">剧毒</span>，等量于此物品<span class="kw-dmg">伤害</span>的<span class="kw-val">10%</span></div>
+        </div>
+        <div class="enchant-cell enc-burn">
+          <div class="enchant-name">炽焰</div>
+          <div class="enchant-desc">造成<span class="kw-burn">灼烧</span>，等量于此物品<span class="kw-dmg">伤害</span>的<span class="kw-val">10%</span></div>
+        </div>
+        <div class="enchant-cell enc-charge">
+          <div class="enchant-name">闪亮</div>
+          <div class="enchant-desc">此物品+<span class="kw-val">1</span>多重释放。</div>
+        </div>
+        <div class="enchant-cell enc-crit">
+          <div class="enchant-name">致命</div>
+          <div class="enchant-desc">此物品能造成双倍暴击<span class="kw-dmg">伤害</span>。</div>
+        </div>
+        <div class="enchant-cell enc-radiant">
+          <div class="enchant-name">辉耀</div>
+          <div class="enchant-desc">此物品免疫<span class="kw-freeze">冻结</span>、<span class="kw-slow">减速</span>和摧毁。</div>
+        </div>
+        <div class="enchant-cell enc-default">
+          <div class="enchant-name">黑曜</div>
+          <div class="enchant-desc">此物品的<span class="kw-dmg">伤害</span>翻倍。</div>
+        </div>
+        <div class="enchant-cell enc-evergreen">
+          <div class="enchant-name">长青</div>
+          <div class="enchant-desc"><span class="kw-life">生命再生量</span>提高，增幅等于此物品<span class="kw-dmg">伤害</span>的<span class="kw-val">10%</span></div>
+        </div>
+    </div>
+  </div>
+  <div class="card item-card">
+    <div class="card-header">
+      <div class="item-image-wrap">
+        <img class="img-blur" src="data:image/webp;base64,UklGRjwBAABXRUJQVlA4IDABAACQBgCdASoUABQAPl0slEiCgIAAwLiOYAnTKEeYrgvZ39YN4BenBEUBiil8BIVRoxLecOoqX0JzEqw8ygwwAP774ahLtBbwzHuTDf385v+srwc8HxcT39T5+TILzZrovx9upCbdx/OGQ/e/J43gFspNAEzwqe4kLXTtlbPfoPc/d5p+JPCU+Y9R952pFt/iWiZVVwEv8bl4IMSmcD3I/NOlUKAkBn7Mz6Y00342I320Kq+UAO8zqtJHR0CKPg7+Y879J3UozsDGBHnwZOpklIg84/vC3iWCIrelaLA3Ug2F6TWzRswHo0L0XWt05lcC80KNuvzicM7/OqW2qzxu7/fYcAY0ef0NcBnJvH86fGDlp/cYvdwUWhZhvEmLq01SFO6SwzyZ2FO++o77UNEenAAA" alt="">
+        <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/c2723472d8041a5411bdb9bd4911839877ad13e6@256.webp?v=6" alt="火箭靴">
+      </div>
+      <div class="item-meta">
+        <div class="item-name-row">
+          <span class="item-name">火箭靴</span>
+          
+        </div>
+        <div class="type-tags"><span class="tag-tier">青铜+</span><span class="tag-tier">白银+</span><span class="tag-tier">黄金+</span><span class="tag-tier">钻石+</span><span class="tag-tier">传奇+</span><span class="tag-type">Tool</span><span class="tag-type">Apparel</span></div>
+        <div class="item-cooldown"><span class="cd-icon">⏱</span><span class="cd-val">5</span><span class="cd-unit">秒</span></div>
+      </div>
+      <div class="item-skills"><div class="skill-line skill-active"><span class="kw-haste">加速</span>相邻物品<span class="kw-val">1</span> » <span class="kw-val">2</span> » <span class="kw-val">3</span> » <span class="kw-val">4</span>秒</div><div class="skill-line skill-passive">出售此物品时，最左侧的<span class="kw-haste">加速</span>物品+<span class="kw-val">1</span><span class="kw-haste">加速</span>持续时间。</div></div>
+    </div>
+    <div class="enchantments-grid">
+        <div class="enchant-cell enc-golden">
+          <div class="enchant-name">黄金</div>
+          <div class="enchant-desc">此物品的价值翻倍。</div>
+        </div>
+        <div class="enchant-cell enc-slow">
+          <div class="enchant-name">沉重</div>
+          <div class="enchant-desc"><span class="kw-slow">减速</span><span class="kw-val">2</span>件物品<span class="kw-val">1</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-freeze">
+          <div class="enchant-name">寒冰</div>
+          <div class="enchant-desc"><span class="kw-freeze">冻结</span>一件物品<span class="kw-val">1</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-haste">
+          <div class="enchant-name">疾速</div>
+          <div class="enchant-desc">此物品的<span class="kw-haste">加速</span>持续时间翻倍。</div>
+        </div>
+        <div class="enchant-cell enc-shield">
+          <div class="enchant-name">护盾</div>
+          <div class="enchant-desc">获得<span class="kw-val">100</span><span class="kw-shield">护盾</span></div>
+        </div>
+        <div class="enchant-cell enc-heal">
+          <div class="enchant-name">回复</div>
+          <div class="enchant-desc"><span class="kw-heal">治疗</span><span class="kw-val">100</span>生命值</div>
+        </div>
+        <div class="enchant-cell enc-poison">
+          <div class="enchant-name">毒素</div>
+          <div class="enchant-desc">造成<span class="kw-val">10</span><span class="kw-poison">剧毒</span></div>
+        </div>
+        <div class="enchant-cell enc-burn">
+          <div class="enchant-name">炽焰</div>
+          <div class="enchant-desc">造成<span class="kw-val">10</span><span class="kw-burn">灼烧</span></div>
+        </div>
+        <div class="enchant-cell enc-charge">
+          <div class="enchant-name">闪亮</div>
+          <div class="enchant-desc">此物品+<span class="kw-val">1</span>多重释放。</div>
+        </div>
+        <div class="enchant-cell enc-radiant">
+          <div class="enchant-name">辉耀</div>
+          <div class="enchant-desc">此物品免疫<span class="kw-freeze">冻结</span>、<span class="kw-slow">减速</span>和摧毁。</div>
+        </div>
+        <div class="enchant-cell enc-default">
+          <div class="enchant-name">黑曜</div>
+          <div class="enchant-desc">造成<span class="kw-val">10</span><span class="kw-dmg">伤害</span></div>
+        </div>
+        <div class="enchant-cell enc-evergreen">
+          <div class="enchant-name">长青</div>
+          <div class="enchant-desc"><span class="kw-life">生命再生量</span>提高<span class="kw-val">10</span></div>
+        </div>
+    </div>
+  </div>
+  <div class="card item-card">
+    <div class="card-header">
+      <div class="item-image-wrap">
+        <img class="img-blur" src="data:image/webp;base64,UklGRhgBAABXRUJQVlA4IAwBAABwBgCdASoUABQAPl0qkkgCgNUAwLiMATplpUAHPO6ZXvOSNBCAauwhaTci0RwDqdYDUGK/dBlDd11DilgA/vp2eomRLXs4Ym+nLhzGmcSIURU24Q65lxJa5t7ClNcELfwS4jdqpGbSgM/B8okw6UK1wL7j3P8osCp35f+oX6QkJJlyhDkfcPZvm/z0ccmNLQ1j1tfjIQpPdN12v1M960QBpvNrsjxAqZXCp+d2tZFwfLomPE1Kd1JTHWpPoD39UdPszs6njN5Bxs0Gn2o4j0F6oQnEnXiI4oSBg7NN8S5ZjQWRymwZmPPS45WRwR67JffyeWq2wRVwp+/k2uNkQ6bOtBMe4OXhhffPdcAA" alt="">
+        <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/78fcd2822ffab4d58d813e5f68c4dd5139edd191@256.webp?v=6" alt="猎人之靴">
+      </div>
+      <div class="item-meta">
+        <div class="item-name-row">
+          <span class="item-name">猎人之靴</span>
+          <span class="hero-tag">Karnok</span>
+        </div>
+        <div class="type-tags"><span class="tag-tier">黄金+</span><span class="tag-tier">钻石+</span><span class="tag-tier">传奇+</span><span class="tag-type">Apparel</span></div>
+        <div class="item-cooldown"><span class="cd-icon">⏱</span><span class="cd-val">4</span><span class="cd-unit">秒</span></div>
+      </div>
+      <div class="item-skills"><div class="skill-line skill-active"><span class="kw-slow">减速</span>相邻物品<span class="kw-val">1</span>秒并为其<span class="kw-charge">充能</span><span class="kw-val">1</span>秒。</div><div class="skill-line skill-passive">当己方物品被<span class="kw-slow">减速</span>时，该物品+<span class="kw-val">10</span> » <span class="kw-val">20%</span><span class="kw-crit">暴击率</span>（限本场战斗）。</div><div class="skill-line skill-passive">暴怒期间，此物品+<span class="kw-val">1</span>多重释放。</div></div>
+    </div>
+    <div class="enchantments-grid">
+        <div class="enchant-cell enc-golden">
+          <div class="enchant-name">黄金</div>
+          <div class="enchant-desc">此物品的价值翻倍。</div>
+        </div>
+        <div class="enchant-cell enc-slow">
+          <div class="enchant-name">沉重</div>
+          <div class="enchant-desc">此物品的<span class="kw-slow">减速</span>持续时间减半。</div>
+        </div>
+        <div class="enchant-cell enc-freeze">
+          <div class="enchant-name">寒冰</div>
+          <div class="enchant-desc"><span class="kw-freeze">冻结</span>一件物品<span class="kw-val">1</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-haste">
+          <div class="enchant-name">疾速</div>
+          <div class="enchant-desc"><span class="kw-haste">加速</span><span class="kw-val">2</span>件物品<span class="kw-val">1</span>秒</div>
+        </div>
+        <div class="enchant-cell enc-shield">
+          <div class="enchant-name">护盾</div>
+          <div class="enchant-desc">获得<span class="kw-val">100</span><span class="kw-shield">护盾</span></div>
+        </div>
+        <div class="enchant-cell enc-heal">
+          <div class="enchant-name">回复</div>
+          <div class="enchant-desc"><span class="kw-heal">治疗</span><span class="kw-val">100</span>生命值</div>
+        </div>
+        <div class="enchant-cell enc-poison">
+          <div class="enchant-name">毒素</div>
+          <div class="enchant-desc">造成<span class="kw-val">10</span><span class="kw-poison">剧毒</span></div>
+        </div>
+        <div class="enchant-cell enc-burn">
+          <div class="enchant-name">炽焰</div>
+          <div class="enchant-desc">造成<span class="kw-val">10</span><span class="kw-burn">灼烧</span></div>
+        </div>
+        <div class="enchant-cell enc-charge">
+          <div class="enchant-name">闪亮</div>
+          <div class="enchant-desc">此物品+<span class="kw-val">1</span>多重释放。</div>
+        </div>
+        <div class="enchant-cell enc-crit">
+          <div class="enchant-name">致命</div>
+          <div class="enchant-desc">此物品的<span class="kw-crit">暴击率</span>加成翻倍。</div>
+        </div>
+        <div class="enchant-cell enc-radiant">
+          <div class="enchant-name">辉耀</div>
+          <div class="enchant-desc">此物品免疫<span class="kw-freeze">冻结</span>、<span class="kw-slow">减速</span>和摧毁。</div>
+        </div>
+        <div class="enchant-cell enc-default">
+          <div class="enchant-name">黑曜</div>
+          <div class="enchant-desc">造成<span class="kw-val">100</span><span class="kw-dmg">伤害</span></div>
+        </div>
+        <div class="enchant-cell enc-evergreen">
+          <div class="enchant-name">长青</div>
+          <div class="enchant-desc"><span class="kw-life">生命再生量</span>提高<span class="kw-val">10</span></div>
+        </div>
+    </div>
+  </div>
+  <div class="card item-card">
+    <div class="card-header">
+      <div class="item-image-wrap">
+        <img class="img-blur" src="data:image/webp;base64,UklGRnYBAABXRUJQVlA4IGoBAABwBwCdASoUABQAPl0slEiCgIAAwLiOoAnTNofic1uTxqNsxdle8UGqAvADOzqABjQvZOCzhu/vLF9SuM8uCnOLwx+GAAD+8HLy3CxoEAPg9+U+/hi/9fVr420iDk37P6SaotWC7R+TDWs/kP+zH/q97uQXCuTGDw/lbfQqnYnP3hezB+dKcjMjZbDFp54QmumXvvnh7d31NhdDA4eOFWdxfBUXpDS6JJFdtR1Cy9yWjUBuPm4Fg1PP+n+PobRXqvQ7x1mWfeO73ulbzo6n6PGZ6z9Qpfr8RLoww8Xt/AZM9VNpzFdXVO/DDY7Ot2WjYhNK/xoiojbpVdNFON4VKSsiFixp9LVGbEDDt6Z1PWYV+2YOsQ8i0AXmrUR/DY/LxV98o9N59DiMz+T3AVyqDQej4n3BnM436pZiFJeRQVY96axr9848XOs1+k+zAfBwhYZukp7Q2M4XtbaE2F4d81oLrAoguFEIAAAAAA==" alt="">
+        <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/851f881d1e26b72c371d15c96f369e267ca10e57@256.webp?v=6" alt="自力更升靴">
+      </div>
+      <div class="item-meta">
+        <div class="item-name-row">
+          <span class="item-name">自力更升靴</span>
+          <span class="hero-tag">皮格马利翁</span>
+        </div>
+        <div class="type-tags"><span class="tag-tier">黄金+</span><span class="tag-tier">钻石+</span><span class="tag-tier">传奇+</span><span class="tag-type">Apparel</span></div>
+        
+      </div>
+      <div class="item-skills"><div class="skill-line skill-passive">每花费<span class="kw-val">50</span>金币，就升级一件低级别物品。</div></div>
+    </div>
+    <div class="enchantments-grid">
+        <div class="enchant-cell enc-golden">
+          <div class="enchant-name">黄金</div>
+          <div class="enchant-desc">并为物品赋予黄金附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-slow">
+          <div class="enchant-name">沉重</div>
+          <div class="enchant-desc">并为物品赋予沉重附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-freeze">
+          <div class="enchant-name">寒冰</div>
+          <div class="enchant-desc">并为物品赋予寒冰附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-haste">
+          <div class="enchant-name">疾速</div>
+          <div class="enchant-desc">并为物品赋予疾速附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-shield">
+          <div class="enchant-name">护盾</div>
+          <div class="enchant-desc">并为物品赋予<span class="kw-shield">护盾</span>附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-heal">
+          <div class="enchant-name">回复</div>
+          <div class="enchant-desc">并为物品赋予回复附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-poison">
+          <div class="enchant-name">毒素</div>
+          <div class="enchant-desc">并为物品赋予毒素附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-burn">
+          <div class="enchant-name">炽焰</div>
+          <div class="enchant-desc">并为物品赋予炽焰附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-charge">
+          <div class="enchant-name">闪亮</div>
+          <div class="enchant-desc">并为物品赋予闪亮附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-crit">
+          <div class="enchant-name">致命</div>
+          <div class="enchant-desc">并为物品赋予致命附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-radiant">
+          <div class="enchant-name">辉耀</div>
+          <div class="enchant-desc">并为物品赋予辉耀附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-default">
+          <div class="enchant-name">黑曜</div>
+          <div class="enchant-desc">并为物品赋予黑曜石附魔（如适用）。</div>
+        </div>
+        <div class="enchant-cell enc-evergreen">
+          <div class="enchant-name">长青</div>
+          <div class="enchant-desc">并为该物品赋予长青附魔（如适用）。</div>
+        </div>
+    </div>
+  </div>
+  <div class="card item-card">
+    <div class="card-header">
+      <div class="item-image-wrap">
+        <img class="img-blur" src="data:image/webp;base64,UklGRuIAAABXRUJQVlA4INYAAABwBQCdASoUABQAPl0slEiCgKqAwLiMATplpUI3P/2SWRH4X8dBsepMHdnWHtri4oWjhEUwAP78qFBDNMGqjfMGrHvbbV99mQ2VgO7Y37HYzXuGjEKVmhrp/m4Qk4nPGN1F9FWJSTZw6hr9gbhxJqYr2s/U6GWMJHIcluHQKwRVo5pRPsbX2BAResHbsXKingQgmeW7JBeCHO6k3CCUYjBPGne/3nvomNDrMDWHWBcLZ3TkqxVRxfsGvnQYrHDNF9zIrjQkPEn2t9H9DJXetmCGrIVGAAAA" alt="">
+        <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/e95c4771c25b59712b70f978804ab8e54eec5973@256.webp?v=6" alt="轻步靴">
+      </div>
+      <div class="item-meta">
+        <div class="item-name-row">
+          <span class="item-name">轻步靴</span>
+          
+        </div>
+        <div class="type-tags"><span class="tag-tier">青铜+</span><span class="tag-tier">白银+</span><span class="tag-tier">黄金+</span><span class="tag-tier">钻石+</span><span class="tag-tier">传奇+</span><span class="tag-type">Apparel</span></div>
+        
+      </div>
+      <div class="item-skills"><div class="skill-line skill-passive">相邻物品+<span class="kw-val">3</span> » <span class="kw-val">6</span> » <span class="kw-val">9</span> » <span class="kw-val">12%</span><span class="kw-crit">暴击率</span>。</div><div class="skill-line skill-passive">出售此物品时，己方物品<span class="kw-crit">暴击率</span>提高+<span class="kw-val">1</span> » <span class="kw-val">2</span> » <span class="kw-val">3</span> » <span class="kw-val">4%</span>。</div></div>
+    </div>
+    <div class="enchantments-grid">
+        <div class="enchant-cell enc-charge">
+          <div class="enchant-name">闪亮</div>
+          <div class="enchant-desc">此物品的<span class="kw-crit">暴击率</span>加成翻倍。</div>
+        </div>
+    </div>
+  </div>
+  <div class="card monster-card">
+    <div class="monster-header">
+      <div class="monster-left">
+        <div class="monster-portrait-wrap">
+          <img class="img-blur" src="data:image/webp;base64,UklGRtIAAABXRUJQVlA4IMYAAADQBQCdASoUABQAPlUmkUeDfoAAwKiMAWI9CQH/WHgNtQBXZXj7JysrKwrEC3bX0mz4UwjSXP+QAP75qVSYg4wLm1Hwi6KvZBrEITBwkoB57TdREJMH554eUwoW91kqrjCK18GSrQHltFjG9ElTeHn6in79QDovwwDeQ7pVJ5+CV/Vm0DLNdQa1B14nStJNQkRIePcH4HRv+68r90d0Z1/TmEO/3RFkiuOUo2AZWi/EJWkPNFhSKjwl4jXWyR+oGEQAdpoAAAA=" alt="">
+          <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/9432e3fcaa16e41f809d0ccdd0176b957948ef2f@256.webp?v=6" alt="精英决斗者">
+        </div>
+        <div class="monster-meta">
+          <div class="monster-name-row">
+            <span class="monster-name">精英决斗者</span>
+            
+          </div>
+          <div class="monster-level">Day 9</div>
+          <div class="monster-rewards">
+            
+            
+          </div>
+        </div>
+      </div>
+      <div class="monster-right">
+        <div class="monster-hp">
+          <span class="hp-icon">♥</span>
+          <span class="hp-value">1925</span>
+        </div>
+        <div class="monster-items-row">
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRiYBAABXRUJQVlA4IBoBAADwBQCdASoUABQAPl0slEiCgIAAwLiOQAsR8RvD2JO8oleCGb+P4QxHwc6mIcjkfBuOeyGd2/B3gAD+qfrYakzoaa+cq1RzJqwi+JJMRWioBb+Oq9s4WgCZdTZjVJhqVw8Iy5n8TGOldggGjr95PF9eRb84uLFebzCq2QxvEWZhX0f+3fYhREG9O0Xf9DlbNGaSCclRqnIQqqubWBD28egfKaiit/r5oReYZqvqr7slGAHfMc8zPUftYOwkQYQ737ZawgVo9skKPx+d60XElEuN7CIVp3xCYAPaAeXsgu3J7d4DFjUPsuqXUbYMLtYz6aCA/1TolXb14pArmWI3vclj6SQ7v0Jsez5L7naQrBto1ATYw2eCy5JbAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/f9ebe85e8acbac8498a8bd3eda6d2ac15207408c@256.webp?v=6" alt="左轮手枪">
+          </div>
+          <div class="monster-item-name">左轮手枪</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRkoBAABXRUJQVlA4ID4BAACQBgCdASoUABQAPl0slEiCgIAAwLiOQAnTKEcDe18OTQnz9Fkpkqn8kREKqpCfC1D3ewAAvtAGiJU/W8AAAP7Ch0xJBDozMGEl11GphO9RuS/267/2OAElU9Vh7ZqsjA36MIxbHwo+lbHutAdS9AstHunAl23hD7W0qhOIkhhogsXniAdOk0jkCFQZrxezqGIcXRSNf1di3jXVUtD1pdIfNlQQL+0YP2rLraKO3OkV0X9/3orvh7nC1KV9EtsTB8knzb2a8vJBGrjG4jsppsYeBziQtCj30Y5s/hQ2RoroYc1DEams1zx63mWungOI6ZQHy2uxDpbH150oWtY5cfE3pTEpE8WJ8nrmbU/0UoK9rABcBxb94QDIxUmLvyZxH5/D/IuCRo4Ccg4yP6tkguPGogO49Ddoi1lAV+5gAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/606512b253cfeca9ff55b760563167ba81f1aed3@256.webp?v=6" alt="火药角">
+          </div>
+          <div class="monster-item-name">火药角</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRiYBAABXRUJQVlA4IBoBAADwBQCdASoUABQAPl0slEiCgIAAwLiOQAsR8RvD2JO8oleCGb+P4QxHwc6mIcjkfBuOeyGd2/B3gAD+qfrYakzoaa+cq1RzJqwi+JJMRWioBb+Oq9s4WgCZdTZjVJhqVw8Iy5n8TGOldggGjr95PF9eRb84uLFebzCq2QxvEWZhX0f+3fYhREG9O0Xf9DlbNGaSCclRqnIQqqubWBD28egfKaiit/r5oReYZqvqr7slGAHfMc8zPUftYOwkQYQ737ZawgVo9skKPx+d60XElEuN7CIVp3xCYAPaAeXsgu3J7d4DFjUPsuqXUbYMLtYz6aCA/1TolXb14pArmWI3vclj6SQ7v0Jsez5L7naQrBto1ATYw2eCy5JbAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/f9ebe85e8acbac8498a8bd3eda6d2ac15207408c@256.webp?v=6" alt="左轮手枪">
+          </div>
+          <div class="monster-item-name">左轮手枪</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRiABAABXRUJQVlA4IBQBAACwBgCdASoUABQAPl0slEiCgIAAwLiOQAnTKEdeDR7B1MOfV9AG8AbyqRHgX4B+MK5grV36pwKsoVYhI30YsAD+8SPAyKJBV3UoGL0U4EU9In1LhvzDZPj71Mif6NzUGOEYh7cVinxGJGLKbuc4064n6xlv/DIHCVvLtce8cdDGnJ7JbMMZKUEomjhWLxNUnlUlCPiyJKlGUzUrhNDMOpi5SsJb9hq/9l+1lqB/KOfj5SZXoZh8mS+HY0n/PHWoycyim46zB+x4CLfrWAM1h32xChp7/naYwmZwFMzhu+pXVNeF+fR3W5PLfrV/794nXjRiUoveJU4RmNQHRb5g5FfrkQLoiRDkwFy+KrLUc8sR528AAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/bc00b840cc28444bd52882e266bb15eb39f089c9@256.webp?v=6" alt="靴里剑">
+          </div>
+          <div class="monster-item-name">靴里剑</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRmQBAABXRUJQVlA4IFgBAABQBwCdASoUABQAPl0slEiCgIAAwLiOgAnTKEeZ+zUzNFM6ZXvJP+qLEEMp8ftDMFcB8WZYCuH9zZk1vwN79kNCUv4AAP79IFZG3M5Zk5qLmSA7q+f3m+wiGJsxn95m7tPU22pab5tUB8J1SELkrrsgcvB9ElPp+1PhUdBed0dF8dHDwKeBspt5x32Ay/VNIlcPnnCndA0JdshksmK2q5COfEYcnBqvtvJN/JwiBxo9u4VIoe4d/+GvBH6e38+vtGNmjvUklkUXJiKr/zt0/Q9kXjwXVCz9mKVBgP09fbbvtP2kutlqyP/2H9CXzeKegOyj5/9PRcTXancjWcliCJBDPhxsUOSGm1UrGrANCmaFPHr9QYtYlw8KVvZGAuMLeaVzmF1F+XaxF5zYYonIr1ipuY3xnCYJEsou738dIDiUX7XURm/68Kzyi6sGxwrPd/kBgvJpcpHgAA==" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/64b8a63449ce5ae63bc152f45fd0648825bcfd1e@256.webp?v=6" alt="蝶剑">
+          </div>
+          <div class="monster-item-name">蝶剑</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRmQBAABXRUJQVlA4IFgBAABQBwCdASoUABQAPl0slEiCgIAAwLiOgAnTKEeZ+zUzNFM6ZXvJP+qLEEMp8ftDMFcB8WZYCuH9zZk1vwN79kNCUv4AAP79IFZG3M5Zk5qLmSA7q+f3m+wiGJsxn95m7tPU22pab5tUB8J1SELkrrsgcvB9ElPp+1PhUdBed0dF8dHDwKeBspt5x32Ay/VNIlcPnnCndA0JdshksmK2q5COfEYcnBqvtvJN/JwiBxo9u4VIoe4d/+GvBH6e38+vtGNmjvUklkUXJiKr/zt0/Q9kXjwXVCz9mKVBgP09fbbvtP2kutlqyP/2H9CXzeKegOyj5/9PRcTXancjWcliCJBDPhxsUOSGm1UrGrANCmaFPHr9QYtYlw8KVvZGAuMLeaVzmF1F+XaxF5zYYonIr1ipuY3xnCYJEsou738dIDiUX7XURm/68Kzyi6sGxwrPd/kBgvJpcpHgAA==" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/64b8a63449ce5ae63bc152f45fd0648825bcfd1e@256.webp?v=6" alt="蝶剑">
+          </div>
+          <div class="monster-item-name">蝶剑</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRm4BAABXRUJQVlA4IGIBAADQBgCdASoUABQAPl0slEiCgIAAwLiOwAnTKEeniB83DavqAlm7eOf2F9HYmawxZtb3BKYqqgUj21GqXk1OAsAA/t2iG6EfHGqbHRVJC9wB4BC2nh4RkmuXJMx/9C76GsasKsMwSccgzMp1U7qF+qzVtL/X25cEr7y9MRifWd/aih9IkMHPFnGc/b+OIvcHQec1O66SE7b++bz0v/Qp7Vqtn4aK24oTJH0eJjXKerzJuuzAGZCzr9e2i7R738mCesuAGiPV6exQwG6+2d6ipcBwWY6UF3ES27j3ssUJrdkyTDMsFKTakhInP/iU4en6ErBgCxBc2CUFJdd41I2AxLgkBEFMBkegEq5v/lzrED36pyzcnYvq3342MpUud6trOUY1C6oook+xVN9wE/8HeFalXGFdEPeh34kGQ1HLiSH7sXtcemJ0AwJ38fmCcUtW2g+YWZvfLE3NAErdl+BmENAAAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/1f8d8d32c6a078d63fb8d9d6d812e87b72eed8df@256.webp?v=6" alt="香料">
+          </div>
+          <div class="monster-item-name">香料</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRmwBAABXRUJQVlA4IGABAADQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEeZjR7Cau+oDbAc8tpmfPjex1WJTY/EbvvhrzXy+H/+LThgwL9HJftrfA0QAAD+9BKFZUsbZeiFk3tiyB/ssiekvhsnk5LaltZJfsv92/Tc2Ee9FtbY2Zf5zGGCcdxvv59qpimPJQI7S9cI5WNR5gPIdjk/bBg1rx63bKf0MBrKCsJRxcTtgaBdO4bX+mpJ11oVgDC/7zv/9zKDF2biF/u1B+Ctp/x5Q75FovCdEVx3jp8OYE2WSNpmb6Eza2txnrJBdXsSYqqiZ+EQ1Z1mEin/CupKMqJ4JfFYW2UsofvX/3R9aL+4u5mfDs3Ovc/1fnEB12X+p9yq0vF+CIviP6IzIaKWi0/DJ52qAIEvOKCOYnap+oAyh4xLpuS83A/LYaa2S2a9sYpQ20Z8pJjjovHp3VQierSjmzWiyVGSNfHuzjXwjAAA" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/be1dc4ff2ac9a1272d47f489505523ae7920c97a@256.webp?v=6" alt="枪套">
+          </div>
+          <div class="monster-item-name">枪套</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRggBAABXRUJQVlA4IPwAAABwBQCdASoUABQAPl0slEiCgIAAwLiOYAnTKEfieqxpZEYhgpuFDLpJwYGH05aky529DvYAAP7uTon2wwgups7KwIBxZ8XOae/7DuL8AzqFQX9tqFn91+w7x85ctu5S+/yHW5iSQ6nkasRYf+ZklO1+tczGrXjJd9f/TtYVPly0bsNJ+zyH99fr+PoJCOwqEk7/jsiojWCKWvOA/nvT3p45ZHsIgKwOX577VOBRi0tHlJfdhJlAGT8zP3AShhpZQl4694CvtM8Is52TJJxdV3bIdjDiiMhf/42Jm0Magx7KuNufsT5eEoqh7FJdzc8N/xCya3rJZLeQmpqQAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/8c04320d2a1cbe03dd9357ab721fea256698aeca@256.webp?v=6" alt="弯刀">
+          </div>
+          <div class="monster-item-name">弯刀</div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card monster-card">
+    <div class="monster-header">
+      <div class="monster-left">
+        <div class="monster-portrait-wrap">
+          <img class="img-blur" src="data:image/webp;base64,UklGRhIBAABXRUJQVlA4IAYBAADQBQCdASoUABQAPl0slEiCgIAAwLiOwAnTLjf22mNtndjW8T/tJ6QADbH5BpS2oNc2RMmiYagAAMoXOk1xuWtJbMM8BLOUsZVAchV0rnb3qAcFVNeN/r9fclXNqsEEg4uaUnzL6eW2wj/lh3Dk3QS/SWpQEFf5Ai3hL+2Dy5Kq3+FBEcWohkymqn/F8PieTZMf/f3ni5dm/HqvYe9yHYvVIDua9blZHX0UmG6/1iyLfGKdqdsd7GAWMLS8i1+KI++6JotdZN7eQbvBNNHPAGlT5FUqqboXkDJ825pIphoit4CGpTLgtS/8Sr6B+a9DLF0GFzzTmMX75mLTDKh0vZD3xpsAAAAA" alt="">
+          <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/07c116e295bf8bf254600245b41ef01ec931279f@256.webp?v=6" alt="荒原旋舞者">
+        </div>
+        <div class="monster-meta">
+          <div class="monster-name-row">
+            <span class="monster-name">荒原旋舞者</span>
+            
+          </div>
+          <div class="monster-level">Day 4</div>
+          <div class="monster-rewards">
+            
+            
+          </div>
+        </div>
+      </div>
+      <div class="monster-right">
+        <div class="monster-hp">
+          <span class="hp-icon">♥</span>
+          <span class="hp-value">450</span>
+        </div>
+        <div class="monster-items-row">
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRkQBAABXRUJQVlA4IDgBAACwBgCdASoUABQAPl0qkkgCgNUAwLiOwAnTKEe1iBtANsBdgHoAdKCRGAT+L0em33oTzEbYGCHRsq+beDSQAAD+8b3pImwg+5Yz435WLi+j8CSPgLY2x/LTDVfpnB7932n2Qz/g6ikZG4gfaftLOzYSdKkoXM4ZfeAbO9T1Q2bnWtiO+7hxQ0d/nP4SNruSz3yfLz05i7//HpCPueP1/ehf9f9pRw+c86rd954zfrby/Z8kT7+raSGlS/hu7PrzloLzHqlrlPVNDkyarmt/FzFKski5G0+C7HzgGwHmrnhfEZSAKQcLKLjtKFbUyhOZuG64IotL5j1LJctHyuLnAXmZntcSnOB228zOJZRh2EX2ACJpkcezl9PfX+30dkgTACEpXwfcM/xAjsWt7WOtNKrtwlMZnYLAAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/09814cff48e9bc454c7ba09023b1def0b04eb07c@256.webp?v=6" alt="金条">
+          </div>
+          <div class="monster-item-name">金条</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRiABAABXRUJQVlA4IBQBAACwBgCdASoUABQAPl0slEiCgIAAwLiOQAnTKEdeDR7B1MOfV9AG8AbyqRHgX4B+MK5grV36pwKsoVYhI30YsAD+8SPAyKJBV3UoGL0U4EU9In1LhvzDZPj71Mif6NzUGOEYh7cVinxGJGLKbuc4064n6xlv/DIHCVvLtce8cdDGnJ7JbMMZKUEomjhWLxNUnlUlCPiyJKlGUzUrhNDMOpi5SsJb9hq/9l+1lqB/KOfj5SZXoZh8mS+HY0n/PHWoycyim46zB+x4CLfrWAM1h32xChp7/naYwmZwFMzhu+pXVNeF+fR3W5PLfrV/794nXjRiUoveJU4RmNQHRb5g5FfrkQLoiRDkwFy+KrLUc8sR528AAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/bc00b840cc28444bd52882e266bb15eb39f089c9@256.webp?v=6" alt="靴里剑">
+          </div>
+          <div class="monster-item-name">靴里剑</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRigBAABXRUJQVlA4IBwBAABQBgCdASoUABQAPl0qk0gCgNUAwLiOQArDM0NPLTJcz1AG8Z/t8RtYX+m/G2sejLpWSJMy2oj9eAuOAAD++oXt5sml1Y+VUQ4R2nsSnhoWa2LzwjzvUZS8FJLG/kDzmh0ufOPjrKlwNxoGuQ+oymhUE/aCBwzi8WMvNQ4zICfreVZpWIJPinJgwsBCj+HC64+OBt53lE4dTt/GqO4b6JPjP8vOZPBfOYMFlf1zWxN/amfzpPHPYtkICL3G/TevEw4YHicHdTQPJg7ILcuJTp613WFrqq6kmE+VNPEs4u4ogrJ9oVdTp7lZObW+uDyjiIhiSO6eEzTzmabIGqYSHGcbpBsQvbCHHXOXHnkE4tZtRC+16qRAmAcAsHAAAA==" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/b351222f58e8eb89d83677952ad298e57ba5b703@256.webp?v=6" alt="发条刀">
+          </div>
+          <div class="monster-item-name">发条刀</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRigBAABXRUJQVlA4IBwBAABQBgCdASoUABQAPl0qk0gCgNUAwLiOQArDM0NPLTJcz1AG8Z/t8RtYX+m/G2sejLpWSJMy2oj9eAuOAAD++oXt5sml1Y+VUQ4R2nsSnhoWa2LzwjzvUZS8FJLG/kDzmh0ufOPjrKlwNxoGuQ+oymhUE/aCBwzi8WMvNQ4zICfreVZpWIJPinJgwsBCj+HC64+OBt53lE4dTt/GqO4b6JPjP8vOZPBfOYMFlf1zWxN/amfzpPHPYtkICL3G/TevEw4YHicHdTQPJg7ILcuJTp613WFrqq6kmE+VNPEs4u4ogrJ9oVdTp7lZObW+uDyjiIhiSO6eEzTzmabIGqYSHGcbpBsQvbCHHXOXHnkE4tZtRC+16qRAmAcAsHAAAA==" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/b351222f58e8eb89d83677952ad298e57ba5b703@256.webp?v=6" alt="发条刀">
+          </div>
+          <div class="monster-item-name">发条刀</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRiABAABXRUJQVlA4IBQBAACwBgCdASoUABQAPl0slEiCgIAAwLiOQAnTKEdeDR7B1MOfV9AG8AbyqRHgX4B+MK5grV36pwKsoVYhI30YsAD+8SPAyKJBV3UoGL0U4EU9In1LhvzDZPj71Mif6NzUGOEYh7cVinxGJGLKbuc4064n6xlv/DIHCVvLtce8cdDGnJ7JbMMZKUEomjhWLxNUnlUlCPiyJKlGUzUrhNDMOpi5SsJb9hq/9l+1lqB/KOfj5SZXoZh8mS+HY0n/PHWoycyim46zB+x4CLfrWAM1h32xChp7/naYwmZwFMzhu+pXVNeF+fR3W5PLfrV/794nXjRiUoveJU4RmNQHRb5g5FfrkQLoiRDkwFy+KrLUc8sR528AAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/bc00b840cc28444bd52882e266bb15eb39f089c9@256.webp?v=6" alt="靴里剑">
+          </div>
+          <div class="monster-item-name">靴里剑</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRkQBAABXRUJQVlA4IDgBAACwBgCdASoUABQAPl0qkkgCgNUAwLiOwAnTKEe1iBtANsBdgHoAdKCRGAT+L0em33oTzEbYGCHRsq+beDSQAAD+8b3pImwg+5Yz435WLi+j8CSPgLY2x/LTDVfpnB7932n2Qz/g6ikZG4gfaftLOzYSdKkoXM4ZfeAbO9T1Q2bnWtiO+7hxQ0d/nP4SNruSz3yfLz05i7//HpCPueP1/ehf9f9pRw+c86rd954zfrby/Z8kT7+raSGlS/hu7PrzloLzHqlrlPVNDkyarmt/FzFKski5G0+C7HzgGwHmrnhfEZSAKQcLKLjtKFbUyhOZuG64IotL5j1LJctHyuLnAXmZntcSnOB228zOJZRh2EX2ACJpkcezl9PfX+30dkgTACEpXwfcM/xAjsWt7WOtNKrtwlMZnYLAAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/09814cff48e9bc454c7ba09023b1def0b04eb07c@256.webp?v=6" alt="金条">
+          </div>
+          <div class="monster-item-name">金条</div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card monster-card">
+    <div class="monster-header">
+      <div class="monster-left">
+        <div class="monster-portrait-wrap">
+          <img class="img-blur" src="data:image/webp;base64,UklGRjQBAABXRUJQVlA4ICgBAACwBgCdASoUABQAPl0sk0iCgKqAwLiOYAnTKDHp2A6DPcmdMW3kT/VEWYGH05FejGD1IQZcuYkryv22PMfhsADMnUL4MuBNg2eUMfW8O5r90kJ8eZPopyPN1QpNZSIFZAzm47wjNBl9gN1Ie2OY7KGiSY5446Jr/iuGsh/+NI+iGtJGfap+Ih7pESDyr7DcCPiUwmfwawNOa/p238wFtn8/KuOM9pI7ZRmn8FKZIOumhUoGtKqncusSBK1vdt6uAFv2hNGPsp3248+5pUs1+SRLU51yrCWIZLQ9JE467xcLFchmleWEmyLdOWeZKw7acsrDTGzzNfmBpefg34/Av6ir4BePRBb16K+i88p4m30J+qe9u1bfYUM7PGJALoDYhcap3Sr3jyAAAA==" alt="">
+          <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/2393c017b8c6e16e9aed39afdbb76d977c311502@256.webp?v=6" alt="哈库维火箭兵">
+        </div>
+        <div class="monster-meta">
+          <div class="monster-name-row">
+            <span class="monster-name">哈库维火箭兵</span>
+            
+          </div>
+          <div class="monster-level">Day 5</div>
+          <div class="monster-rewards">
+            
+            
+          </div>
+        </div>
+      </div>
+      <div class="monster-right">
+        <div class="monster-hp">
+          <span class="hp-icon">♥</span>
+          <span class="hp-value">900</span>
+        </div>
+        <div class="monster-items-row">
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRjwBAABXRUJQVlA4IDABAADQBgCdASoUABQAPl0slEiCgIAAwLiOYAnTKEcDD99a1AOe60yXeVP2gI28MuysTLVue2IAiYlv43XO0XLGgZAA/vzI7vYAZcMdZof4LbwgWnOFmMoOd6c5OioyVuPFG5mfy2uRJeU5SMn/eVv6zzKi3mkCeM3FqYlsl7u+p3NJM6mGjcBMNG3kV6Io51cMn7mFpnAXV/GP17s5IrYeEHWVdFVFlk7diYZON/TVSQ6tqEusaTUllQ13PUOZzX+0jmLkc8mEJI4gHspY/Oe/LrhURPUF8+4oAjEiGwFRYeCw8C7TSY3cUCshoAJ2FftbZRgZQ2cb3YPHbX/j9apvi8K8+mSiDrBkfT23GMhBokF4ZKy+iiUpo0WDiPYXgmm8deK+svA/+DgaLQCBVb1DzAAA" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/2675de1265b46b64cca0494d5a47204cb7bc8bc9@256.webp?v=6" alt="鹰之护符">
+          </div>
+          <div class="monster-item-name">鹰之护符</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRkABAABXRUJQVlA4IDQBAADQBgCdASoUABQAPl0qkkgCgNUAwLiOQAnTKEfibzORRrdtndju8pERfuyQwlq/y5c8Poi5Vb3yWhrVm++TCAAA/uowp/hpU8TunoxnG9CV7jOSFz2XLWAR+UKrkT2VlFor/TYg6kNiWq9YxZX6HS1rhP3VOl8yf7fzh5X/EQQ81eMIMe7mFRO5qirU7nB9ZXkcgzpyya6DYnzxKM0UdY7BCq5+w5WN6UBh2m568LHu7fIenw+K+eNA0P+Ini7Rsk32zqRkMOjHbc4Y+6vG17pUwtn6oarPadMM/sT92fnbEB0DboLRHIdvQ7y2iDdji2DxPWacpnUk7uJ0UQu73jsFLb3Xz8QFm2BTgohiWH1gy4Ok3eC6GVPEkem4jvjdtWe8ZHHdxWMtlpxE79GcBKlkQoAAAA==" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/b2d32942b245a0eec83a8d5774ce12b87b25d748@256.webp?v=6" alt="暗影斗篷">
+          </div>
+          <div class="monster-item-name">暗影斗篷</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRmwBAABXRUJQVlA4IGABAABQBwCdASoUABQAPl0slEiCgIAAwLiOoAnTKEfJrLKwHqY2wF2uc937FfkgEzKFaV9ePp5Zcf3KbOknr8i/hU4NkEQAAP718bHPWg9/lHAFFPbf42ladqC4D3yCmjm58btFx60vvGbdcsbbVvNz2u/zIldcytmLZRZT+dS7UHz3mbS44e5lit4Feui78q77ofz/WG4MjMNqvrNkdytTmGqIUrmFs/7zTtbOYwZJRYFvaGNvRxCnZttAY68/2mOB9T+u4vun17U4aJSvPBmE3rsHa5Y+loy59X4OCMx4VOB2hNmzu6KJDsCcCDBJG7ovRdjca4dPqOQxPMLw1TlxeqHrOICXi+a+4/ACBVvg1ywPz4bP1+cOezOHE0llkvoYUbtjNIuYLpUeVrKOfSnu9KP7lBBQ6dWeTtGTP95FhmA6r+peHPsotc7ONuvG+7Jcu2slseqqwD8BYbd6PRUC0uAA" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/4054c73fece53e70e1ba81161bf029b42db571db@256.webp?v=6" alt="哈库维发射器">
+          </div>
+          <div class="monster-item-name">哈库维发射器</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRjwBAABXRUJQVlA4IDABAACQBgCdASoUABQAPl0slEiCgIAAwLiOYAnTKEeYrgvZ39YN4BenBEUBiil8BIVRoxLecOoqX0JzEqw8ygwwAP774ahLtBbwzHuTDf385v+srwc8HxcT39T5+TILzZrovx9upCbdx/OGQ/e/J43gFspNAEzwqe4kLXTtlbPfoPc/d5p+JPCU+Y9R952pFt/iWiZVVwEv8bl4IMSmcD3I/NOlUKAkBn7Mz6Y00342I320Kq+UAO8zqtJHR0CKPg7+Y879J3UozsDGBHnwZOpklIg84/vC3iWCIrelaLA3Ug2F6TWzRswHo0L0XWt05lcC80KNuvzicM7/OqW2qzxu7/fYcAY0ef0NcBnJvH86fGDlp/cYvdwUWhZhvEmLq01SFO6SwzyZ2FO++o77UNEenAAA" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/c2723472d8041a5411bdb9bd4911839877ad13e6@256.webp?v=6" alt="火箭靴">
+          </div>
+          <div class="monster-item-name">火箭靴</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRlwBAABXRUJQVlA4IFABAAAQBwCdASoUABQAPl0slEiCgIAAwLiOYAnTKEdXezcOtQxz2dkgEqg8dH0FqAAfYEt61GJxBvo9bh8lNtwSbc9UwAD+m9nfdv7XiYQAqpscJEw84rPo4ZPZ07nonVWl9zPooFQb3AzStH+JaQ341oYqTWAD6iyG7220voVgmaXpiyNxqf2Z6q3sSRPwNl0Zrhv0Bl/IQrU7t0QNc2xJf2ISgnyaS4Gyy9Xb229fVH0kr1Ap/vX2CxyRxehX7PKXu5dvfHSTfBKi+i+HEmYlQG6VJPn/Sf7DycuRBc+WrmVUnKwwfQ7PbmndyWD5wLX1DM+xcKDjbtKys40JtZ3K1xUu3kOFGHp0h+PLXuhNl8He9owk5hNj+cKVy2nKbL/p7YoX/4J5GgRRJUsjT81KshqQllcCJybH+AK+vfK8HAgnh8vMnqKf/4J40BoCvbYyAAA=" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/5b20ba27dc7f09c47292003eddb1ca38ef47027c@256.webp?v=6" alt="护目镜">
+          </div>
+          <div class="monster-item-name">护目镜</div>
+        </div>
+        <div class="monster-item-slot">
+          <div class="monster-item-img-wrap">
+            <img class="img-blur" src="data:image/webp;base64,UklGRiQBAABXRUJQVlA4IBgBAACQBgCdASoUABQAPl0slEiCgIAAwLiOQAnTKEdILefaDnpLJpJVd5DSGcbvfue6p+37YlpGV3lnpG+dOPGAAP79HN4T8rkQvPmEktQzXRl9ZpmWc5Bo6vYa7+mp7yWlAc7UEvFExIwDlBnsGWz2ze3vWRebwiDB8dqYtPZmOzjhPo8Fj5qczWVENOKuPpXLNTedWpgLmgzQeKEVIvD/I69ddl7mFgs6jPdxeX8GGRASm2rS8/xn/KF8fv4uJoaiIHPnUtKs+PCPIulhzfZw/5pa+I2afevo0YE/yZMdd4moGWAYt0LtrfRZnaPOrATYE6mf+4lE7tzMEtXXdD1YoXrUqXODgpp2N4ZjAzh6iw1ZO0jD68beAAAA" alt="">
+            <img class="img-main" src="https://s.bazaardb.gg/v1/z13.0/4174ca222c0f6ee7b6e9ba58e507c8e3eb2f5765@256.webp?v=6" alt="火药">
+          </div>
+          <div class="monster-item-name">火药</div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

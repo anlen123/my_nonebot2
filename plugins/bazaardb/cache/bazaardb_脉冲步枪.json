@@ -1,0 +1,131 @@
+[
+  {
+    "type": "item",
+    "name": "脉冲步枪",
+    "hero_tag": "杜利",
+    "type_tags": [
+      "青铜+",
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Weapon",
+      "Tech"
+    ],
+    "description": "如果此物品与伙伴相邻，就+1多重释放。如果没有其他伙伴，那么此效果翻倍。",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速一件物品1秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品0.5秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速一件物品1秒"
+      },
+      {
+        "name": "护盾",
+        "description": "获得护盾，等量于此物品伤害量"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品伤害"
+      },
+      {
+        "name": "毒素",
+        "description": "造成剧毒，等量于此物品伤害的10%"
+      },
+      {
+        "name": "炽焰",
+        "description": "造成灼烧，等量于此物品伤害的10%"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "黑曜",
+        "description": "此物品的伤害翻倍。"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品伤害的10%"
+      }
+    ],
+    "cooldowns": [
+      "5"
+    ],
+    "active_skills": [
+      "造成15 » 30 » 60 » 120伤害"
+    ],
+    "passive_skills": [
+      "如果此物品与伙伴相邻，就+1多重释放。如果没有其他伙伴，那么此效果翻倍。"
+    ],
+    "url": "https://bazaardb.gg/card/1209ymcq8bn31yy4gwgzq9tf71l/Pulse-Rifle",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/ef29e1c79d85bed85f6e8bacf59c5b676a3823df@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRlABAABXRUJQVlA4IEQBAAAQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEeZ+m8Ug4TRa7AN5EK9T29j2m8VR2dX+Ofaw+oUH467vds40qA/4AD+3bD+0N1jJtlVylG0SSgqeOE5hrGLQaB4kx+RnJt0FsPr3a6n43jSlaqLBXeNq604ufxVTu7UweflfaPr4h+9ezla2mkaRKFoO+lhfMlFKSDRe+VYc46kdUJ31qr1uWaCm6WSs5p2u+mpRw/WA4w2fS7W/YkekaWzlk6Fvwf4pML2aM6r7lDVwfjRzYnpqX/HR3XzP7SdMmtRHO4dbEk02ZGlIFnw/G/J8TEzXPeFqa59feggu4x/F9mMZZYR9gB1B0aMVn6eVw9AvDV61yYh+ZSgMVC85/vQ/3QH+4LNLzb21siDYL2IxrQSBgBwr9VR6dsIGsaDEqCcGtumWFloAAA="
+  },
+  {
+    "type": "monster",
+    "name": "门卫机甲",
+    "tier": "",
+    "level_text": "Day 8+\nDay 8",
+    "hp": "1925",
+    "url": "https://bazaardb.gg/card/vc9z26l70pjv51qv7xqz9kg05l/Bouncertron",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/0e79c896c121f29745ea65ea986838e561a1da7b@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRgwBAABXRUJQVlA4IAABAADQBQCdASoUABQAPl0sk0iCgKqAwLiOgAnTMlyAXt9oD3UwGPi8rZ193D3oyFi27TOtPpFB4uiAAP6qGn0G0/KzQtC6LzrspGPDLu7i6HjFS0+dhyit1+MTPIx66Na0Xut6iRg46U0QZX05n0nRvYB38dOm9//SqrD98XjwbeKxR/0Llbm39DrahuP/zfd625/yXnWst0vylahzZRy/SORW3Ntx69owxJSb2v942T2SvOm7PU4kpOkoCDuVSZxwaJflSr1c9Pv+en71zxp9mO1zPrNiIMRGkx6cqFG1AZsPSyE6g7qwVZnabYMmyCzq1qj6S6lLEaAhq6rHv5nAAAAA",
+    "items": [
+      {
+        "name": "赛博保安",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/a707c39bf15a70433e7a987ecb8c5c0c8be09c01@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRlABAABXRUJQVlA4IEQBAABwBwCdASoUABQAPl0sk0iCgKqAwLiOQAnTKDxzXDezBgNspzyGmV+gB+oHWykRUEKS0v6xZUi3w2hRytfiK0CdVqu/gAD+5s9G9wh+3uT9YZahPqHb58WRKNXFlNLVbfjCLPb4HL3vlcH7Oz4tF02eesbptM80Hcu3K/jxOKNX1+fGr3aIlsGKiFvFCkeH77VhU20/8E438tySxfKOqq4VPZ0JeWm3czzL2fmsej3jjVSbjvtn0nOfuay+2Nb0gTDVUwWFtbMCiB05THpLjlBT6f4OhKDDY0G7fvwRSpgosYpLMWPIVzVKovGnu1wJgjLgPpQMyqlCUUzg973Efji9DTkWfCi9Whm0O6opUh005RJmmG2ej841/+p2UoNm9iP28Estz1t+Ht5a2EZ/yJmX/JwCYjQkp2R0szxDpL8aJs6YAAA=",
+        "url": "https://bazaardb.gg/card/tstvyvbf4jmpws44bzbhvhv2s7/Cybersecurity"
+      },
+      {
+        "name": "脉冲步枪",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/ef29e1c79d85bed85f6e8bacf59c5b676a3823df@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRlABAABXRUJQVlA4IEQBAAAQBwCdASoUABQAPl0slEiCgIAAwLiOwAnTKEeZ+m8Ug4TRa7AN5EK9T29j2m8VR2dX+Ofaw+oUH467vds40qA/4AD+3bD+0N1jJtlVylG0SSgqeOE5hrGLQaB4kx+RnJt0FsPr3a6n43jSlaqLBXeNq604ufxVTu7UweflfaPr4h+9ezla2mkaRKFoO+lhfMlFKSDRe+VYc46kdUJ31qr1uWaCm6WSs5p2u+mpRw/WA4w2fS7W/YkekaWzlk6Fvwf4pML2aM6r7lDVwfjRzYnpqX/HR3XzP7SdMmtRHO4dbEk02ZGlIFnw/G/J8TEzXPeFqa59feggu4x/F9mMZZYR9gB1B0aMVn6eVw9AvDV61yYh+ZSgMVC85/vQ/3QH+4LNLzb21siDYL2IxrQSBgBwr9VR6dsIGsaDEqCcGtumWFloAAA=",
+        "url": "https://bazaardb.gg/card/1209ymcq8bn31yy4gwgzq9tf71l/Pulse-Rifle"
+      },
+      {
+        "name": "武士刀",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/61948061e680b8fdc74e4501ac58f6f9c4f01606@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRj4BAABXRUJQVlA4IDIBAABwBgCdASoUABQAPl0slEiCgIAAwLiOgAnTKEfK+k34dqo2bb2emV7xuV4HtvIYbyG4/1STKH1mzW4UpgAA/vbrBOFEsAy/9ZthDYxSOt5vOi/aqLHzuG+nLPqMt/8JGogqE/fTm/OaebKWr6x14i/HfzHSTkHPwnLnKCCljL9V1uW1/x8aLU5xJt9GrNhi1T8gTnMCaiOfCdyfm9HDGOu5ICqEH+zJlhfgJ8X7b9MulLFXm791aJbqGbDE/HBSjoALvYA6C7ZjBFMl4/MWzjaHjSg3DE57WH2mAIaNaBnBwSKWH9CYc3h+gObjy6lX1DPZWaLNmw+GVZvwdNTyHNThAnY/ekk5joEGU66gLNppDciQNPDu777x90+Xk9wX+fzTrNuAO+DVfKImMd/BrT2kAAA=",
+        "url": "https://bazaardb.gg/card/f9xmx2hzf0xkldvltxlyv8gfh6/Katana"
+      },
+      {
+        "name": "激光手枪",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/8f85b53edcc8d60dac36f73f1b63749ca7192835@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRkgBAABXRUJQVlA4IDwBAABQBwCdASoUABQAPl0slEiCgIAAwLiOYAnTKDxzZkPNZhX+mfBM5JP5SpgAmcQsMqp7tKi0P+WBWTPaA8FoKbaKRR4AAP76nNg6QCnFwR5JNEfp8f0jK1hJK1DMruedIy7GDr7p+fP1ZbVE1viVdDOlVOHqjjhg/hUHXidoFM9h3icpgquoprT4orX8hBj1ys6hod5ymsu7ZgyuikG/v66b5+iS/jZscf/c2MNbH9z2xG3msy23IJqsmS5j1RDSt/RBLIn5ENtk199rg9bzCwGDZF0IRieIM4eHJR4qnRiRNgLP0Cb0E8MO3OC9zMqfqo1YVG7DMn1cQcnX4/LUdY1PvFsI/8HHp09mhNFucUsk3veO7xTxZN0v0mDsDIaTnGxD1sotEAUAyEQNTfaIV+M05af24I8RF4/Bv0AA",
+        "url": "https://bazaardb.gg/card/mfkf834nj3vl4vjdk0jcphw6bx/Laser-Pistol"
+      },
+      {
+        "name": "裂盾刀",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/73591ae9e087f8dc660ac68a7bcd154bb6ff72e5@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRhIBAABXRUJQVlA4IAYBAADwBgCdASoUABQAPl0slEiCgIAAwLiOwAsR7jdeeO24bECsAbwBymfwT+UyTNQZaUNNdZUDAvk2KIy+OvNQ9owAAP7lN1IVlKNCDnz8QAZma+4HsqyCZlM3fBB7YvZfOkHZ5N6QmX4rOufwuZa0o3dpBNhvxe8eFd6wxAPyPSuivTbLR9FCa/fqnXk5ISrYsa8vi7hGduI0rC3Pzg/sPQvldn/8cJq//UPiKLi2ip9winBmxT+hrrs+VFtAbc9GWWEtJFu+IoWLHKnyr4hN7O9gYMOpzcLJPqWJ4HdNHrMcLjNyIMjfx3stz2Bh8G/OrtrgBPEkTLLF9yP/FSdqkOUGUgjYXsAA",
+        "url": "https://bazaardb.gg/card/14ycnjjb22qq55lw75hzbjdbwvh/Sunderer"
+      },
+      {
+        "name": "加特林机枪",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/d99be34eecf70e9927df1e6224ceb96af1cf6d16@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRnYBAABXRUJQVlA4IGoBAABQBwCdASoUABQAPl0sk0iCgKqAwLiOgAnTKEcDeq0yl2A/Tm9FPQA/WbrUSVU+PIbL3RS6Y0ToIg7H+yKx50kBJ0oAAP7wOlfJwfGvLXHyHV6eLKBUJlRriKz291fiVLpgJCvvu/HQCGJrlu32fpP6FlDsBLy4+a7LMbM1vMOuJ6W4NxPpC7GEUoHHVGl4/dPkwQ1XYXDAU9wqgbWXcJ6zbduguiDPHCT0mrw1z8hOSsNUAMsSYp/TJ8/8/83UV3HOeZ3beC4OlUj6Mes55JuPb37BzhkjKVqq7HNe24mAQRhIWkHLIrGr5/LPWrmjTTwQCCZp/8HFjh6HVr4T4J4JXbhKdZVH/U4/a5ig38co0rSIGdyYon4uD/dTozXD+AKAmSD52/zqZSL0M1MAh8vv2tH9dV64MJ7ujNC3ffK7dzWEZ/v360onpt3/ozKki3+Mrh+kH3KDscr3vw3tntrUWGbn5Lp+9L7OAA==",
+        "url": "https://bazaardb.gg/card/k99b4fq69bm089myvgfvz8nydv/Gatling-Gun"
+      }
+    ]
+  }
+]

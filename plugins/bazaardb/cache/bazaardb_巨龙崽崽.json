@@ -1,0 +1,140 @@
+[
+  {
+    "type": "item",
+    "name": "巨龙崽崽",
+    "hero_tag": "",
+    "type_tags": [
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Weapon",
+      "Friend",
+      "Dragon"
+    ],
+    "description": "",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速一件物品4秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品1秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速一件物品4秒"
+      },
+      {
+        "name": "护盾",
+        "description": "获得护盾，等量于此物品伤害量"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品伤害"
+      },
+      {
+        "name": "毒素",
+        "description": "造成剧毒，等量于此物品伤害"
+      },
+      {
+        "name": "炽焰",
+        "description": "此物品的灼烧翻倍。"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "黑曜",
+        "description": "此物品的伤害翻倍。"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品的伤害"
+      }
+    ],
+    "cooldowns": [
+      "9",
+      "8",
+      "7",
+      "9"
+    ],
+    "active_skills": [
+      "造成5伤害",
+      "造成灼烧，等量于此物品伤害",
+      "此物品开始飞行"
+    ],
+    "passive_skills": [],
+    "url": "https://bazaardb.gg/card/50dcy1f5m47wy1jv8vf557d6mk/Dragon-Whelp",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/1cb8388323e7d203a2352f4eafdf462117ebbabd@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRloBAABXRUJQVlA4IE4BAACwBwCdASoUABQAPl0sk0iCgKqAwLiOwAnTKEcDDZ8yAwG2d8YDJVee79jgrwPcmRvdiBJwvyNr9WDsfRCf8FPD3su40OYAAP7HI1ny9uZBSEIJo9Ei88Gh7Di1HaCX8yAu7Ne1InUvX7PwaGaz5CPowE68rnNU5ZCyFfzeddtI1g2PYYDOLOEIzu4IgDqVA67S8g95TBHYTfhs+JafxCRvCkOtFxwciI3xQ3zxTTO/lKzL/U5Tpd+Eeu1fvff/MokZmEAQlr3MonQVtnso2dCQ8XQGxTrjTgA1vtb9s1EFgypav/gpYEOkMm2SC5suNxy6w4SLR8k23L3biJHpvvEr1UDpqeCHhXmlf5eP2Uq7b3yoeH0BuPMRJnE3gezQQ+M0FdC/hNJLJHSV0QI53+fOQEYsnhajjJ8FEIpyraqTGnnC8M8yi6pCi0dEAAAA"
+  },
+  {
+    "type": "monster",
+    "name": "动物饲养员",
+    "tier": "",
+    "level_text": "Day 6+\nDay 6",
+    "hp": "900",
+    "url": "https://bazaardb.gg/card/kz82jk2tkpgs3m9kqv4bkxfk7l/Zookeeper",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/3b5a35a9e8a86cc10dc41ab125f5753c1008b17d@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRuYAAABXRUJQVlA4INoAAADwBACdASoUABQAPl0slEiCgIAAwLiMAVgj/8WxEY8HVINJMtKItpCBCMjN70KFiwAA/ukoMN9QRbh9jMzO9yfTSjjMRdL+3uXBdMMJm2GCUnU9T6ABXjAuIn2XKDXHkh2iBDcXkd64qP68k1TBN6Jj4EJAsnuByuuvvP/EM1MleL/Z87/soYAssh/FzGm0eK9aj7NQDLGUG6t/HXvqWIJL68qmxPDiFx5nXE6W4UKCvWbsf2xQ/BTPER0GvTXqKqmJdMiECNeWH2nMd+lx36aljzlYcKAceIAAAA==",
+    "items": [
+      {
+        "name": "兽皮",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/14ea765edc4b4e83ee2097c71e2fad9281ef18fb@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRlQBAABXRUJQVlA4IEgBAADwBgCdASoUABQAPl0qk0gCgNUAwLiOYAnTKEdXCBagOeS9AG8k7ye+AM7cMw6uaTD9yzr/aVvS01dGQ6GTZyqAAP6Iov0kg+UAd57hmytB2boae95mYSXJ4AYTZ4oTcnD8iAQGhQfQA41zAyGmP8VNrjzzr7a8hxJKb3dcEuvQnx+uBASEQ+w4KG0MFR3bpIMUKTvtlHN1rSO9lDjZP4pi3cQDLTLmtypQsfcziFjH8nf5xNxNDWy7//lPHuSu8QU6aWVfkGY/WUVR+4Yz8WSJg/Nx0Hn+u1JQOdxVQwaZ6z1vgzA6Qz6XXgfAic5pQKnZrm0Wtwdolp6HtI8XqoN6c6Ydzi9TuglR6ExyC8pbzhbvhJ2LrXNJgfZ2GYQPauST0SCwMTAcsrOhce61ZhaZ0yGXfNF1BSCy9v+JKZAcKVxYK2FYAAAA",
+        "url": "https://bazaardb.gg/card/19dhlysvwms9vfsj44w0349gbh0/Pelt"
+      },
+      {
+        "name": "巨龙崽崽",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/1cb8388323e7d203a2352f4eafdf462117ebbabd@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRloBAABXRUJQVlA4IE4BAACwBwCdASoUABQAPl0sk0iCgKqAwLiOwAnTKEcDDZ8yAwG2d8YDJVee79jgrwPcmRvdiBJwvyNr9WDsfRCf8FPD3su40OYAAP7HI1ny9uZBSEIJo9Ei88Gh7Di1HaCX8yAu7Ne1InUvX7PwaGaz5CPowE68rnNU5ZCyFfzeddtI1g2PYYDOLOEIzu4IgDqVA67S8g95TBHYTfhs+JafxCRvCkOtFxwciI3xQ3zxTTO/lKzL/U5Tpd+Eeu1fvff/MokZmEAQlr3MonQVtnso2dCQ8XQGxTrjTgA1vtb9s1EFgypav/gpYEOkMm2SC5suNxy6w4SLR8k23L3biJHpvvEr1UDpqeCHhXmlf5eP2Uq7b3yoeH0BuPMRJnE3gezQQ+M0FdC/hNJLJHSV0QI53+fOQEYsnhajjJ8FEIpyraqTGnnC8M8yi6pCi0dEAAAA",
+        "url": "https://bazaardb.gg/card/50dcy1f5m47wy1jv8vf557d6mk/Dragon-Whelp"
+      },
+      {
+        "name": "曲柄杖",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/79fcae859f9975d6db528b094e4cde8eefe19215@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4IDABAACwBgCdASoUABQAPl0qk0gCgNUAwLiOwAnTKEdXemuMBuAN5y9ADpOfJVJm8LzHAfJ+ZydbHA/nBJE7JkpDAAD8/9SvjUP7EOe1eOskr+5h5SL0lHAWkXDznFu6TPodpF3vU8WhFAr1Vn9uf3wbd/1db0rPIr0NaBNPpAZLzT4fqMeVUcrdHqaAUQ/IMcP4lErh5bB7J85u2fr/5O4sgq/w8OE5nx/zfIKFacI0/KH6oUH/y/JE79umq6op+WaCid0cHyoOdMvs6pEqAArGGRWyzQB+S+Xuz4y2HMRz+3iZ/pcXlD27/5JOHuZcabxJWrf+TR3nBPvAWHuSI2WMlMMApo6H8990c8Gfkn4AYgmmVgfSQ2cGRqL6FlghORza5F5TvhTu1LZ4DE4jRw9ohAAA",
+        "url": "https://bazaardb.gg/card/141bv079y4xbg60t53zm8dm0zvm/Crook"
+      },
+      {
+        "name": "水蛭",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/7b6206f357c78a4561e357511bb43afba10902ff@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRpABAABXRUJQVlA4IIQBAADQBwCdASoUABQAPl0sk0iCgKqAwLiOwAnTKEdoiB89QwG2A8UD9gMtA58f2Qv2WI2oMOgg7SCqeS0D23PcbKTkGGOR8RsygAD+T96MVbsAirQ5cngDenuRrnq75P88BUL6yQVhd4Kl4Y51FUZNdaW3dNEuZ7EfvnYTFvQ5F2jMV9c3LY2P+IQzl1u4h8PZYoyDMZ9BeU3uQsXE5HFsaeHnCmP/S2Mfr2ZmZZHtX5zygOjfetHAzmmax//FsOCdiUan+Tx/MoxQz+luOP3hZ99GXyJmF2zKyfBMZwuEPdMn+v/H69yZsXPcN8J+3H7ZPXvcpRrvNj5WyUxAjmV3VEYyqLBdgUhhFd39G12g2irxxfmh06LIdIaSR/gZYNLu0MuI6dQiP7m5T97vLIne9+584JB+p6PKP2RptosnYkWYeO8VUIV1+22+v84uVeTuNTSSy2Ja//1Yt8//zZe8wU05x9I1zoU+/ndWLES7V+ZK7FemEMwIaXg0H6m/+l4YT6rDoAAA",
+        "url": "https://bazaardb.gg/card/n2wm1jdq7379g3g521mn5lghws/Leeches"
+      },
+      {
+        "name": "火蜥幼兽",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/29b17655e6f65502b0375a8990511046ea442fad@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4IDABAADwBgCdASoUABQAPl0slEiCgIAAwLiOgAnTKEcCcZu2ngE0nlez7ih5BACOXmYVEa0peK/R8w77k9FlbsxJuoqYAP7eMcz96/0UA17PIQNd5H66IOHVK68w0mEE51VhdKNtK3YF7QQ+Kkz0FH8V2T9t8rYgLwxc9TkqMr/PotjR+F+4jvFWV+jUNCoXHwNcucnpmD+3/UqqGzR+J97OBrX9/d1Xn3suG/I0e/YlBKOImrL3nSDC8k72n8TBnK3RE2P4/1f2JuGqj9kJk05jkvU6Rbq5QiD2jszVQKQ4iRlmAEg4DlHhZ3QUqwA1VVTQduE8wsh9YN1qDRhQc3d9YK86RIT301PCFj3R9Qmh088RRyPpXqnpx9hF+GZsQWmZ7iNh7jZueRCpMUne3xugAAAA",
+        "url": "https://bazaardb.gg/card/bb08npjxbmx2nk83vb0cqwhhpq/Salamander-Pup"
+      },
+      {
+        "name": "驯化蜘蛛",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/d1edfaeb90a1cce1bb15c12caeb5da6961f3722e@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRiQBAABXRUJQVlA4IBgBAADwBgCdASoUABQAPl0okkeDAYDAAMC4jiDmAAx3dtrnVIkq30C7Gt5w/45FWhW/Ojig5Ct/d3AO6d3GXVvblYgAAP70w9WnW3rEW5iLR683d4sZ2dieSx73lmDkQhhEojiL6mwueR1JDmvyh6K2ErmDtviT591hn0vYaZQ+gf7nnHSpw1/kHFDhQLC6bngWepxzZ97uN4qa6/IkiNeWN+be/RMHQP7ETP6zcY1C+u0rThqg7hptTEIPx7cxMJi52u86prXLD90DUdj4e+V1cmiF96KypU9YqXTibtN03yS+I05U1ji2z382JKHoOdJCzZcPpBvyhbIIlyPI+sAf8ERS4/QGovASm/0hdNd/cOFdW1mUl13g8AAA",
+        "url": "https://bazaardb.gg/card/63zxqnzwlkld6b1y3b2wh190b/Trained-Spider"
+      },
+      {
+        "name": "兽皮",
+        "img_src": "https://s.bazaardb.gg/v1/z13.0/14ea765edc4b4e83ee2097c71e2fad9281ef18fb@256.webp?v=6",
+        "img_blur": "data:image/webp;base64,UklGRlQBAABXRUJQVlA4IEgBAADwBgCdASoUABQAPl0qk0gCgNUAwLiOYAnTKEdXCBagOeS9AG8k7ye+AM7cMw6uaTD9yzr/aVvS01dGQ6GTZyqAAP6Iov0kg+UAd57hmytB2boae95mYSXJ4AYTZ4oTcnD8iAQGhQfQA41zAyGmP8VNrjzzr7a8hxJKb3dcEuvQnx+uBASEQ+w4KG0MFR3bpIMUKTvtlHN1rSO9lDjZP4pi3cQDLTLmtypQsfcziFjH8nf5xNxNDWy7//lPHuSu8QU6aWVfkGY/WUVR+4Yz8WSJg/Nx0Hn+u1JQOdxVQwaZ6z1vgzA6Qz6XXgfAic5pQKnZrm0Wtwdolp6HtI8XqoN6c6Ydzi9TuglR6ExyC8pbzhbvhJ2LrXNJgfZ2GYQPauST0SCwMTAcsrOhce61ZhaZ0yGXfNF1BSCy9v+JKZAcKVxYK2FYAAAA",
+        "url": "https://bazaardb.gg/card/19dhlysvwms9vfsj44w0349gbh0/Pelt"
+      }
+    ]
+  }
+]

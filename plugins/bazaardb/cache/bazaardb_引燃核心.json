@@ -1,0 +1,86 @@
+[
+  {
+    "type": "item",
+    "name": "引燃核心",
+    "hero_tag": "杜利",
+    "type_tags": [
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Core",
+      "Tech"
+    ],
+    "description": "使用此物品左侧的任意物品时，为此物品充能1秒。",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速2件物品1秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品1秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速2件物品1秒"
+      },
+      {
+        "name": "护盾",
+        "description": "获得护盾，等量于此物品灼烧的5倍"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品灼烧的5倍"
+      },
+      {
+        "name": "毒素",
+        "description": "造成剧毒，等量于此物品灼烧"
+      },
+      {
+        "name": "炽焰",
+        "description": "此物品的灼烧翻倍。"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "黑曜",
+        "description": "造成伤害，等量于此物品灼烧的5倍"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品的灼烧"
+      }
+    ],
+    "cooldowns": [
+      "8",
+      "6",
+      "5",
+      "8"
+    ],
+    "active_skills": [
+      "造成4灼烧",
+      "此物品及其右侧灼烧物品的灼烧提高2 » 4 » 8（限本场战斗）"
+    ],
+    "passive_skills": [
+      "使用此物品左侧的任意物品时，为此物品充能1秒。"
+    ],
+    "url": "https://bazaardb.gg/card/tdd8bgbytp94b4w3xdcs2d3kpb/Ignition-Core",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/a278718df95227f786149aefbbf3e9443fe8022a@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRoIBAABXRUJQVlA4IHYBAACQCACdASoUABQAPl0sk0iCgKqAwLiOwAnTKEfK+S8IZpduMcoB6gP0A6aTTAOfA9j3ylaPIdoEf+Q/+wHXfCJ3mjFUJ1vh4tehBe8rwAD+/SBfyBD3mMc+up0fVA66BUwR5ZPOY9HoSk+dhXH/84/3THmP/txqzKc4ps45Hkbb/splvCrEe27m3HEujug6Q0f3qWnujTDs6qj+Hq8vh6x3fw2buMZgdqjPICJJsU6kOYgAm7X+sezloflaTXxVF8avv/fpt3rfqjMyZ9DqHcO8bPE227CmtpN+LtBHSEUWP9q+z3UzIMPC4PN4tcvOtaibGZcL6TQwW2tx81WZ2ca56tCbVj1b4r048H5w/E3MeVo7Kh2hPZDn/GjOf/jAcC36PjxBzy9orm4HpCCu42/3rUyZSKbl8tksJc/M3+y057/SyVRynYqHKZk8iUmvRbv3h+Ct5ychxiDoJgIOgAv4AL227jlH9eAAO/tvVi4k7bJ4QGSoAA=="
+  }
+]

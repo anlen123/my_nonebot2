@@ -1,0 +1,22 @@
+[
+  {
+    "type": "item",
+    "name": "刀技",
+    "hero_tag": "凡妮莎",
+    "type_tags": [
+      "钻石+",
+      "传奇+",
+      "Weapon"
+    ],
+    "description": "使用武器时，使其冷却时间缩短4%（限本场战斗）。",
+    "enchantments": [],
+    "cooldowns": [],
+    "active_skills": [],
+    "passive_skills": [
+      "使用武器时，使其冷却时间缩短4%（限本场战斗）。"
+    ],
+    "url": "https://bazaardb.gg/card/y6209m15y3l111mvm25t1stbwj/Knife-Tricks",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/872698221e215a7451d8e4d09a351303d2973105@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRnACAABXRUJQVlA4WAoAAAAQAAAAEwAAEwAAQUxQSLAAAAABgBRJsmprHspjsIQuUBGTBVx9OlWLc158CxExAZE3RuvD+71dDZvxuXdTFNK5W6rOVcz5+plWsrkIosrf3zgieiioSP7bisZFwBwV07kx8p9oGmwKoCiAaXEiy1Elyf6lAAqCou+7Ckox47VHEAUElf1KFVRAQRfDJAqClPv1I1IQELg2oltQBRXaETFDSD9/IMA4IqIyRUkJVKbVLKJ9BnMurfhcHyz3z+du0a9HDlZQOCCaAQAA8AgAnQEqFAAUAD5dKpNIAoDVAMC4jsAJ0yhHA3oHDn7E9k8lnqc29Jzs3WAegB5ZfsYftz6QFygOfxztDnRhsBGK5YjuhImX3bLTXdC2HgAA/vns4kd0lqjReByt6TL6v8swpi6/P7g9dhx94TGSiBL9Y+11vAY/Vr0PiD6Cr6Eau9TA3kPeCAssxt+d/pP2dcd3dzYHwVEUq+pF9KI3m/4X4Ti8VDPybSqWIoE7WGYwOdxyf20dJwe9IaNXg6kZmfva//Kzsvx05iVKpjmQ/2rqGPs34QgSaJyeSIWSk4Uopndv/xz+J48RRILxiOAGd5X7+eUhOfo4qfl71TOvXxnOAxBcbh8BR7XL4ZMY/QfH32M/IiIDSov3O0h5AcK35KKW776/1O9VRAZa4Ly+wzoQv/d9PJlVTZLVP8IRoit9S3AM6+86N7k8ijF4/csKcnV6rdlLAAY1LZFFTnjrw5b80G64CsTfJXOCp6v+fK6Nw5S6INsQyTjc9NS7BHaFzD88Q3VmC5OdxCTQagE4P0qB5nvr91ZQAAA="
+  }
+]

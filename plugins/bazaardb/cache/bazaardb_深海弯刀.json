@@ -1,0 +1,84 @@
+[
+  {
+    "type": "item",
+    "name": "深海弯刀",
+    "hero_tag": "凡妮莎",
+    "type_tags": [
+      "白银+",
+      "黄金+",
+      "钻石+",
+      "传奇+",
+      "Weapon",
+      "Relic",
+      "Aquatic"
+    ],
+    "description": "暴击时，造成剧毒，等量于此物品伤害的一半。",
+    "enchantments": [
+      {
+        "name": "黄金",
+        "description": "此物品的价值翻倍。"
+      },
+      {
+        "name": "沉重",
+        "description": "减速2件物品1秒"
+      },
+      {
+        "name": "寒冰",
+        "description": "冻结一件物品0.5秒"
+      },
+      {
+        "name": "疾速",
+        "description": "加速2件物品1秒"
+      },
+      {
+        "name": "护盾",
+        "description": "获得护盾，等量于此物品伤害量"
+      },
+      {
+        "name": "回复",
+        "description": "获得治疗，等量于此物品伤害"
+      },
+      {
+        "name": "毒素",
+        "description": "此物品的剧毒翻倍。"
+      },
+      {
+        "name": "炽焰",
+        "description": "造成灼烧，等量于此物品伤害的10%"
+      },
+      {
+        "name": "闪亮",
+        "description": "此物品+1多重释放。"
+      },
+      {
+        "name": "致命",
+        "description": "此物品+50%暴击率。"
+      },
+      {
+        "name": "辉耀",
+        "description": "此物品免疫冻结、减速和摧毁。"
+      },
+      {
+        "name": "黑曜",
+        "description": "此物品的伤害翻倍。"
+      },
+      {
+        "name": "长青",
+        "description": "生命再生量提高，增幅等于此物品伤害的10%"
+      }
+    ],
+    "cooldowns": [
+      "5"
+    ],
+    "active_skills": [
+      "造成20伤害"
+    ],
+    "passive_skills": [
+      "暴击时，造成剧毒，等量于此物品伤害的一半。",
+      "此物品被加速时，剧毒物品的剧毒提高+3 » 6 » 9（限本场战斗）。"
+    ],
+    "url": "https://bazaardb.gg/card/hcgz2z6snc8pxvm10ls19wch6z/Scimitar-of-the-Deep",
+    "img_src": "https://s.bazaardb.gg/v1/z13.0/b7c5734a6b6fada1114bd783856608dbcb9afb2f@256.webp?v=6",
+    "img_blur": "data:image/webp;base64,UklGRkQBAABXRUJQVlA4IDgBAADQBgCdASoUABQAPl0slEiCgIAAwLiOwAnTKEeZ+NcOY8r1L95efAHvy4DjIITh0ADH+2xona2CepcIIbi356AA99uvg7bfSKYqDf2mtMuucXqQHZrDdW/s0uJ9h9XI3zSiMNO5CqHiCR6EZgHxnT1RBYvZeRnm7zjRhXs36L8vczF9ppYR4yeox0K0vWFtBZ8Khvv8QZ84bFn935DG6eia0/O0PCJiP/hLvzeyha/jn/8Y4sho5ajUvmgbJyTLs1nPc+wiMsV91/9BxEmtuseo8o2vZYvhu2pCKJkGCMFGW5XT8txUrJBHG0y6OL/8ScR7+h0aJ86oJpP92f3alBHjTgSyvOZ8i2LKQgpcItaSfAXHSZAcPtj5pAGZxXxv/vFZvhrr+vmAUSO6BgtcBh1APKD0VrsIAAA="
+  }
+]
