@@ -442,6 +442,10 @@ async def bz_rank_rev(bot: Bot, event: Event):
     _snapshots[group_id] = new_snapshot
     _save_snapshot(_snapshots)
 
+    # 发起者 QQ 和绑定账号
+    requester_qq      = str(event.user_id)
+    requester_account = group_map.get(requester_qq)
+
     # 按 rating 降序排列
     ranked.sort(key=lambda x: x["rating"], reverse=True)
 
@@ -455,7 +459,6 @@ async def bz_rank_rev(bot: Bot, event: Event):
         return f" ▼{d}分"
 
     def _fmt_delta_position(d) -> str:
-        # d = last_position - current_position，正数表示排名上升
         if d is None or d == 0: return ""
         if d > 0: return f" 📈+{d}"
         return f" 📉{d}"
@@ -470,27 +473,55 @@ async def bz_rank_rev(bot: Bot, event: Event):
         medal    = MEDALS[i] if i < 3 else f"{i + 1}."
         dr       = _fmt_delta_rating(item["delta_rating"])
         dp       = _fmt_delta_position(item["delta_position"])
-        detail_lines.append(
-            f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr})"
-        )
+        is_me    = item["qq"] == requester_qq
+        me_mark  = " 👤" if is_me else ""
+        detail_lines.append((
+            f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr}){me_mark}",
+            is_me,
+            i,   # 原始排名序号
+        ))
 
     # 用合并消息发送
-    def _node(text: str) -> dict:
+    def _node(content) -> dict:
         return {
             "type": "node",
-            "data": {
-                "name":    "巴扎排名",
-                "uin":     bot.self_id,
-                "content": text,
-            }
+            "data": {"name": "巴扎排名", "uin": bot.self_id, "content": content}
         }
 
-    # 前三名每人单独一个气泡，4名及以后合并成一个气泡
-    top3    = detail_lines[:3]
-    rest    = detail_lines[3:]
-    messages = [_node(header)]
+    messages = []
+
+    # 若发起者有绑定账号，先生成查分图片放最前面
+    if requester_account:
+        nonebot.logger.info(f"[bazaardb] 巴扎排名：为 {requester_account} 生成查分图")
+        try:
+            img_bytes = await asyncio.get_event_loop().run_in_executor(
+                None, _query_user_sync, requester_account
+            )
+            if img_bytes:
+                messages.append(_node(MessageSegment.image(f"base64://{base64.b64encode(img_bytes).decode()}")))
+        except Exception as e:
+            nonebot.logger.warning(f"[bazaardb] 查分图生成失败: {e}")
+
+    messages.append(_node(header))
+
+    # 若发起者在排名中，将其单独提到最前（header 后第一条）
+    requester_line = None
+    other_lines    = []
+    for text, is_me, _ in detail_lines:
+        if is_me:
+            requester_line = text
+        else:
+            other_lines.append(text)
+
+    if requester_line:
+        messages.append(_node(requester_line))
+
+    # 其余：前三名（排除发起者后的前三）每人单独气泡，之后合并
+    top3 = other_lines[:3]
+    rest = other_lines[3:]
     messages += [_node(line) for line in top3]
     if rest:
         messages.append(_node("\n".join(rest)))
+
     await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
 
