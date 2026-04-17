@@ -411,6 +411,10 @@ async def bz_rank_rev(bot: Bot, event: Event):
     except Exception:
         pass
 
+    # 发起者 QQ 和绑定账号
+    requester_qq      = str(event.user_id)
+    requester_account = group_map.get(requester_qq)
+
     # 上次快照
     last_snapshot = _snapshots.get(group_id, {})
 
@@ -463,10 +467,6 @@ async def bz_rank_rev(bot: Bot, event: Event):
     # 保存新快照
     _snapshots[group_id] = new_snapshot
     _save_snapshot(_snapshots)
-
-    # 发起者 QQ 和绑定账号
-    requester_qq      = str(event.user_id)
-    requester_account = group_map.get(requester_qq)
 
     # 按 rating 降序排列
     ranked.sort(key=lambda x: x["rating"], reverse=True)
