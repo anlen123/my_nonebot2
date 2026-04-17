@@ -30,6 +30,8 @@ def calc_stats(history: list) -> dict:
     up_games = 0
     down_games = 0
     season_highest = 0
+    cur_streak = 0       # 当前连续上分
+    max_streak = 0       # 最大连续上分
 
     for i, item in enumerate(history):
         r = item["rating"]
@@ -39,23 +41,29 @@ def calc_stats(history: list) -> dict:
             prev = history[i - 1]["rating"]
             if r > prev:
                 up_games += 1
+                cur_streak += 1
+                if cur_streak > max_streak:
+                    max_streak = cur_streak
             elif r < prev:
                 down_games += 1
+                cur_streak = 0
 
     total_games = up_games + down_games
     win_rate = (up_games / total_games * 100) if total_games > 1 else 0
 
     latest = history[-1]
     return {
-        "current_rating": latest["rating"],
-        "current_rank": latest.get("position", "-"),
-        "total_games": total_games,
-        "up_games": up_games,
-        "season_highest": season_highest,
-        "win_rate": round(win_rate, 2),
-        "first_record": history[0]["timestamp"],
-        "last_record": latest["timestamp"],
-        "record_count": len(history),
+        "current_rating":  latest["rating"],
+        "current_rank":    latest.get("position", "-"),
+        "total_games":     total_games,
+        "up_games":        up_games,
+        "season_highest":  season_highest,
+        "win_rate":        round(win_rate, 2),
+        "cur_streak":      cur_streak,
+        "max_streak":      max_streak,
+        "first_record":    history[0]["timestamp"],
+        "last_record":     latest["timestamp"],
+        "record_count":    len(history),
     }
 
 
@@ -87,7 +95,7 @@ def build_html(username: str, season_id: str, season_display: str,
 <style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
-    background: #f5f7fa;
+    background: #13131f;
     font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
     padding: 24px;
     display: inline-block;
@@ -96,9 +104,9 @@ def build_html(username: str, season_id: str, season_display: str,
 
   /* ══ 主容器 ══ */
   .wrap {{
-    background: #fff;
+    background: #1a1a2e;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    box-shadow: 0 2px 20px rgba(0,0,0,.4);
     overflow: hidden;
     width: 1040px;
   }}
@@ -131,25 +139,31 @@ def build_html(username: str, season_id: str, season_display: str,
 
   /* ══ 统计网格 ══ */
   .stats-grid {{
-    display: grid; grid-template-columns: repeat(6, 1fr);
-    gap: 1px; background: #eee; margin: 20px 24px 0;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1px; background: #333; margin: 20px 24px 0;
     border-radius: 10px; overflow: hidden;
   }}
-  .stat-cell {{
-    background: #fff; padding: 16px 12px; text-align: center;
+  .stats-grid-row2 {{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: #333; margin: 1px 24px 0;
+    border-radius: 0 0 10px 10px; overflow: hidden;
   }}
-  .stat-label {{ font-size: 12px; color: #888; margin-bottom: 6px; }}
+  .stat-cell {{
+    background: #1e1e2e; padding: 16px 12px; text-align: center;
+  }}
+  .stat-label {{ font-size: 12px; color: #aaa; margin-bottom: 6px; }}
   .stat-value {{ font-size: 26px; font-weight: 700; }}
-  .c-blue {{ color: #4a6ceb; }}
-  .c-green {{ color: #52c41a; }}
-  .c-red {{ color: #ff4d4f; }}
-  .c-gold {{ color: #faad14; }}
-  .c-purple {{ color: #722ed1; }}
+  .c-blue   {{ color: #5b8dee; }}
+  .c-green  {{ color: #52c41a; }}
+  .c-red    {{ color: #ff4d4f; }}
+  .c-gold   {{ color: #faad14; }}
+  .c-purple {{ color: #b37feb; }}
+  .c-orange {{ color: #ff7a45; }}
 
   /* ══ 图表区 ══ */
   .chart-section {{ margin: 20px 24px; }}
   .chart-title {{
-    font-size: 16px; font-weight: 700; color: #333;
+    font-size: 16px; font-weight: 700; color: #ccc;
     margin-bottom: 12px; padding-left: 8px;
     border-left: 4px solid #667eea;
   }}
@@ -157,8 +171,8 @@ def build_html(username: str, season_id: str, season_display: str,
 
   /* ══ 底部信息 ══ */
   .footer {{
-    text-align: center; padding: 14px; color: #aaa; font-size: 12px;
-    border-top: 1px solid #eee; margin-top: 4px;
+    text-align: center; padding: 14px; color: #666; font-size: 12px;
+    border-top: 1px solid #2a2a3e; margin-top: 4px;
   }}
 </style>
 </head>
@@ -180,7 +194,7 @@ def build_html(username: str, season_id: str, season_display: str,
     </div>
   </div>
 
-  <!-- 统计 -->
+  <!-- 统计第一行 -->
   <div class="stats-grid">
     <div class="stat-cell">
       <div class="stat-label">🔍 当前分数</div>
@@ -202,9 +216,20 @@ def build_html(username: str, season_id: str, season_display: str,
       <div class="stat-label">🏆 赛季最高分</div>
       <div class="stat-value c-red">{s.get('season_highest', '-')}</div>
     </div>
+  </div>
+  <!-- 统计第二行 -->
+  <div class="stats-grid-row2">
     <div class="stat-cell">
       <div class="stat-label">✨ 上分率</div>
       <div class="stat-value c-gold">{s.get('win_rate', '-')}<span style="font-size:16px">%</span></div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">🔥 当前连续上分</div>
+      <div class="stat-value c-orange">{s.get('cur_streak', '-')}</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">🚀 最大连续上分</div>
+      <div class="stat-value c-red">{s.get('max_streak', '-')}</div>
     </div>
   </div>
 
