@@ -360,19 +360,25 @@ _personal_snapshots: Dict[str, dict] = _load_personal_snapshot()
 
 
 async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
-    """拉取用户最新一条排位记录，返回 {rating, position} 或 None"""
+    """拉取用户最新一条排位记录，返回 {rating, position} 或 None，失败自动重试一次"""
     url = f"{BASE_URL}/api/rating-history?username={username}&seasonId={SEASON_ID}"
-    try:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-            data = await resp.json(content_type=None)
-            if data and isinstance(data, list):
-                latest = data[-1]
-                return {
-                    "rating":   latest.get("rating", 0),
-                    "position": latest.get("position", None),
-                }
-    except Exception as e:
-        nonebot.logger.warning(f"[bazaardb] 拉取 {username} 失败: {e}")
+    for attempt in range(2):
+        try:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                data = await resp.json(content_type=None)
+                if data and isinstance(data, list):
+                    latest = data[-1]
+                    return {
+                        "rating":   latest.get("rating", 0),
+                        "position": latest.get("position", None),
+                    }
+                return None
+        except Exception as e:
+            if attempt == 0:
+                nonebot.logger.debug(f"[bazaardb] 拉取 {username} 第1次失败，重试: {e}")
+                await asyncio.sleep(1)
+            else:
+                nonebot.logger.warning(f"[bazaardb] 拉取 {username} 失败: {e}")
     return None
 
 
@@ -391,15 +397,22 @@ async def bz_rank_rev(bot: Bot, event: Event):
         ))
         return
 
-    # 并发拉取所有成员数据
+    # 分批并发拉取，每批 8 个，避免触发服务器限流
+    BATCH_SIZE = 8
+    items      = list(group_map.items())
+    results: Dict[str, Optional[dict]] = {}
+
     async with aiohttp.ClientSession() as session:
-        tasks = {
-            qq: asyncio.create_task(_fetch_latest_rating(session, account))
-            for qq, account in group_map.items()
-        }
-        results: Dict[str, Optional[dict]] = {}
-        for qq, task in tasks.items():
-            results[qq] = await task
+        for i in range(0, len(items), BATCH_SIZE):
+            batch = items[i:i + BATCH_SIZE]
+            tasks = {
+                qq: asyncio.create_task(_fetch_latest_rating(session, account))
+                for qq, account in batch
+            }
+            for qq, task in tasks.items():
+                results[qq] = await task
+            if i + BATCH_SIZE < len(items):
+                await asyncio.sleep(0.5)
 
     # 尝试获取群成员昵称
     nick_map: Dict[str, str] = {}
