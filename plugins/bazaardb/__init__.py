@@ -12,13 +12,19 @@ import asyncio
 import base64
 import importlib.util
 import json
+import os
 import aiohttp
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import nonebot
+from nonebot import require
 from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, GroupMessageEvent
+
+require("nonebot_plugin_apscheduler")
+from nonebot_plugin_apscheduler import scheduler
 
 # 脚本目录（与插件同目录）
 SCRAPER_DIR = Path(__file__).parent
@@ -33,6 +39,46 @@ bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
 bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
 bz_rank     = on_regex(pattern=r"^巴扎排名$")
 bz_alias    = on_regex(pattern=r"^巴扎别名")
+
+# ── 每日排名推送配置 ──────────────────────────────────────────────────────────
+# 从 .env 读取 BAZAAR_DAILY_RANK_GROUPS=["群号1","群号2"]
+def _load_daily_groups() -> List[str]:
+    root = Path(__file__).parent.parent.parent
+    for name in (".env.dev", ".env.prod", ".env"):
+        p = root / name
+        if not p.exists():
+            continue
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("BAZAAR_DAILY_RANK_GROUPS"):
+                _, _, val = line.partition("=")
+                try:
+                    return json.loads(val.strip())
+                except Exception:
+                    pass
+    raw = os.environ.get("BAZAAR_DAILY_RANK_GROUPS", "[]")
+    try:
+        return json.loads(raw)
+    except Exception:
+        return []
+
+DAILY_RANK_GROUPS: List[str] = _load_daily_groups()
+
+# 每日快照：{ "群号": { "游戏账号": {"rating": int, "position": int} } }
+DAILY_SNAPSHOT_FILE = Path(__file__).parent / "daily_snapshot.json"
+
+def _load_daily_snapshot() -> Dict[str, Dict[str, dict]]:
+    if DAILY_SNAPSHOT_FILE.exists():
+        try:
+            return json.loads(DAILY_SNAPSHOT_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_daily_snapshot(data: Dict[str, Dict[str, dict]]):
+    DAILY_SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+_daily_snapshots: Dict[str, Dict[str, dict]] = _load_daily_snapshot()
 
 # ── 别名持久化：{ "xxx": "yyy" } ─────────────────────────────────────────────
 ALIAS_FILE = Path(__file__).parent / "aliases.json"
@@ -569,4 +615,140 @@ async def bz_rank_rev(bot: Bot, event: Event):
                 "position": requester_result["position"],
             }
             _save_personal_snapshot(_personal_snapshots)
+
+
+# ── 凌晨0点自动推送排名 ───────────────────────────────────────────────────────
+
+async def _send_daily_rank(group_id: str):
+    """向指定群推送每日排名，并与前一天0点快照对比"""
+    group_map = _bindings.get(group_id, {})
+    if not group_map:
+        return
+
+    # 拉取所有成员数据
+    BATCH_SIZE = 8
+    items      = list(group_map.items())
+    results: Dict[str, Optional[dict]] = {}
+
+    async with aiohttp.ClientSession() as session:
+        for i in range(0, len(items), BATCH_SIZE):
+            batch = items[i:i + BATCH_SIZE]
+            tasks = {
+                qq: asyncio.create_task(_fetch_latest_rating(session, account))
+                for qq, account in batch
+            }
+            for qq, task in tasks.items():
+                results[qq] = await task
+            if i + BATCH_SIZE < len(items):
+                await asyncio.sleep(0.5)
+
+    # 昨日快照
+    yesterday_snapshot = _daily_snapshots.get(group_id, {})
+
+    # 构建排行
+    ranked = []
+    no_data = []
+    new_daily_snapshot: Dict[str, dict] = {}
+
+    for qq, account in group_map.items():
+        r = results.get(qq)
+        if r:
+            rating   = r["rating"]
+            position = r["position"]
+            new_daily_snapshot[account] = {"rating": rating, "position": position}
+            last = yesterday_snapshot.get(account)
+            if isinstance(last, dict):
+                delta_rating   = rating - last.get("rating", rating)
+                last_pos       = last.get("position")
+                delta_position = (last_pos - position) if (last_pos and position) else None
+            else:
+                delta_rating   = None
+                delta_position = None
+            ranked.append({
+                "account":        account,
+                "rating":         rating,
+                "position":       position,
+                "delta_rating":   delta_rating,
+                "delta_position": delta_position,
+            })
+        else:
+            no_data.append(account)
+
+    # 保存今日快照（供明天对比）
+    _daily_snapshots[group_id] = new_daily_snapshot
+    _save_daily_snapshot(_daily_snapshots)
+
+    ranked.sort(key=lambda x: x["rating"], reverse=True)
+
+    total    = len(group_map)
+    on_board = len(ranked)
+    today    = datetime.now().strftime("%Y-%m-%d")
+
+    def _dr(d) -> str:
+        if d is None or d == 0: return ""
+        return f" ▲+{d}分" if d > 0 else f" ▼{d}分"
+
+    def _dp(d) -> str:
+        if d is None or d == 0: return ""
+        return f" 📈+{d}" if d > 0 else f" 📉{d}"
+
+    # 今日总结
+    risers  = [x for x in ranked if x["delta_rating"] and x["delta_rating"] > 0]
+    fallers = [x for x in ranked if x["delta_rating"] and x["delta_rating"] < 0]
+    unchanged = [x for x in ranked if x["delta_rating"] == 0]
+
+    summary = (
+        f"📅 {today} 每日巴扎排名播报\n"
+        f"共 {on_board}/{total} 人上榜\n"
+        f"📈 上分 {len(risers)} 人　📉 下分 {len(fallers)} 人　→ 持平 {len(unchanged)} 人"
+    )
+    if no_data:
+        summary += f"\n⚠️ 无传奇记录：{', '.join(no_data)}"
+
+    detail_lines = []
+    for i, item in enumerate(ranked):
+        pos_str = f"#{item['position']}" if item["position"] else "#-"
+        medal   = MEDALS[i] if i < 3 else f"{i + 1}."
+        dr      = _dr(item["delta_rating"])
+        dp      = _dp(item["delta_position"])
+        detail_lines.append(
+            f"{medal} {item['account']} - {pos_str}{dp} ({item['rating']}分{dr})"
+        )
+
+    try:
+        bot: Bot = nonebot.get_bot()
+    except Exception:
+        nonebot.logger.warning(f"[bazaardb] 每日推送 group={group_id}：no bot")
+        return
+
+    def _node(content) -> dict:
+        return {"type": "node", "data": {"name": "巴扎日报", "uin": bot.self_id, "content": content}}
+
+    messages = [_node(summary)]
+    top3 = detail_lines[:3]
+    rest = detail_lines[3:]
+    messages += [_node(line) for line in top3]
+    if rest:
+        messages.append(_node("\n".join(rest)))
+
+    try:
+        await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
+        nonebot.logger.info(f"[bazaardb] 每日排名已推送到群 {group_id}")
+    except Exception as e:
+        nonebot.logger.warning(f"[bazaardb] 每日推送 group={group_id} 失败: {e}")
+
+
+@scheduler.scheduled_job("cron", hour=0, minute=0, id="bazaardb_daily_rank")
+async def daily_rank_job():
+    if not DAILY_RANK_GROUPS:
+        return
+    nonebot.logger.info(f"[bazaardb] 触发每日排名推送，群组: {DAILY_RANK_GROUPS}")
+    for group_id in DAILY_RANK_GROUPS:
+        await _send_daily_rank(group_id)
+        await asyncio.sleep(2)
+
+
+nonebot.logger.info(
+    f"[bazaardb] 每日排名推送已配置，目标群: {DAILY_RANK_GROUPS or '未配置'}"
+)
 
