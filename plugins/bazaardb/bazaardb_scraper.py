@@ -773,18 +773,27 @@ async def fetch_via_page_content(context, category: str, query: str) -> list[dic
     print(f"  → 搜索{label}: {url}")
 
     page = await context.new_page()
+    html = ""
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=60000)
-        # 等待 Next.js Flight 数据注入完成（通常在 domcontentloaded 后很快）
-        # 如果 pageCards 还没出现，稍等一下
+        # 等待 Next.js Flight 数据注入完成
         html = await page.content()
         if "pageCards" not in html:
             await page.wait_for_timeout(1500)
             html = await page.content()
-    except Exception:
-        html = await page.content()
+    except Exception as e:
+        print(f"    ⚠ {label}页面加载异常: {e}，尝试读取当前内容")
+        try:
+            # 等待页面停止跳转后再读取
+            await page.wait_for_load_state("domcontentloaded", timeout=10000)
+            html = await page.content()
+        except Exception:
+            html = ""
     finally:
-        await page.close()
+        try:
+            await page.close()
+        except Exception:
+            pass
 
     cards_raw = extract_page_cards_from_html(html, category)
     print(f"    ✓ 找到 {len(cards_raw)} 个{label}原始记录")
