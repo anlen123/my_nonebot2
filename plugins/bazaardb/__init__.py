@@ -222,14 +222,14 @@ async def bz_alias_rev(bot: Bot, event: Event):
 
 def _user_cache_path(username: str) -> Path:
     safe = username.replace("/", "_").replace("\\", "_")
-    return CACHE_DIR / f"bazaar_{safe}_s14.png"
+    return CACHE_DIR / f"bazaar_{safe}_s15.png"
 
 
 def _query_user_sync(username: str) -> bytes | None:
     scraper = _load_scraper("bazaar_user_scraper.py")
-    asyncio.run(scraper.scrape_and_export(username, "14", str(CACHE_DIR)))
+    asyncio.run(scraper.scrape_and_export(username, "15", str(CACHE_DIR)))
     safe = username.replace("/", "_").replace("\\", "_")
-    png  = CACHE_DIR / f"bazaar_{safe}_s14.png"
+    png  = CACHE_DIR / f"bazaar_{safe}_s15.png"
     return png.read_bytes() if png.exists() else None
 
 
@@ -368,8 +368,8 @@ async def bz_unbind_rev(bot: Bot, event: Event):
 
 # ── 巴扎排名：查询群内所有绑定成员排名 ───────────────────────────────────────
 
-BASE_URL   = "https://bazaar.mrmao.life"
-SEASON_ID  = "14"
+BASE_URL   = "https://bazaarapi.mrmao.life"
+SEASON_ID  = "15"
 MEDALS     = ["🥇", "🥈", "🥉"]
 
 # 群排名快照（所有成员对比用）：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
@@ -407,17 +407,24 @@ _personal_snapshots: Dict[str, dict] = _load_personal_snapshot()
 
 async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
     """拉取用户最新一条排位记录，返回 {rating, position} 或 None，失败自动重试一次"""
-    url = f"{BASE_URL}/api/rating-history?username={username}&seasonId={SEASON_ID}"
+    url = f"{BASE_URL}/api/user/comprehensive-info?username={username}&seasonId={SEASON_ID}"
+    headers = {
+        "accept": "*/*",
+        "origin": "https://bazaar.mrmao.life",
+        "referer": "https://bazaar.mrmao.life/",
+    }
     for attempt in range(2):
         try:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as resp:
-                data = await resp.json(content_type=None)
-                if data and isinstance(data, list):
-                    latest = data[-1]
-                    return {
-                        "rating":   latest.get("rating", 0),
-                        "position": latest.get("position", None),
-                    }
+            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                resp_data = await resp.json(content_type=None)
+                if resp_data and resp_data.get("success") and resp_data.get("data"):
+                    history = resp_data["data"].get("ratingHistory", [])
+                    if history:
+                        latest = history[-1]
+                        return {
+                            "rating":   latest.get("rating", 0),
+                            "position": latest.get("position", None),
+                        }
                 return None
         except Exception as e:
             if attempt == 0:
