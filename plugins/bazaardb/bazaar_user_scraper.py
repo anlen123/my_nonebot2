@@ -13,12 +13,18 @@ import asyncio
 from urllib.parse import quote
 from playwright.async_api import async_playwright
 
-BASE_URL = "https://bazaar.mrmao.life"
+BASE_URL = "https://bazaarapi.mrmao.life"
+
+_API_HEADERS = {
+    "accept": "*/*",
+    "origin": "https://bazaar.mrmao.life",
+    "referer": "https://bazaar.mrmao.life/",
+}
 
 
-async def fetch_json(page, url: str):
+async def fetch_json(page, url: str, headers: dict = None):
     """通过 Playwright page.request 发起 HTTP GET 获取 JSON"""
-    resp = await page.request.get(url)
+    resp = await page.request.get(url, headers=headers or {})
     return await resp.json()
 
 
@@ -432,7 +438,7 @@ chart.setOption({{
 </html>"""
 
 
-async def scrape_and_export(username: str, season_id: str = "14", out_dir: str = "."):
+async def scrape_and_export(username: str, season_id: str = "15", out_dir: str = "."):
     safe_name = username.replace("/", "_").replace("\\", "_")
     json_path = os.path.join(out_dir, f"bazaar_{safe_name}_s{season_id}.json")
     html_path = os.path.join(out_dir, f"bazaar_{safe_name}_s{season_id}.html")
@@ -454,11 +460,18 @@ async def scrape_and_export(username: str, season_id: str = "14", out_dir: str =
 
         # ── 1. 调 API 获取数据 ──
         encoded_user = quote(username)
-        hist_url = f"{BASE_URL}/api/rating-history?username={encoded_user}&seasonId={season_id}"
-        title_url = f"{BASE_URL}/api/user-season/title/by-username/{encoded_user}/{season_id}"
+        comp_url = f"{BASE_URL}/api/user/comprehensive-info?username={encoded_user}&seasonId={season_id}"
 
-        print(f"  📡 请求: {hist_url}")
-        history = await fetch_json(page, hist_url)
+        print(f"  📡 请求: {comp_url}")
+        resp_data = await fetch_json(page, comp_url, headers=_API_HEADERS)
+
+        if not resp_data or not resp_data.get("success") or not resp_data.get("data"):
+            print(f"  ⚠ 未找到该用户在 Season {int(season_id)-1} 的排位记录（仅记录传奇段位以上）")
+            await browser.close()
+            return
+
+        api_data = resp_data["data"]
+        history = api_data.get("ratingHistory", [])
 
         if not history:
             print(f"  ⚠ 未找到该用户在 Season {int(season_id)-1} 的排位记录（仅记录传奇段位以上）")
@@ -467,11 +480,7 @@ async def scrape_and_export(username: str, season_id: str = "14", out_dir: str =
 
         print(f"  ✓ 历史记录: {len(history)} 条")
 
-        # 称号信息
-        try:
-            title_info = await fetch_json(page, title_url)
-        except Exception:
-            title_info = {}
+        title_info = api_data.get("seasonTitleInfo") or {}
 
         if title_info.get("titleName"):
             print(f"  🎖️ 称号: {title_info['titleName']} — {title_info.get('message','')}")
@@ -530,7 +539,7 @@ async def scrape_and_export(username: str, season_id: str = "14", out_dir: str =
 
 async def main():
     username = sys.argv[1] if len(sys.argv) > 1 else "xikala"
-    season_id = sys.argv[2] if len(sys.argv) > 2 else "14"
+    season_id = sys.argv[2] if len(sys.argv) > 2 else "15"
     out_dir = sys.argv[3] if len(sys.argv) > 3 else os.path.dirname(os.path.abspath(__file__))
     await scrape_and_export(username, season_id, out_dir)
 
