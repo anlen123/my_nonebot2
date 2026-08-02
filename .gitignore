@@ -148,3 +148,6 @@ gocq
 /plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/img/card_dir/
 /plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/img/cai/
 .env.dev
+
+# 卡片图片缓存,不入库
+picture/card/
