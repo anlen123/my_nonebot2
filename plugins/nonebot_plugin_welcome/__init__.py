@@ -24,11 +24,16 @@ from pathlib import Path
 from typing import Dict
 
 import nonebot
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    GroupIncreaseNoticeEvent,
+    Message,
+    MessageSegment,
+)
 from nonebot.plugin import on_notice
-from nonebot.adapters.onebot.v11 import Bot, GroupIncreaseNoticeEvent, MessageSegment, Message
-
 
 # ── 读取配置 ──────────────────────────────────────────────────────────────────
+
 
 def _find_env_file() -> Path:
     root = Path(__file__).parent.parent.parent
@@ -54,15 +59,15 @@ def _parse_env_file(path: Path) -> Dict[str, str]:
         key = key.strip()
         value = value.strip()
         # 支持多行值（括号未闭合时继续拼接）
-        open_b  = value.count("[") + value.count("{")
+        open_b = value.count("[") + value.count("{")
         close_b = value.count("]") + value.count("}")
         while open_b > close_b and i < len(lines):
             nxt = lines[i].strip()
             i += 1
             if nxt.startswith("#"):
                 continue
-            value  += nxt
-            open_b  += nxt.count("[") + nxt.count("{")
+            value += nxt
+            open_b += nxt.count("[") + nxt.count("{")
             close_b += nxt.count("]") + nxt.count("}")
         result[key] = value
     return result
@@ -92,7 +97,7 @@ welcome = on_notice()
 @welcome.handle()
 async def welcome_handle(bot: Bot, event: GroupIncreaseNoticeEvent):
     group_id = str(event.group_id)
-    user_id  = event.user_id
+    user_id = event.user_id
 
     cfg = WELCOME_CONFIG.get(group_id)
     if not cfg:

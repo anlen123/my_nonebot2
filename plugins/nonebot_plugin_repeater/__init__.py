@@ -15,11 +15,11 @@ from pathlib import Path
 from typing import Dict
 
 import nonebot
-from nonebot.plugin import on_message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
-
+from nonebot.plugin import on_message
 
 # ── 读取配置 ──────────────────────────────────────────────────────────────────
+
 
 def _load_threshold() -> int:
     root = Path(__file__).parent.parent.parent
@@ -73,7 +73,9 @@ def _msg_key(event: GroupMessageEvent) -> str:
             parts.append(f"face:{seg.data.get('id', '')}")
         elif seg.type == "mface":
             # 魔法表情/表情包
-            parts.append(f"mface:{seg.data.get('emoji_id', '')}{seg.data.get('key', '')}")
+            parts.append(
+                f"mface:{seg.data.get('emoji_id', '')}{seg.data.get('key', '')}"
+            )
         else:
             parts.append(f"{seg.type}:{str(seg.data)[:50]}")
     return "|".join(parts)
@@ -95,8 +97,8 @@ async def repeater_handle(bot: Bot, event: GroupMessageEvent):
     if key == state["key"]:
         state["count"] += 1
     else:
-        state["key"]     = key
-        state["count"]   = 1
+        state["key"] = key
+        state["count"] = 1
         state["message"] = event.message
 
     if state["count"] == THRESHOLD:

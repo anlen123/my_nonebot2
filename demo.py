@@ -1,13 +1,16 @@
-import sqlite3
 import difflib
+import re
+import sqlite3
 
-import pypinyin, re
+import pypinyin
 
 
 def get_id_and_name_all():
     # 连接到 SQLite 数据库
 
-    conn = sqlite3.connect('plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/cards.cdb')
+    conn = sqlite3.connect(
+        "plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/cards.cdb"
+    )
 
     # 创建一个 Cursor 对象，用于执行 SQL 命令
     cursor = conn.cursor()
@@ -49,6 +52,6 @@ def get_max_like_id(name: str):
     return ret[0]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     msg = "上传游戏王卡图 121"
     print(re.findall("^上传游戏王卡图\ \d+$", msg))

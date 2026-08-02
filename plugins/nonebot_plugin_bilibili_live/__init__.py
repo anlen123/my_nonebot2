@@ -11,9 +11,9 @@ bilibili_live —— B 站直播监控插件
   BILIBILI_LIVE_INTERVAL=60   # 状态轮询间隔（秒）
 """
 
-import io
 import asyncio
 import base64
+import io
 from collections import Counter
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -48,9 +48,9 @@ initialized: Dict[str, bool] = {}
 live_session: Dict[str, dict] = {}
 
 # ── B 站 API ──────────────────────────────────────────────────────────────────
-ROOM_INFO_URL   = "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld"
-DANMAKU_URL     = "https://api.live.bilibili.com/xlive/web-room/v1/dM/gethistory"
-USER_CARD_URL   = "https://api.bilibili.com/x/web-interface/card"
+ROOM_INFO_URL = "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld"
+DANMAKU_URL = "https://api.live.bilibili.com/xlive/web-room/v1/dM/gethistory"
+USER_CARD_URL = "https://api.bilibili.com/x/web-interface/card"
 
 HEADERS = {
     "User-Agent": (
@@ -64,12 +64,14 @@ HEADERS = {
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────────
 
+
 async def fetch_room_info(uid: str) -> Optional[dict]:
     try:
         async with aiohttp.ClientSession(headers=HEADERS) as s:
             async with s.get(
-                ROOM_INFO_URL, params={"mid": uid},
-                timeout=aiohttp.ClientTimeout(total=10)
+                ROOM_INFO_URL,
+                params={"mid": uid},
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as r:
                 data = await r.json(content_type=None)
                 if data.get("code") == 0:
@@ -84,8 +86,9 @@ async def fetch_user_card(uid: str) -> Tuple[str, int]:
     try:
         async with aiohttp.ClientSession(headers=HEADERS) as s:
             async with s.get(
-                USER_CARD_URL, params={"mid": uid, "photo": "false"},
-                timeout=aiohttp.ClientTimeout(total=10)
+                USER_CARD_URL,
+                params={"mid": uid, "photo": "false"},
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as r:
                 data = await r.json(content_type=None)
                 if data.get("code") == 0:
@@ -105,7 +108,12 @@ async def fetch_danmaku_with_user(room_id: int) -> List[Tuple[str, str]]:
         async with aiohttp.ClientSession(headers=HEADERS) as s:
             async with s.get(
                 DANMAKU_URL,
-                params={"roomid": room_id, "csrf_token": "", "csrf": "", "visit_id": ""},
+                params={
+                    "roomid": room_id,
+                    "csrf_token": "",
+                    "csrf": "",
+                    "visit_id": "",
+                },
                 timeout=aiohttp.ClientTimeout(total=10),
             ) as r:
                 data = await r.json(content_type=None)
@@ -133,6 +141,7 @@ async def fetch_cover_base64(url: str) -> Optional[str]:
 def build_wordcloud(texts: List[str]) -> Optional[bytes]:
     try:
         import os
+
         import jieba
         from wordcloud import WordCloud
 
@@ -155,11 +164,13 @@ def build_wordcloud(texts: List[str]) -> Optional[bytes]:
                 break
 
         import matplotlib
+
         matplotlib.use("Agg")
 
         wc = WordCloud(
             font_path=font_path,
-            width=900, height=450,
+            width=900,
+            height=450,
             background_color="white",
             max_words=150,
             collocations=False,
@@ -194,19 +205,21 @@ def fmt_fans(n: int) -> str:
 
 # ── 推送 ──────────────────────────────────────────────────────────────────────
 
+
 async def notify_groups(groups: list, messages: list, at_all: bool = True):
     """
     groups:  [{"groupId": "xxx", "isAtAll": bool}, ...]
     at_all:  False 时强制不 @全体，忽略 groups 里的 isAtAll 配置
     """
     from nonebot.adapters.onebot.v11 import Message
+
     try:
         bot: Bot = nonebot.get_bot()
     except Exception:
         nonebot.logger.warning("[bilibili_live] no bot available")
         return
     for g in groups:
-        gid       = g["groupId"]
+        gid = g["groupId"]
         is_at_all = at_all and g.get("isAtAll", False)
 
         def _build(with_at: bool) -> Message:
@@ -224,24 +237,29 @@ async def notify_groups(groups: list, messages: list, at_all: bool = True):
         except Exception as e:
             if is_at_all:
                 # @全体 失败，降级去掉 @全体 重试
-                nonebot.logger.warning(f"[bilibili_live] send group {gid} with @all failed ({e})，降级重试")
+                nonebot.logger.warning(
+                    f"[bilibili_live] send group {gid} with @all failed ({e})，降级重试"
+                )
                 try:
                     await bot.send_group_msg(group_id=int(gid), message=_build(False))
                     await asyncio.sleep(0.5)
                 except Exception as e2:
-                    nonebot.logger.warning(f"[bilibili_live] send group {gid} retry failed: {e2}")
+                    nonebot.logger.warning(
+                        f"[bilibili_live] send group {gid} retry failed: {e2}"
+                    )
             else:
                 nonebot.logger.warning(f"[bilibili_live] send group {gid}: {e}")
 
 
 # ── 开播 ──────────────────────────────────────────────────────────────────────
 
+
 async def on_live_start(uid: str, info: dict):
     uname, fans = await fetch_user_card(uid)
-    title     = info.get("title", "未知标题")
-    room_id   = info.get("roomid", "")
+    title = info.get("title", "未知标题")
+    room_id = info.get("roomid", "")
     cover_url = info.get("cover", "")
-    live_url  = f"https://live.bilibili.com/{room_id}"
+    live_url = f"https://live.bilibili.com/{room_id}"
 
     live_session[uid] = {
         "start_time": datetime.now(),
@@ -260,11 +278,7 @@ async def on_live_start(uid: str, info: dict):
         if cover_b64:
             msgs.append(MessageSegment.image(f"base64://{cover_b64}"))
 
-    msgs.append(MessageSegment.text(
-        f"🔴 {uname} 开播啦！\n"
-        f"📺 {title}\n"
-        f"🔗 {live_url}"
-    ))
+    msgs.append(MessageSegment.text(f"🔴 {uname} 开播啦！\n📺 {title}\n🔗 {live_url}"))
 
     await notify_groups(UIDS.get(uid, []), msgs)
     nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 开播")
@@ -272,9 +286,10 @@ async def on_live_start(uid: str, info: dict):
 
 # ── 下播 ──────────────────────────────────────────────────────────────────────
 
+
 async def on_live_end(uid: str, info: dict):
     session = live_session.pop(uid, {})
-    uname   = session.get("uname", uid)
+    uname = session.get("uname", uid)
     room_id = session.get("room_id") or info.get("roomid", 0)
 
     # 时长
@@ -294,13 +309,13 @@ async def on_live_end(uid: str, info: dict):
     # 再拉一次最新弹幕补充
     if room_id:
         latest = await fetch_danmaku_with_user(int(room_id))
-        seen   = session.get("seen_danmaku", set())
+        seen = session.get("seen_danmaku", set())
         for user, text in latest:
             key = f"{user}:{text}"
             if key not in seen and user:
                 counter[user] += 1
     total_danmaku = sum(counter.values())
-    total_users   = len(counter)
+    total_users = len(counter)
 
     # 排行榜 Top3 + 特别嘉奖
     top = counter.most_common(5)
@@ -312,9 +327,7 @@ async def on_live_end(uid: str, info: dict):
     special = [name for name, _ in top[3:5]]
 
     rank_text = "\n".join(rank_lines) if rank_lines else "暂无数据"
-    special_text = (
-        f"\n🎖️ 特别嘉奖：{'  &  '.join(special)}" if special else ""
-    )
+    special_text = f"\n🎖️ 特别嘉奖：{'  &  '.join(special)}" if special else ""
     # 下播通知文字
     end_text = (
         f"{uname} 下播啦，本次直播了 {duration_str}，粉丝数变化 {fans_delta_str}\n\n"
@@ -330,7 +343,10 @@ async def on_live_end(uid: str, info: dict):
     msgs = [MessageSegment.text(end_text)]
 
     # 词云
-    all_texts = [text for _, text in (await fetch_danmaku_with_user(int(room_id)) if room_id else [])]
+    all_texts = [
+        text
+        for _, text in (await fetch_danmaku_with_user(int(room_id)) if room_id else [])
+    ]
     # 用 counter 里已有的弹幕文本凑词云（从 seen_danmaku 提取 text 部分）
     seen = session.get("seen_danmaku", set())
     wc_texts = [k.split(":", 1)[1] for k in seen if ":" in k] + all_texts
@@ -339,13 +355,16 @@ async def on_live_end(uid: str, info: dict):
             None, build_wordcloud, wc_texts
         )
         if wc_bytes:
-            msgs.append(MessageSegment.image(f"base64://{base64.b64encode(wc_bytes).decode()}"))
+            msgs.append(
+                MessageSegment.image(f"base64://{base64.b64encode(wc_bytes).decode()}")
+            )
 
     await notify_groups(UIDS.get(uid, []), msgs, at_all=False)
     nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 下播")
 
 
 # ── 直播中弹幕累积 & 每小时播报 ───────────────────────────────────────────────
+
 
 async def update_session_danmaku(uid: str, room_id: int):
     """拉取最新弹幕，增量更新 counter"""
@@ -367,11 +386,11 @@ async def send_hourly_report(uid: str, info: dict):
     if not session:
         return
 
-    uname    = session.get("uname", uid)
-    start    = session["start_time"]
+    uname = session.get("uname", uid)
+    start = session["start_time"]
     duration = fmt_duration(int((datetime.now() - start).total_seconds()))
-    online   = info.get("online", 0)
-    room_id  = session.get("room_id", "")
+    online = info.get("online", 0)
+    room_id = session.get("room_id", "")
     live_url = f"https://live.bilibili.com/{room_id}"
 
     online_str = fmt_fans(online) if online else "未知"
@@ -389,6 +408,7 @@ async def send_hourly_report(uid: str, info: dict):
 
 # ── 定时轮询 ──────────────────────────────────────────────────────────────────
 
+
 @scheduler.scheduled_job("interval", seconds=INTERVAL, id="bilibili_live_poll")
 async def poll_live_status():
     if not UIDS:
@@ -403,11 +423,11 @@ async def poll_live_status():
             nonebot.logger.warning(f"[bilibili_live] uid={uid} 接口请求失败，跳过")
             continue
 
-        is_live  = info.get("liveStatus") == 1
+        is_live = info.get("liveStatus") == 1
         was_live = live_status.get(uid, False)
         nonebot.logger.debug(
             f"[bilibili_live] uid={uid} liveStatus={info.get('liveStatus')} "
-            f"is_live={is_live} was_live={was_live} title={info.get('title','')[:20]}"
+            f"is_live={is_live} was_live={was_live} title={info.get('title', '')[:20]}"
         )
 
         # ── 首次轮询：静默识别当前状态，不推送开播通知 ──
@@ -427,7 +447,9 @@ async def poll_live_status():
                     "peak_online": info.get("online", 0),
                     "last_hourly_notify": datetime.now(),  # 下次播报从现在起算 1 小时
                 }
-                nonebot.logger.info(f"[bilibili_live] uid={uid} 初始化时已在直播，静默识别，1小时后播报")
+                nonebot.logger.info(
+                    f"[bilibili_live] uid={uid} 初始化时已在直播，静默识别，1小时后播报"
+                )
             else:
                 nonebot.logger.info(f"[bilibili_live] uid={uid} 初始化完成，当前未直播")
             await asyncio.sleep(1)
@@ -457,7 +479,9 @@ async def poll_live_status():
                 await update_session_danmaku(uid, int(room_id))
                 after = sum(session["danmaku_counter"].values())
                 if after > before:
-                    nonebot.logger.debug(f"[bilibili_live] uid={uid} 新增弹幕 {after - before} 条，累计 {after} 条")
+                    nonebot.logger.debug(
+                        f"[bilibili_live] uid={uid} 新增弹幕 {after - before} 条，累计 {after} 条"
+                    )
 
             last = session.get("last_hourly_notify")
             if last and (datetime.now() - last).total_seconds() >= 3600:

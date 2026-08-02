@@ -1,11 +1,12 @@
 # import nonebot
-from nonebot import get_driver, on_regex, on_message
+import re
+
+from nonebot import get_driver, on_message, on_regex
+from nonebot.adapters.onebot.v11 import Bot, Event, Message
+from nonebot.rule import Rule
 
 from .config import Config
-from nonebot.rule import Rule
-from nonebot.adapters.onebot.v11 import Bot, Event, Message
 from .data_source import get_av_data
-import re
 
 global_config = get_driver().config
 config = Config(**global_config.dict())
@@ -32,7 +33,10 @@ async def handle(bot: Bot, event: Event):
     if not event.get_plaintext().strip():
         return
 
-    avCode = re.search('av(\d{1,100})|BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2,100})', str(event.get_message()))
+    avCode = re.search(
+        "av(\d{1,100})|BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2,100})",
+        str(event.get_message()),
+    )
     print(avCode)
     if not avCode:
         return

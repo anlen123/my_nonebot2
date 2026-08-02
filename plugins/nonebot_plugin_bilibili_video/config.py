@@ -27,7 +27,7 @@ def _parse_env_file(path: Path) -> Dict[str, str]:
         key = key.strip()
         value = value.strip()
         if "#" in value and not (value.startswith('"') or value.startswith("'")):
-            value = value[:value.index("#")].strip()
+            value = value[: value.index("#")].strip()
         result[key] = value
     return result
 
@@ -40,10 +40,12 @@ def _normalize_uids(raw_uids: dict) -> Dict[str, List[dict]]:
             if isinstance(g, str):
                 normalized.append({"groupId": g, "isAtAll": False})
             elif isinstance(g, dict):
-                normalized.append({
-                    "groupId": str(g.get("groupId", "")),
-                    "isAtAll": bool(g.get("isAtAll", False)),
-                })
+                normalized.append(
+                    {
+                        "groupId": str(g.get("groupId", "")),
+                        "isAtAll": bool(g.get("isAtAll", False)),
+                    }
+                )
         result[uid] = normalized
     return result
 
@@ -53,14 +55,18 @@ def load_config() -> Dict:
     raw = _parse_env_file(env_path)
 
     # BILIBILI_VIDEO_UIDS={"uid": [{"groupId": "xxx", "isAtAll": true}], ...}
-    uids_raw = raw.get("BILIBILI_VIDEO_UIDS", os.environ.get("BILIBILI_VIDEO_UIDS", "{}"))
+    uids_raw = raw.get(
+        "BILIBILI_VIDEO_UIDS", os.environ.get("BILIBILI_VIDEO_UIDS", "{}")
+    )
     try:
         uids = _normalize_uids(json.loads(uids_raw))
     except (json.JSONDecodeError, TypeError):
         uids = {}
 
     # 轮询间隔（秒），默认 300 秒（5 分钟）
-    interval_raw = raw.get("BILIBILI_VIDEO_INTERVAL", os.environ.get("BILIBILI_VIDEO_INTERVAL", "300"))
+    interval_raw = raw.get(
+        "BILIBILI_VIDEO_INTERVAL", os.environ.get("BILIBILI_VIDEO_INTERVAL", "300")
+    )
     try:
         interval: int = int(interval_raw)
     except (ValueError, TypeError):

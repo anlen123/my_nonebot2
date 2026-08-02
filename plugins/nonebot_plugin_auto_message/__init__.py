@@ -33,8 +33,8 @@ _msg_cursor: dict = {}
 
 # ── 为每个任务注册独立定时器 ──────────────────────────────────────────────────
 def _make_job(task_index: int, task: dict):
-    target   = str(task["target"])
-    ttype    = task.get("type", "private")   # "private" | "group"
+    target = str(task["target"])
+    ttype = task.get("type", "private")  # "private" | "group"
     interval = int(task.get("interval", 1200))
     messages = task.get("messages", [])
 
@@ -48,20 +48,30 @@ def _make_job(task_index: int, task: dict):
         try:
             bot: Bot = nonebot.get_bot()
         except Exception:
-            nonebot.logger.warning(f"[auto_message] task[{task_index}] no bot available")
+            nonebot.logger.warning(
+                f"[auto_message] task[{task_index}] no bot available"
+            )
             return
 
-        idx  = _msg_cursor[task_index]
+        idx = _msg_cursor[task_index]
         text = messages[idx % len(messages)]
         _msg_cursor[task_index] = (idx + 1) % len(messages)
 
         try:
             if ttype == "group":
-                await bot.send_group_msg(group_id=int(target), message=MessageSegment.text(text))
-                nonebot.logger.info(f"[auto_message] task[{task_index}] -> 群 {target}：{text[:30]}")
+                await bot.send_group_msg(
+                    group_id=int(target), message=MessageSegment.text(text)
+                )
+                nonebot.logger.info(
+                    f"[auto_message] task[{task_index}] -> 群 {target}：{text[:30]}"
+                )
             else:
-                await bot.send_private_msg(user_id=int(target), message=MessageSegment.text(text))
-                nonebot.logger.info(f"[auto_message] task[{task_index}] -> 私聊 {target}：{text[:30]}")
+                await bot.send_private_msg(
+                    user_id=int(target), message=MessageSegment.text(text)
+                )
+                nonebot.logger.info(
+                    f"[auto_message] task[{task_index}] -> 私聊 {target}：{text[:30]}"
+                )
         except Exception as e:
             nonebot.logger.warning(f"[auto_message] task[{task_index}] 发送失败：{e}")
 

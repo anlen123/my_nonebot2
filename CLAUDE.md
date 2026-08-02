@@ -35,7 +35,7 @@ There is no automated test suite. Testing is done manually by interacting with t
 
 `bot.py` initializes NoneBot with FastAPI driver and OneBot v11 adapter, then loads plugins two ways:
 1. Plugins listed in `pyproject.toml` under `[tool.nonebot]`
-2. Direct `nonebot.load_plugin()` calls for local plugins (e.g. `plugins.deepseek_gpt`)
+2. Direct `nonebot.load_plugin()` calls for local plugins (e.g. `plugins.nonebot_plugin_deepseek_gpt`)
 
 ### Plugin Structure
 
@@ -61,13 +61,10 @@ NoneBot loads the env file based on `ENVIRONMENT` variable. Sensitive keys (Open
 
 The bot depends on several external services that must be running:
 - **go-cqhttp** — QQ protocol bridge (configured via `config.yml`), sign server at `http://127.0.0.1:7701`
-- **Meilisearch** — conversation history search for ChatGPT plugin (port 7700)
 - **Redis** — production only (port 6379)
 
 ### Data Storage
 
-- `chat_history.db` — ChatGPT conversation history (SQLite)
-- `chat_gemini_history.db` — Gemini conversation history (SQLite)
 - `data/pokemon/` — local Pokemon data (JSON + images), paths configured in `.env`
 - `data/custom_emote_data/` — custom emoji storage
 
@@ -75,18 +72,23 @@ The bot depends on several external services that must be running:
 
 | Plugin | Commands | Notes |
 |--------|----------|-------|
-| `deepseek_gpt` | `ds3`, `dsr`, `翻译`/`fy` | Uses ByteDance Ark API |
-| `chat_gpt` | `gpt3`, `gpt4`, `chat`, `chat4` | OpenAI API + Meilisearch history |
-| `gemini_gpt` | `gm`, `gmt`, `gmi` | Google Gemini, supports image input |
+| `nonebot_plugin_deepseek_gpt` | `ds3`, `dsr`, `翻译`/`fy` | Uses ByteDance Ark API |
 | `nonebot_plugin_masterduel` | `ygo`, `ck` | Yu-Gi-Oh! card query from local DB |
-| `nonebot_plugin_pokemon` | — | Pokemon info from local JSON data |
 | `nonebot_plugin_pixiv` | `pixiv <PID>` | Requires Pixiv cookie in `.env` |
 | `nonebot_plugin_xuanran` | `xr <URL>` | Renders webpage to image via Selenium |
-| `jm` | — | Manga downloader, permission-gated |
-| `love` | `ll`, `love`, `菜单` | Basic commands + forward message helper |
+| `nonebot_plugin_bazaardb` | `巴扎`, `巴扎查分` | BazaarDB item/user/rank query |
+| `nonebot_plugin_bilibili_live` | — | Bilibili live stream monitor |
+| `nonebot_plugin_bilibili_video` | — | New video push notification |
+| `nonebot_plugin_repeater` | — | Message repeater (text/image/sticker) |
+| `nonebot_plugin_welcome` | — | New member welcome message |
+| `nonebot_plugin_keyword_image` | — | Keyword-triggered random image |
+| `nonebot_plugin_auto_message` | — | Scheduled auto messages |
+| `nonebot_plugin_yulu` | `语录` | Quote collection |
+| `nonebot_plugin_sbbot` | — | Reply when insulted |
+| `nonebot_plugin_love` | `ll`, `love`, `菜单` | Basic commands + forward message helper |
 
 ### Adding a New Plugin
 
-1. Create `plugins/your_plugin/__init__.py` with NoneBot handlers
-2. Add `nonebot.load_plugin("plugins.your_plugin")` in `bot.py`
+1. Create `plugins/nonebot_plugin_your_plugin/__init__.py` with NoneBot handlers
+2. Add `nonebot.load_plugin("plugins.nonebot_plugin_your_plugin")` in `bot.py`
 3. If the plugin needs config, add a `config.py` with a `BaseSettings` class and merge it in `__init__.py` via `Config.parse_obj(global_config.dict())`

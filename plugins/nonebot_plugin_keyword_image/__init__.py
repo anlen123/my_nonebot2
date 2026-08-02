@@ -24,16 +24,17 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 import nonebot
-from nonebot.plugin import on_message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
+from nonebot.plugin import on_message
 
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
 
 
 # ── 读取配置 ──────────────────────────────────────────────────────────────────
+
 
 def _find_env_file() -> Path:
     root = Path(__file__).parent.parent.parent
@@ -58,15 +59,15 @@ def _parse_env_file(path: Path) -> Dict[str, str]:
         key, _, value = line.partition("=")
         key = key.strip()
         value = value.strip()
-        open_b  = value.count("[") + value.count("{")
+        open_b = value.count("[") + value.count("{")
         close_b = value.count("]") + value.count("}")
         while open_b > close_b and i < len(lines):
             nxt = lines[i].strip()
             i += 1
             if nxt.startswith("#"):
                 continue
-            value  += nxt
-            open_b  += nxt.count("[") + nxt.count("{")
+            value += nxt
+            open_b += nxt.count("[") + nxt.count("{")
             close_b += nxt.count("]") + nxt.count("}")
         result[key] = value
     return result
@@ -82,7 +83,9 @@ def load_rules() -> List[dict]:
     }
     """
     raw = _parse_env_file(_find_env_file())
-    rules_raw = raw.get("KEYWORD_IMAGE_RULES", os.environ.get("KEYWORD_IMAGE_RULES", "[]"))
+    rules_raw = raw.get(
+        "KEYWORD_IMAGE_RULES", os.environ.get("KEYWORD_IMAGE_RULES", "[]")
+    )
     try:
         rules = json.loads(rules_raw)
     except (json.JSONDecodeError, TypeError):
@@ -100,12 +103,12 @@ for rule in RULES:
         _kw_index.setdefault(kw, []).append(rule)
 
 nonebot.logger.info(
-    f"[keyword_image] 插件已加载，共 {len(RULES)} 条规则，"
-    f"{len(_kw_index)} 个关键词"
+    f"[keyword_image] 插件已加载，共 {len(RULES)} 条规则，{len(_kw_index)} 个关键词"
 )
 
 
 # ── 图片选取 ──────────────────────────────────────────────────────────────────
+
 
 def _pick_image(folder: str) -> Path | None:
     p = Path(folder)
@@ -129,7 +132,7 @@ async def kw_img_handle(bot: Bot, event: GroupMessageEvent):
     if str(event.user_id) == str(bot.self_id):
         return
 
-    text     = event.get_plaintext()
+    text = event.get_plaintext()
     group_id = str(event.group_id)
 
     # 找到第一个匹配的关键词对应的规则
@@ -155,6 +158,5 @@ async def kw_img_handle(bot: Bot, event: GroupMessageEvent):
         f"[keyword_image] group={group_id} 触发关键词，发送图片: {img_path.name}"
     )
     await bot.send_group_msg(
-        group_id=int(group_id),
-        message=MessageSegment.image(img_path.read_bytes())
+        group_id=int(group_id), message=MessageSegment.image(img_path.read_bytes())
     )

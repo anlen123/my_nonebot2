@@ -65,7 +65,9 @@ def load_config() -> Dict:
     env_path = _find_env_file()
     raw = _parse_env_file(env_path)
 
-    tasks_raw = raw.get("AUTO_MESSAGE_TASKS", os.environ.get("AUTO_MESSAGE_TASKS", "[]"))
+    tasks_raw = raw.get(
+        "AUTO_MESSAGE_TASKS", os.environ.get("AUTO_MESSAGE_TASKS", "[]")
+    )
     try:
         tasks: List[Dict] = json.loads(tasks_raw)
     except (json.JSONDecodeError, TypeError):

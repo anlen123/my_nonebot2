@@ -1,10 +1,13 @@
 import sqlite3
+
 from ..mapper import *
 
 
 def get_rarity(cardId: int) -> str:
     try:
-        rarityList = get_nonebot_plugin_masterduel_rarity(f'SELECT * FROM rarity WHERE id = "{cardId}"')
+        rarityList = get_nonebot_plugin_masterduel_rarity(
+            f'SELECT * FROM rarity WHERE id = "{cardId}"'
+        )
     except IndexError:
         print(f"No card found with id {cardId}")
         return None

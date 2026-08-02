@@ -1,17 +1,58 @@
 import math
+
 import jieba
 
 
 class Likelihood:
-
     def word2vec(self, word1, word2):
 
         if self.punctuation is False:
-            pun_list = ['。', '，', '、', '？', '！', '；', '：', '“', '”', '‘', '’', '「', '」', '『', '』', '（', '）', '[', ']',
-                        '〔', '〕', '【', '】', '——', '—', '……', '…', '—', '-', '～', '·', '《', '》', '〈', '〉', '﹏﹏', '___',
-                        '.']
-            seg_list_1 = [w for w in list(jieba.cut(word1, cut_all=False)) if w not in pun_list]
-            seg_list_2 = [w for w in list(jieba.cut(word2, cut_all=False)) if w not in pun_list]
+            pun_list = [
+                "。",
+                "，",
+                "、",
+                "？",
+                "！",
+                "；",
+                "：",
+                "“",
+                "”",
+                "‘",
+                "’",
+                "「",
+                "」",
+                "『",
+                "』",
+                "（",
+                "）",
+                "[",
+                "]",
+                "〔",
+                "〕",
+                "【",
+                "】",
+                "——",
+                "—",
+                "……",
+                "…",
+                "—",
+                "-",
+                "～",
+                "·",
+                "《",
+                "》",
+                "〈",
+                "〉",
+                "﹏﹏",
+                "___",
+                ".",
+            ]
+            seg_list_1 = [
+                w for w in list(jieba.cut(word1, cut_all=False)) if w not in pun_list
+            ]
+            seg_list_2 = [
+                w for w in list(jieba.cut(word2, cut_all=False)) if w not in pun_list
+            ]
         else:
             seg_list_1 = list(jieba.cut(word1, cut_all=False))
             seg_list_2 = list(jieba.cut(word2, cut_all=False))
@@ -40,8 +81,8 @@ class Likelihood:
         b_sq = 0.0
         for a1, b1 in zip(self.seg_vec_1, self.seg_vec_2):
             part_up += a1 * b1
-            a_sq += a1 ** 2
-            b_sq += b1 ** 2
+            a_sq += a1**2
+            b_sq += b1**2
         part_down = math.sqrt(a_sq * b_sq)
         if part_down == 0.0:
             return None
@@ -55,5 +96,3 @@ class Likelihood:
         self.word2vec(self.word1, self.word2)
         like_per = self.cos_dist()
         return like_per
-
-

@@ -1,8 +1,8 @@
-from nonebot import get_driver
-
-from nonebot.plugin import on_regex
-from nonebot.adapters.onebot.v11 import Bot, Event, Message
 import asyncio
+
+from nonebot import get_driver
+from nonebot.adapters.onebot.v11 import Bot, Event, Message
+from nonebot.plugin import on_regex
 
 global_config = get_driver().config
 config = global_config.dict()
@@ -24,7 +24,7 @@ async def cmd_rev(bot: Bot, event: Event):
     if event.user_id in cmd_super:
         msgs = await run(f"cd ;{msg}")
     else:
-        msgs = await run(f"runuser -l dmf -c \"cd ;{msg}\"")
+        msgs = await run(f'runuser -l dmf -c "cd ;{msg}"')
     if msgs:
         if len(msgs) >= 7000:
             msgs = msgs[:7000]
@@ -47,7 +47,7 @@ async def cmd_rev(bot: Bot, event: Event):
     if event.user_id in cmd_super:
         msgs = await run(f"cd ;{msg}")
     else:
-        msgs = await run(f"runuser -l dmf -c \"cd ;{msg}\"")
+        msgs = await run(f'runuser -l dmf -c "cd ;{msg}"')
     if msgs:
         if len(msgs) >= 7000:
             msgs = msgs[:7000]
@@ -64,9 +64,8 @@ async def run(command: str):
             command = f"{command}"
         print(command)
         proc = await asyncio.create_subprocess_shell(
-            command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE)
+            command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
         stdout, stderr = await proc.communicate()
         return (stdout + stderr).decode()
     except Exception:

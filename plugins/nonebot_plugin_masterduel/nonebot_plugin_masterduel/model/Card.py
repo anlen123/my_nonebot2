@@ -3,15 +3,50 @@ from .Texts import Texts
 
 
 def buildYgoCard(datas: Datas, texts: Texts):
-    return YgoCard(datas.id, datas.ot, datas.alias, datas.setcode, datas.type, datas.atk, datas.def_, datas.level,
-                   datas.race, datas.attribute, datas.category, texts.name, texts.desc, texts.str1, texts.str2,
-                   texts.str3, texts.str4, texts.str5)
+    return YgoCard(
+        datas.id,
+        datas.ot,
+        datas.alias,
+        datas.setcode,
+        datas.type,
+        datas.atk,
+        datas.def_,
+        datas.level,
+        datas.race,
+        datas.attribute,
+        datas.category,
+        texts.name,
+        texts.desc,
+        texts.str1,
+        texts.str2,
+        texts.str3,
+        texts.str4,
+        texts.str5,
+    )
 
 
 class YgoCard:
-
-    def __init__(self, id: int, ot, alias, setcode, type, atk, def_, level, race, attribute, category, name, desc, str1,
-                 str2, str3, str4, str5):
+    def __init__(
+        self,
+        id: int,
+        ot,
+        alias,
+        setcode,
+        type,
+        atk,
+        def_,
+        level,
+        race,
+        attribute,
+        category,
+        name,
+        desc,
+        str1,
+        str2,
+        str3,
+        str4,
+        str5,
+    ):
         self.id = id
         self.ot = ot
         self.alias = alias

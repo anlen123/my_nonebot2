@@ -13,15 +13,15 @@ import base64
 import importlib.util
 import json
 import os
-import aiohttp
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import aiohttp
 import nonebot
 from nonebot import require
+from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent, MessageSegment
 from nonebot.plugin import on_regex
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, GroupMessageEvent
 
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
@@ -33,12 +33,13 @@ SCRAPER_DIR = Path(__file__).parent
 CACHE_DIR = Path(__file__).parent / "cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
-bz          = on_regex(pattern=r"^巴扎 ")
-bz_user     = on_regex(pattern=r"^巴扎查分 ")
-bz_bind     = on_regex(pattern=r"^巴扎绑定 ")
-bz_unbind   = on_regex(pattern=r"^巴扎解绑$")
-bz_rank     = on_regex(pattern=r"^巴扎排名$")
-bz_alias    = on_regex(pattern=r"^巴扎别名")
+bz = on_regex(pattern=r"^巴扎 ")
+bz_user = on_regex(pattern=r"^巴扎查分 ")
+bz_bind = on_regex(pattern=r"^巴扎绑定 ")
+bz_unbind = on_regex(pattern=r"^巴扎解绑$")
+bz_rank = on_regex(pattern=r"^巴扎排名$")
+bz_alias = on_regex(pattern=r"^巴扎别名")
+
 
 # ── 每日排名推送配置 ──────────────────────────────────────────────────────────
 # 从 .env 读取 BAZAAR_DAILY_RANK_GROUPS=["群号1","群号2"]
@@ -62,10 +63,12 @@ def _load_daily_groups() -> List[str]:
     except Exception:
         return []
 
+
 DAILY_RANK_GROUPS: List[str] = _load_daily_groups()
 
 # 每日快照：{ "群号": { "游戏账号": {"rating": int, "position": int} } }
 DAILY_SNAPSHOT_FILE = Path(__file__).parent / "daily_snapshot.json"
+
 
 def _load_daily_snapshot() -> Dict[str, Dict[str, dict]]:
     if DAILY_SNAPSHOT_FILE.exists():
@@ -75,13 +78,18 @@ def _load_daily_snapshot() -> Dict[str, Dict[str, dict]]:
             pass
     return {}
 
+
 def _save_daily_snapshot(data: Dict[str, Dict[str, dict]]):
-    DAILY_SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    DAILY_SNAPSHOT_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 _daily_snapshots: Dict[str, Dict[str, dict]] = _load_daily_snapshot()
 
 # ── 别名持久化：{ "xxx": "yyy" } ─────────────────────────────────────────────
 ALIAS_FILE = Path(__file__).parent / "aliases.json"
+
 
 def _load_aliases() -> Dict[str, str]:
     if ALIAS_FILE.exists():
@@ -91,14 +99,19 @@ def _load_aliases() -> Dict[str, str]:
             pass
     return {}
 
+
 def _save_aliases(data: Dict[str, str]):
-    ALIAS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    ALIAS_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 _aliases: Dict[str, str] = _load_aliases()
 
 # ── 绑定数据持久化（JSON 文件）────────────────────────────────────────────────
 # 结构：{ "群号": { "QQ号": "游戏账号", ... }, ... }
 BIND_FILE = Path(__file__).parent / "bindings.json"
+
 
 def _load_bindings() -> Dict[str, Dict[str, str]]:
     if BIND_FILE.exists():
@@ -108,8 +121,12 @@ def _load_bindings() -> Dict[str, Dict[str, str]]:
             pass
     return {}
 
+
 def _save_bindings(data: Dict[str, Dict[str, str]]):
-    BIND_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    BIND_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 # 内存缓存
 _bindings: Dict[str, Dict[str, str]] = _load_bindings()
@@ -117,10 +134,11 @@ _bindings: Dict[str, Dict[str, str]] = _load_bindings()
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────────
 
+
 def _load_scraper(filename: str):
     path = SCRAPER_DIR / filename
     spec = importlib.util.spec_from_file_location(filename[:-3], path)
-    mod  = importlib.util.module_from_spec(spec)
+    mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
@@ -132,6 +150,7 @@ async def _send_image(bot: Bot, event, img_bytes: bytes):
 
 # ── bz <关键词>：物品 / 怪物查询 ─────────────────────────────────────────────
 
+
 def _item_cache_path(keyword: str) -> Path:
     safe = keyword.replace("/", "_").replace("\\", "_")
     return CACHE_DIR / f"bazaardb_{safe}.png"
@@ -141,7 +160,7 @@ def _query_item_sync(keyword: str) -> bytes | None:
     scraper = _load_scraper("bazaardb_scraper.py")
     asyncio.run(scraper.scrape_and_export(keyword, str(CACHE_DIR)))
     safe = keyword.replace("/", "_").replace("\\", "_")
-    png  = CACHE_DIR / f"bazaardb_{safe}.png"
+    png = CACHE_DIR / f"bazaardb_{safe}.png"
     return png.read_bytes() if png.exists() else None
 
 
@@ -149,7 +168,9 @@ def _query_item_sync(keyword: str) -> bytes | None:
 async def bz_rev(bot: Bot, event: Event):
     keyword = str(event.message).strip()[3:].strip()
     if not keyword:
-        await bot.send(event=event, message=MessageSegment.text("请输入关键词，例如：巴扎 光纤"))
+        await bot.send(
+            event=event, message=MessageSegment.text("请输入关键词，例如：巴扎 光纤")
+        )
         return
 
     # 别名解析
@@ -165,14 +186,19 @@ async def bz_rev(bot: Bot, event: Event):
         return
 
     try:
-        img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_item_sync, keyword)
+        img_bytes = await asyncio.get_event_loop().run_in_executor(
+            None, _query_item_sync, keyword
+        )
     except Exception as e:
         nonebot.logger.warning(f"[bazaardb] 查询失败 keyword={keyword}: {e}")
         await bot.send(event=event, message=MessageSegment.text(f"查询失败：{e}"))
         return
 
     if img_bytes is None:
-        await bot.send(event=event, message=MessageSegment.text(f"未找到「{keyword}」相关物品或怪物"))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text(f"未找到「{keyword}」相关物品或怪物"),
+        )
         return
 
     cache_file.write_bytes(img_bytes)
@@ -181,6 +207,7 @@ async def bz_rev(bot: Bot, event: Event):
 
 
 # ── 巴扎别名 <xxx> <yyy>：设置/查看/删除别名 ─────────────────────────────────
+
 
 @bz_alias.handle()
 async def bz_alias_rev(bot: Bot, event: Event):
@@ -192,22 +219,26 @@ async def bz_alias_rev(bot: Bot, event: Event):
         _aliases[src] = dst
         _save_aliases(_aliases)
         nonebot.logger.info(f"[bazaardb] 设置别名 {src} -> {dst}")
-        await bot.send(event=event, message=MessageSegment.text(
-            f"✅ 别名设置成功：巴扎 {src} → 实际查询「{dst}」"
-        ))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text(
+                f"✅ 别名设置成功：巴扎 {src} → 实际查询「{dst}」"
+            ),
+        )
         return
 
     # 巴扎别名 xxx     -> 查看该别名
     if len(args) == 1:
         src = args[0]
         if src in _aliases:
-            await bot.send(event=event, message=MessageSegment.text(
-                f"📌 当前别名：{src} → {_aliases[src]}"
-            ))
+            await bot.send(
+                event=event,
+                message=MessageSegment.text(f"📌 当前别名：{src} → {_aliases[src]}"),
+            )
         else:
-            await bot.send(event=event, message=MessageSegment.text(
-                f"「{src}」未设置别名"
-            ))
+            await bot.send(
+                event=event, message=MessageSegment.text(f"「{src}」未设置别名")
+            )
         return
 
     # 无参数 -> 列出所有别名
@@ -220,6 +251,7 @@ async def bz_alias_rev(bot: Bot, event: Event):
 
 # ── 巴扎查分 <用户名>：用户排位查询 ──────────────────────────────────────────
 
+
 def _user_cache_path(username: str) -> Path:
     safe = username.replace("/", "_").replace("\\", "_")
     return CACHE_DIR / f"bazaar_{safe}_s15.png"
@@ -229,7 +261,7 @@ def _query_user_sync(username: str) -> bytes | None:
     scraper = _load_scraper("bazaar_user_scraper.py")
     asyncio.run(scraper.scrape_and_export(username, "15", str(CACHE_DIR)))
     safe = username.replace("/", "_").replace("\\", "_")
-    png  = CACHE_DIR / f"bazaar_{safe}_s15.png"
+    png = CACHE_DIR / f"bazaar_{safe}_s15.png"
     return png.read_bytes() if png.exists() else None
 
 
@@ -237,18 +269,28 @@ def _query_user_sync(username: str) -> bytes | None:
 async def bz_user_rev(bot: Bot, event: Event):
     username = str(event.message).strip()[5:].strip()
     if not username:
-        await bot.send(event=event, message=MessageSegment.text("请输入用户名，例如：巴扎查分 xikala"))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text("请输入用户名，例如：巴扎查分 xikala"),
+        )
         return
 
     try:
-        img_bytes = await asyncio.get_event_loop().run_in_executor(None, _query_user_sync, username)
+        img_bytes = await asyncio.get_event_loop().run_in_executor(
+            None, _query_user_sync, username
+        )
     except Exception as e:
         nonebot.logger.warning(f"[bazaardb] 查分失败 username={username}: {e}")
         await bot.send(event=event, message=MessageSegment.text(f"查询失败：{e}"))
         return
 
     if img_bytes is None:
-        await bot.send(event=event, message=MessageSegment.text(f"未找到「{username}」的排位记录（仅记录传奇段位以上）"))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text(
+                f"未找到「{username}」的排位记录（仅记录传奇段位以上）"
+            ),
+        )
         return
 
     nonebot.logger.info(f"[bazaardb] 查分成功 username={username}")
@@ -256,6 +298,7 @@ async def bz_user_rev(bot: Bot, event: Event):
 
 
 # ── 巴扎绑定 <游戏账号>：绑定QQ到游戏账号 ────────────────────────────────────
+
 
 @bz_bind.handle()
 async def bz_bind_rev(bot: Bot, event: Event):
@@ -265,20 +308,23 @@ async def bz_bind_rev(bot: Bot, event: Event):
 
     args = str(event.message).strip()[5:].strip().split()
     if not args:
-        await bot.send(event=event, message=MessageSegment.text(
-            "用法：\n巴扎绑定 <游戏账号>（绑定自己）\n巴扎绑定 <QQ号> <游戏账号>（绑定指定QQ）"
-        ))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text(
+                "用法：\n巴扎绑定 <游戏账号>（绑定自己）\n巴扎绑定 <QQ号> <游戏账号>（绑定指定QQ）"
+            ),
+        )
         return
 
     group_id = str(event.group_id)
 
     if len(args) >= 2 and args[0].isdigit():
         # 巴扎绑定 QQ号 游戏账号
-        qq_id        = args[0]
+        qq_id = args[0]
         game_account = args[1]
     else:
         # 巴扎绑定 游戏账号（绑定自己）
-        qq_id        = str(event.user_id)
+        qq_id = str(event.user_id)
         game_account = args[0]
 
     group_map = _bindings.setdefault(group_id, {})
@@ -286,7 +332,9 @@ async def bz_bind_rev(bot: Bot, event: Event):
     group_map[qq_id] = game_account
     _save_bindings(_bindings)
     is_update = old_account and old_account != game_account
-    nonebot.logger.info(f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account} (旧={old_account})")
+    nonebot.logger.info(
+        f"[bazaardb] 绑定 group={group_id} qq={qq_id} -> {game_account} (旧={old_account})"
+    )
 
     # 查询用户当前排位数据
     rating_info = None
@@ -307,14 +355,18 @@ async def bz_bind_rev(bot: Bot, event: Event):
     # 获取 QQ 昵称
     nick = qq_id
     try:
-        member_info = await bot.get_group_member_info(group_id=int(group_id), user_id=int(qq_id))
+        member_info = await bot.get_group_member_info(
+            group_id=int(group_id), user_id=int(qq_id)
+        )
         nick = member_info.get("card") or member_info.get("nickname") or qq_id
     except Exception:
         pass
 
     if rating_info:
-        rank_str  = f"#{rating_info['position']:,}" if rating_info.get("position") else "#-"
-        score     = rating_info["rating"]
+        rank_str = (
+            f"#{rating_info['position']:,}" if rating_info.get("position") else "#-"
+        )
+        score = rating_info["rating"]
         header = "✅ 绑定更新！" if is_update else "✅ 绑定成功！"
         if is_update:
             header += f"\n🔄 {old_account} → {game_account}"
@@ -345,6 +397,7 @@ async def bz_bind_rev(bot: Bot, event: Event):
 
 # ── 巴扎解绑：解除当前QQ的绑定 ───────────────────────────────────────────────
 
+
 @bz_unbind.handle()
 async def bz_unbind_rev(bot: Bot, event: Event):
     if not isinstance(event, GroupMessageEvent):
@@ -352,7 +405,7 @@ async def bz_unbind_rev(bot: Bot, event: Event):
         return
 
     group_id = str(event.group_id)
-    qq_id    = str(event.user_id)
+    qq_id = str(event.user_id)
 
     group_map = _bindings.get(group_id, {})
     if qq_id not in group_map:
@@ -362,18 +415,24 @@ async def bz_unbind_rev(bot: Bot, event: Event):
     account = group_map.pop(qq_id)
     _save_bindings(_bindings)
 
-    nonebot.logger.info(f"[bazaardb] 解绑 group={group_id} qq={qq_id} account={account}")
-    await bot.send(event=event, message=MessageSegment.text(f"✅ 解绑成功！已移除 {qq_id} → {account} 的绑定"))
+    nonebot.logger.info(
+        f"[bazaardb] 解绑 group={group_id} qq={qq_id} account={account}"
+    )
+    await bot.send(
+        event=event,
+        message=MessageSegment.text(f"✅ 解绑成功！已移除 {qq_id} → {account} 的绑定"),
+    )
 
 
 # ── 巴扎排名：查询群内所有绑定成员排名 ───────────────────────────────────────
 
-BASE_URL   = "https://bazaarapi.mrmao.life"
-SEASON_ID  = "15"
-MEDALS     = ["🥇", "🥈", "🥉"]
+BASE_URL = "https://bazaarapi.mrmao.life"
+SEASON_ID = "15"
+MEDALS = ["🥇", "🥈", "🥉"]
 
 # 群排名快照（所有成员对比用）：{ "群号": { "游戏账号": {"rating": int, "position": int|None} } }
 SNAPSHOT_FILE = Path(__file__).parent / "rank_snapshot.json"
+
 
 def _load_snapshot() -> Dict[str, Dict[str, dict]]:
     if SNAPSHOT_FILE.exists():
@@ -383,13 +442,18 @@ def _load_snapshot() -> Dict[str, Dict[str, dict]]:
             pass
     return {}
 
+
 def _save_snapshot(data: Dict[str, Dict[str, dict]]):
-    SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    SNAPSHOT_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 _snapshots: Dict[str, Dict[str, dict]] = _load_snapshot()
 
 # 个人快照（发起者自己上次查询时的数据）：{ "qq号": {"rating": int, "position": int|None} }
 PERSONAL_SNAPSHOT_FILE = Path(__file__).parent / "personal_snapshot.json"
+
 
 def _load_personal_snapshot() -> Dict[str, dict]:
     if PERSONAL_SNAPSHOT_FILE.exists():
@@ -399,13 +463,19 @@ def _load_personal_snapshot() -> Dict[str, dict]:
             pass
     return {}
 
+
 def _save_personal_snapshot(data: Dict[str, dict]):
-    PERSONAL_SNAPSHOT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    PERSONAL_SNAPSHOT_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 _personal_snapshots: Dict[str, dict] = _load_personal_snapshot()
 
 
-async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) -> Optional[dict]:
+async def _fetch_latest_rating(
+    session: aiohttp.ClientSession, username: str
+) -> Optional[dict]:
     """拉取用户最新一条排位记录，返回 {rating, position} 或 None，失败自动重试一次"""
     url = f"{BASE_URL}/api/user/comprehensive-info?username={username}&seasonId={SEASON_ID}"
     headers = {
@@ -415,14 +485,16 @@ async def _fetch_latest_rating(session: aiohttp.ClientSession, username: str) ->
     }
     for attempt in range(2):
         try:
-            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+            async with session.get(
+                url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)
+            ) as resp:
                 resp_data = await resp.json(content_type=None)
                 if resp_data and resp_data.get("success") and resp_data.get("data"):
                     history = resp_data["data"].get("ratingHistory", [])
                     if history:
                         latest = history[-1]
                         return {
-                            "rating":   latest.get("rating", 0),
+                            "rating": latest.get("rating", 0),
                             "position": latest.get("position", None),
                         }
                 return None
@@ -441,23 +513,26 @@ async def bz_rank_rev(bot: Bot, event: Event):
         await bot.send(event=event, message=MessageSegment.text("请在群聊中使用此命令"))
         return
 
-    group_id  = str(event.group_id)
+    group_id = str(event.group_id)
     group_map = _bindings.get(group_id, {})
 
     if not group_map:
-        await bot.send(event=event, message=MessageSegment.text(
-            "本群还没有人绑定账号，请先发送「巴扎绑定 <游戏账号>」进行绑定"
-        ))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text(
+                "本群还没有人绑定账号，请先发送「巴扎绑定 <游戏账号>」进行绑定"
+            ),
+        )
         return
 
     # 分批并发拉取，每批 8 个，避免触发服务器限流
     BATCH_SIZE = 8
-    items      = list(group_map.items())
+    items = list(group_map.items())
     results: Dict[str, Optional[dict]] = {}
 
     async with aiohttp.ClientSession() as session:
         for i in range(0, len(items), BATCH_SIZE):
-            batch = items[i:i + BATCH_SIZE]
+            batch = items[i : i + BATCH_SIZE]
             tasks = {
                 qq: asyncio.create_task(_fetch_latest_rating(session, account))
                 for qq, account in batch
@@ -478,7 +553,7 @@ async def bz_rank_rev(bot: Bot, event: Event):
         pass
 
     # 发起者 QQ 和绑定账号
-    requester_qq      = str(event.user_id)
+    requester_qq = str(event.user_id)
     requester_account = group_map.get(requester_qq)
 
     # 上次快照
@@ -492,11 +567,11 @@ async def bz_rank_rev(bot: Bot, event: Event):
     for qq, account in group_map.items():
         r = results.get(qq)
         if r:
-            rating   = r["rating"]
+            rating = r["rating"]
             position = r["position"]
             new_snapshot[account] = {"rating": rating, "position": position}
 
-            is_requester = (qq == requester_qq)
+            is_requester = qq == requester_qq
 
             if is_requester:
                 # 发起者：与自己上次查询时的数据对比
@@ -506,27 +581,33 @@ async def bz_rank_rev(bot: Bot, event: Event):
                 last = last_snapshot.get(account)
 
             if isinstance(last, dict):
-                last_rating   = last.get("rating")
+                last_rating = last.get("rating")
                 last_position = last.get("position")
             elif isinstance(last, int):
-                last_rating   = last
+                last_rating = last
                 last_position = None
             else:
-                last_rating   = None
+                last_rating = None
                 last_position = None
 
-            delta_rating   = (rating - last_rating)     if last_rating   is not None else None
-            delta_position = (last_position - position) if (last_position is not None and position is not None) else None
+            delta_rating = (rating - last_rating) if last_rating is not None else None
+            delta_position = (
+                (last_position - position)
+                if (last_position is not None and position is not None)
+                else None
+            )
 
-            ranked.append({
-                "qq":             qq,
-                "account":        account,
-                "nick":           nick_map.get(qq, qq),
-                "rating":         rating,
-                "position":       position,
-                "delta_rating":   delta_rating,
-                "delta_position": delta_position,
-            })
+            ranked.append(
+                {
+                    "qq": qq,
+                    "account": account,
+                    "nick": nick_map.get(qq, qq),
+                    "rating": rating,
+                    "position": position,
+                    "delta_rating": delta_rating,
+                    "delta_position": delta_position,
+                }
+            )
         else:
             no_data.append(account)
 
@@ -537,18 +618,22 @@ async def bz_rank_rev(bot: Bot, event: Event):
     # 按 rating 降序排列
     ranked.sort(key=lambda x: x["rating"], reverse=True)
 
-    total    = len(group_map)
+    total = len(group_map)
     on_board = len(ranked)
 
     # 构建每条消息行
     def _fmt_delta_rating(d) -> str:
-        if d is None or d == 0: return ""
-        if d > 0: return f" ▲+{d}分"
+        if d is None or d == 0:
+            return ""
+        if d > 0:
+            return f" ▲+{d}分"
         return f" ▼{d}分"
 
     def _fmt_delta_position(d) -> str:
-        if d is None or d == 0: return ""
-        if d > 0: return f" 📈+{d}"
+        if d is None or d == 0:
+            return ""
+        if d > 0:
+            return f" 📈+{d}"
         return f" 📉{d}"
 
     header = f"📅 群内绑定成员顺位 (共 {on_board}/{total} 人上榜)"
@@ -557,23 +642,25 @@ async def bz_rank_rev(bot: Bot, event: Event):
 
     detail_lines = []
     for i, item in enumerate(ranked):
-        pos_str  = f"#{item['position']}" if item['position'] else "#-"
-        medal    = MEDALS[i] if i < 3 else f"{i + 1}."
-        dr       = _fmt_delta_rating(item["delta_rating"])
-        dp       = _fmt_delta_position(item["delta_position"])
-        is_me    = item["qq"] == requester_qq
-        me_mark  = " 👤" if is_me else ""
-        detail_lines.append((
-            f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr}){me_mark}",
-            is_me,
-            i,   # 原始排名序号
-        ))
+        pos_str = f"#{item['position']}" if item["position"] else "#-"
+        medal = MEDALS[i] if i < 3 else f"{i + 1}."
+        dr = _fmt_delta_rating(item["delta_rating"])
+        dp = _fmt_delta_position(item["delta_position"])
+        is_me = item["qq"] == requester_qq
+        me_mark = " 👤" if is_me else ""
+        detail_lines.append(
+            (
+                f"{medal} {item['account']}({item['nick']}) - {pos_str}{dp} ({item['rating']}分{dr}){me_mark}",
+                is_me,
+                i,  # 原始排名序号
+            )
+        )
 
     # 用合并消息发送
     def _node(content) -> dict:
         return {
             "type": "node",
-            "data": {"name": "巴扎排名", "uin": bot.self_id, "content": content}
+            "data": {"name": "巴扎排名", "uin": bot.self_id, "content": content},
         }
 
     messages = []
@@ -586,7 +673,13 @@ async def bz_rank_rev(bot: Bot, event: Event):
                 None, _query_user_sync, requester_account
             )
             if img_bytes:
-                messages.append(_node(MessageSegment.image(f"base64://{base64.b64encode(img_bytes).decode()}")))
+                messages.append(
+                    _node(
+                        MessageSegment.image(
+                            f"base64://{base64.b64encode(img_bytes).decode()}"
+                        )
+                    )
+                )
         except Exception as e:
             nonebot.logger.warning(f"[bazaardb] 查分图生成失败: {e}")
 
@@ -594,7 +687,7 @@ async def bz_rank_rev(bot: Bot, event: Event):
 
     # 若发起者在排名中，将其单独提到最前（header 后第一条）
     requester_line = None
-    other_lines    = []
+    other_lines = []
     for text, is_me, _ in detail_lines:
         if is_me:
             requester_line = text
@@ -611,20 +704,23 @@ async def bz_rank_rev(bot: Bot, event: Event):
     if rest:
         messages.append(_node("\n".join(rest)))
 
-    await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
+    await bot.call_api(
+        "send_group_forward_msg", group_id=int(group_id), messages=messages
+    )
 
     # 更新发起者的个人快照（在发送后记录，下次作为对比基准）
     if requester_account:
         requester_result = results.get(requester_qq)
         if requester_result:
             _personal_snapshots[requester_qq] = {
-                "rating":   requester_result["rating"],
+                "rating": requester_result["rating"],
                 "position": requester_result["position"],
             }
             _save_personal_snapshot(_personal_snapshots)
 
 
 # ── 凌晨0点自动推送排名 ───────────────────────────────────────────────────────
+
 
 async def _send_daily_rank(group_id: str):
     """向指定群推送每日排名，并与前一天0点快照对比"""
@@ -634,12 +730,12 @@ async def _send_daily_rank(group_id: str):
 
     # 拉取所有成员数据
     BATCH_SIZE = 8
-    items      = list(group_map.items())
+    items = list(group_map.items())
     results: Dict[str, Optional[dict]] = {}
 
     async with aiohttp.ClientSession() as session:
         for i in range(0, len(items), BATCH_SIZE):
-            batch = items[i:i + BATCH_SIZE]
+            batch = items[i : i + BATCH_SIZE]
             tasks = {
                 qq: asyncio.create_task(_fetch_latest_rating(session, account))
                 for qq, account in batch
@@ -660,24 +756,28 @@ async def _send_daily_rank(group_id: str):
     for qq, account in group_map.items():
         r = results.get(qq)
         if r:
-            rating   = r["rating"]
+            rating = r["rating"]
             position = r["position"]
             new_daily_snapshot[account] = {"rating": rating, "position": position}
             last = yesterday_snapshot.get(account)
             if isinstance(last, dict):
-                delta_rating   = rating - last.get("rating", rating)
-                last_pos       = last.get("position")
-                delta_position = (last_pos - position) if (last_pos and position) else None
+                delta_rating = rating - last.get("rating", rating)
+                last_pos = last.get("position")
+                delta_position = (
+                    (last_pos - position) if (last_pos and position) else None
+                )
             else:
-                delta_rating   = None
+                delta_rating = None
                 delta_position = None
-            ranked.append({
-                "account":        account,
-                "rating":         rating,
-                "position":       position,
-                "delta_rating":   delta_rating,
-                "delta_position": delta_position,
-            })
+            ranked.append(
+                {
+                    "account": account,
+                    "rating": rating,
+                    "position": position,
+                    "delta_rating": delta_rating,
+                    "delta_position": delta_position,
+                }
+            )
         else:
             no_data.append(account)
 
@@ -687,20 +787,22 @@ async def _send_daily_rank(group_id: str):
 
     ranked.sort(key=lambda x: x["rating"], reverse=True)
 
-    total    = len(group_map)
+    total = len(group_map)
     on_board = len(ranked)
-    today    = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now().strftime("%Y-%m-%d")
 
     def _dr(d) -> str:
-        if d is None or d == 0: return ""
+        if d is None or d == 0:
+            return ""
         return f" ▲+{d}分" if d > 0 else f" ▼{d}分"
 
     def _dp(d) -> str:
-        if d is None or d == 0: return ""
+        if d is None or d == 0:
+            return ""
         return f" 📈+{d}" if d > 0 else f" 📉{d}"
 
     # 今日总结
-    risers  = [x for x in ranked if x["delta_rating"] and x["delta_rating"] > 0]
+    risers = [x for x in ranked if x["delta_rating"] and x["delta_rating"] > 0]
     fallers = [x for x in ranked if x["delta_rating"] and x["delta_rating"] < 0]
     unchanged = [x for x in ranked if x["delta_rating"] == 0]
 
@@ -715,9 +817,9 @@ async def _send_daily_rank(group_id: str):
     detail_lines = []
     for i, item in enumerate(ranked):
         pos_str = f"#{item['position']}" if item["position"] else "#-"
-        medal   = MEDALS[i] if i < 3 else f"{i + 1}."
-        dr      = _dr(item["delta_rating"])
-        dp      = _dp(item["delta_position"])
+        medal = MEDALS[i] if i < 3 else f"{i + 1}."
+        dr = _dr(item["delta_rating"])
+        dp = _dp(item["delta_position"])
         detail_lines.append(
             f"{medal} {item['account']} - {pos_str}{dp} ({item['rating']}分{dr})"
         )
@@ -729,7 +831,10 @@ async def _send_daily_rank(group_id: str):
         return
 
     def _node(content) -> dict:
-        return {"type": "node", "data": {"name": "巴扎日报", "uin": bot.self_id, "content": content}}
+        return {
+            "type": "node",
+            "data": {"name": "巴扎日报", "uin": bot.self_id, "content": content},
+        }
 
     messages = [_node(summary)]
     top3 = detail_lines[:3]
@@ -739,7 +844,9 @@ async def _send_daily_rank(group_id: str):
         messages.append(_node("\n".join(rest)))
 
     try:
-        await bot.call_api("send_group_forward_msg", group_id=int(group_id), messages=messages)
+        await bot.call_api(
+            "send_group_forward_msg", group_id=int(group_id), messages=messages
+        )
         nonebot.logger.info(f"[bazaardb] 每日排名已推送到群 {group_id}")
     except Exception as e:
         nonebot.logger.warning(f"[bazaardb] 每日推送 group={group_id} 失败: {e}")
@@ -758,4 +865,3 @@ async def daily_rank_job():
 nonebot.logger.info(
     f"[bazaardb] 每日排名推送已配置，目标群: {DAILY_RANK_GROUPS or '未配置'}"
 )
-

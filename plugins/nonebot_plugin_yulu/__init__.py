@@ -1,15 +1,27 @@
-import nonebot
-from nonebot.plugin import on_regex, on_startswith
-from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent, MessageSegment, Message
+import os
 import random as rd
-import os, time, uuid, re, requests
+import re
+import shutil
+import time
+import uuid
 from datetime import datetime
-import nonebot_plugin_navicat as export
 from typing import List
-from .config import config
 
+import httpx
+import nonebot
+import nonebot_plugin_navicat as export
+import requests
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    Event,
+    GroupMessageEvent,
+    Message,
+    MessageSegment,
+)
+from nonebot.plugin import on_regex, on_startswith
 from objprint import op
-import shutil, httpx
+
+from .config import config
 
 imgRoot = config.imgRoot
 
@@ -31,7 +43,9 @@ async def yulu_rev(bot: Bot, event: GroupMessageEvent):
     else:
         rd.seed(time.time())
         path = img_list[rd.randint(0, len(img_list) - 1)]
-        await bot.send(event=event, message=MessageSegment.image(await get_img_url(f"{path}")))
+        await bot.send(
+            event=event, message=MessageSegment.image(await get_img_url(f"{path}"))
+        )
 
 
 yulu_save = on_regex("^上传语录$")
@@ -41,20 +55,22 @@ yulu_save = on_regex("^上传语录$")
 async def yulu_save_handle(event: Event):
     msg = event.message
     if str(msg) != "上传语录":
-        await yulu_save.finish("后面不加参数,直接at我后,输入\"上传语录\"即可.")
+        await yulu_save.finish('后面不加参数,直接at我后,输入"上传语录"即可.')
 
 
 @yulu_save.got(key="url", prompt="请输入图片")
 async def yulu_save_got(event: GroupMessageEvent):
     msg = event.message
-    url = msg[0].data['url']
+    url = msg[0].data["url"]
     group_id = event.group_id
     path_prefix = f"{imgRoot}QQbotFiles/yulu/{group_id}/"
     if not os.path.exists(path_prefix):
         os.makedirs(path_prefix)
     if url:
         r = httpx.get(url)
-        with open(f"{imgRoot}QQbotFiles/yulu/{group_id}/{uuid.uuid4()}.png", mode="wb") as f:
+        with open(
+            f"{imgRoot}QQbotFiles/yulu/{group_id}/{uuid.uuid4()}.png", mode="wb"
+        ) as f:
             f.write(r.content)
         await yulu_save.finish("上传成功!!!")
     else:
@@ -98,10 +114,20 @@ async def get_all_yl(group_id) -> List[str]:
     path_prefix = f"{imgRoot}QQbotFiles/yulu/{group_id}/"
     queue = []
     ret = []
-    queue += [path_prefix + _ for _ in os.listdir(path_prefix) if os.path.isdir(path_prefix + _)]
-    ret += [path_prefix + _ for _ in os.listdir(path_prefix) if os.path.isfile(path_prefix + _)]
+    queue += [
+        path_prefix + _
+        for _ in os.listdir(path_prefix)
+        if os.path.isdir(path_prefix + _)
+    ]
+    ret += [
+        path_prefix + _
+        for _ in os.listdir(path_prefix)
+        if os.path.isfile(path_prefix + _)
+    ]
     while len(queue) != 0:
         top = queue.pop(0)
-        queue += [top + "/" + _ for _ in os.listdir(top) if os.path.isdir(top + "/" + _)]
+        queue += [
+            top + "/" + _ for _ in os.listdir(top) if os.path.isdir(top + "/" + _)
+        ]
         ret += [top + "/" + _ for _ in os.listdir(top) if os.path.isfile(top + "/" + _)]
     return ret

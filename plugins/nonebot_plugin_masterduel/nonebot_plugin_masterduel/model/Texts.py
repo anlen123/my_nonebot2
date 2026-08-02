@@ -1,7 +1,26 @@
 class Texts:
-
-    def __init__(self, id: int, name: str, desc: str, str1, str2, str3, str4, str5, str6, str7, str8, str9, str10,
-                 str11, str12, str13, str14, str15, str16):
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        desc: str,
+        str1,
+        str2,
+        str3,
+        str4,
+        str5,
+        str6,
+        str7,
+        str8,
+        str9,
+        str10,
+        str11,
+        str12,
+        str13,
+        str14,
+        str15,
+        str16,
+    ):
         self.id = id
         self.name = name
         self.desc = desc

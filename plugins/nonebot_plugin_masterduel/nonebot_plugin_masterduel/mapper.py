@@ -7,18 +7,16 @@ import Levenshtein
 import nonebot
 import parsel
 import requests
+from objprint import op
 from PIL import Image, ImageFilter
 
+from .config import config
 from .model.Alias import Alias
-from .model.Card import YgoCard
-from .model.Card import buildYgoCard
+from .model.Card import YgoCard, buildYgoCard
 from .model.Datas import Datas
 from .model.Rarity import Rarity
 from .model.Texts import Texts
 from .utils.likelihoodUtils import Likelihood
-from .config import config
-
-from objprint import op
 
 nonebot_plugin_masterduel_root_dir = config.nonebot_plugin_masterduel_root_dir
 nonebot_plugin_masterduel_img_dir = config.nonebot_plugin_masterduel_img_dir
@@ -32,8 +30,8 @@ def get_like(s1: str, s2: str):
 
 def get_card_info_by_id(cardId: int) -> YgoCard:
     try:
-        datas = get_datas(f'SELECT * FROM datas WHERE id = {cardId}')[0]
-        texts = get_texts(f'SELECT * FROM texts WHERE id = {cardId}')[0]
+        datas = get_datas(f"SELECT * FROM datas WHERE id = {cardId}")[0]
+        texts = get_texts(f"SELECT * FROM texts WHERE id = {cardId}")[0]
         ygoCard = buildYgoCard(datas, texts)
         return ygoCard
     except IndexError:
@@ -66,7 +64,9 @@ def get_card_info_by_name(name: str) -> YgoCard:
 
 def get_card_info_by_alias(name: str) -> YgoCard:
     try:
-        aliasList = get_nonebot_plugin_masterduel_alias(f'SELECT * FROM alias WHERE name = "{name}"')
+        aliasList = get_nonebot_plugin_masterduel_alias(
+            f'SELECT * FROM alias WHERE name = "{name}"'
+        )
         if aliasList:
             return get_card_info_by_id(int(aliasList[0].card_id))
     except IndexError:
@@ -75,17 +75,23 @@ def get_card_info_by_alias(name: str) -> YgoCard:
 
 def set_card_alias_by_id(cardId: int, name: str):
     try:
-        aliasList = get_nonebot_plugin_masterduel_alias(f'SELECT * FROM alias WHERE name = "{name}"')
+        aliasList = get_nonebot_plugin_masterduel_alias(
+            f'SELECT * FROM alias WHERE name = "{name}"'
+        )
     except IndexError:
         print(f"No card found with id {name}")
         return None
 
     if aliasList:
         alias = aliasList[0]  # 更新
-        set_nonebot_plugin_masterduel(f'update alias set card_id = {cardId} where name = "{alias.name}"')
+        set_nonebot_plugin_masterduel(
+            f'update alias set card_id = {cardId} where name = "{alias.name}"'
+        )
     else:
         # 插入
-        set_nonebot_plugin_masterduel(f'insert into alias (name, card_id) VALUES ("{name}",{cardId})')
+        set_nonebot_plugin_masterduel(
+            f'insert into alias (name, card_id) VALUES ("{name}",{cardId})'
+        )
 
 
 def get_ban_msg(card_id: int):
@@ -111,11 +117,18 @@ def get_ban_msg(card_id: int):
 
 
 def read_ban_card(card_id: int):
-    return get_nonebot_plugin_masterduel(f"SELECT * FROM ban WHERE id = {card_id} ORDER BY date")
+    return get_nonebot_plugin_masterduel(
+        f"SELECT * FROM ban WHERE id = {card_id} ORDER BY date"
+    )
 
 
 def get_all_ban_date():
-    return [_[0] for _ in get_nonebot_plugin_masterduel(f"select distinct date from ban where ban_type order by date")]
+    return [
+        _[0]
+        for _ in get_nonebot_plugin_masterduel(
+            f"select distinct date from ban where ban_type order by date"
+        )
+    ]
 
 
 def get_nonebot_plugin_masterduel_rarity(sql: str) -> list[Rarity]:
@@ -141,7 +154,9 @@ def get_datas(sql: str) -> list[Datas]:
 
 def set_nonebot_plugin_masterduel(sql: str):
     print(sql)
-    conn = sqlite3.connect(f'{nonebot_plugin_masterduel_root_dir}\\nonebot_plugin_masterduel.cdb')
+    conn = sqlite3.connect(
+        f"{nonebot_plugin_masterduel_root_dir}\\nonebot_plugin_masterduel.cdb"
+    )
     cursor = conn.cursor()
     cursor.execute(sql)
     conn.commit()
@@ -149,15 +164,21 @@ def set_nonebot_plugin_masterduel(sql: str):
 
 
 def close_ygo_game_open_value():
-    set_nonebot_plugin_masterduel(f"update redis_like set value =\"0\" where name=\"ygo_game_open\"")
+    set_nonebot_plugin_masterduel(
+        f'update redis_like set value ="0" where name="ygo_game_open"'
+    )
 
 
 def open_ygo_game_open_value():
-    set_nonebot_plugin_masterduel(f"update redis_like set value =\"1\" where name=\"ygo_game_open\"")
+    set_nonebot_plugin_masterduel(
+        f'update redis_like set value ="1" where name="ygo_game_open"'
+    )
 
 
 def is_ygo_game_open() -> bool:
-    ygo_game_open = get_nonebot_plugin_masterduel(f"select * from redis_like where name=\"ygo_game_open\"")
+    ygo_game_open = get_nonebot_plugin_masterduel(
+        f'select * from redis_like where name="ygo_game_open"'
+    )
     print(f"{ygo_game_open=}")
     if ygo_game_open:
         ygo_game_open_value = ygo_game_open[0][1]
@@ -185,7 +206,9 @@ def get_texts(sql: str) -> list[Texts]:
 
 def get_nonebot_plugin_masterduel(sql: str):
     print(sql)
-    conn = sqlite3.connect(f'{nonebot_plugin_masterduel_root_dir}\\nonebot_plugin_masterduel.cdb')
+    conn = sqlite3.connect(
+        f"{nonebot_plugin_masterduel_root_dir}\\nonebot_plugin_masterduel.cdb"
+    )
     cursor = conn.cursor()
     cursor.execute(sql)
     # 获取查询结果
@@ -195,7 +218,7 @@ def get_nonebot_plugin_masterduel(sql: str):
 
 
 def get_cards(sql: str):
-    conn = sqlite3.connect(f'{nonebot_plugin_masterduel_root_dir}\\cards.cdb')
+    conn = sqlite3.connect(f"{nonebot_plugin_masterduel_root_dir}\\cards.cdb")
     cursor = conn.cursor()
     cursor.execute(sql)
     # 获取查询结果
@@ -231,20 +254,22 @@ def get_max_like_id(name: str):
 def get_nonebot_plugin_masterduel_id_by_cid(cid: int):
     ret = get_nonebot_plugin_masterduel(f"select id from cid where cid = '{cid}'")
 
-    url = f'https://ygocdb.com/api/v0/?search={cid}'
+    url = f"https://ygocdb.com/api/v0/?search={cid}"
 
     if ret:
         return ret[0][0]
     else:
-        url = f'https://ygocdb.com/api/v0/?search={cid}'
+        url = f"https://ygocdb.com/api/v0/?search={cid}"
         resp = requests.get(url, headers={"qq": "1761512493"})
         resp_json = json.loads(resp.text)
         flag = False
-        for x in resp_json['result']:
-            r_cid = (x['cid'])
-            card_id = (x['id'])
+        for x in resp_json["result"]:
+            r_cid = x["cid"]
+            card_id = x["id"]
             if str(cid).strip() == str(r_cid).strip():
-                set_nonebot_plugin_masterduel(f"insert into cid (id,cid) values ('{card_id}','{cid}')")
+                set_nonebot_plugin_masterduel(
+                    f"insert into cid (id,cid) values ('{card_id}','{cid}')"
+                )
                 return card_id
 
 
@@ -252,44 +277,77 @@ def get_card_by_md_shard_deck_code(deckCode: str) -> tuple:
     search_url = "https://ayk-deck.mo.konami.net/ayk/yocgapi/search"
     detail_url = "https://ayk-deck.mo.konami.net/ayk/yocgapi/detail"
 
-    headers = {"User-Agent": "UnityPlayer/2020.3.46f1 (UnityWebRequest/1.0, libcurl/7.84.0-DEV)",
-               "Host": "ayk-deck.mo.konami.net"}
+    headers = {
+        "User-Agent": "UnityPlayer/2020.3.46f1 (UnityWebRequest/1.0, libcurl/7.84.0-DEV)",
+        "Host": "ayk-deck.mo.konami.net",
+    }
 
-    post_data = {"commandName": "data.ycdb.searchDeckForMd",
-                 "params": {"typeCode": 0, "categoryList": [], "tagList": [], "cardIdList": [], "keyword": "",
-                            "deckCode": f"{deckCode}", "sortCode": 2, "sizePerPage": 100, "requestPageNo": 0,
-                            "deckTypeList": [1, 2]}}
+    post_data = {
+        "commandName": "data.ycdb.searchDeckForMd",
+        "params": {
+            "typeCode": 0,
+            "categoryList": [],
+            "tagList": [],
+            "cardIdList": [],
+            "keyword": "",
+            "deckCode": f"{deckCode}",
+            "sortCode": 2,
+            "sizePerPage": 100,
+            "requestPageNo": 0,
+            "deckTypeList": [1, 2],
+        },
+    }
 
-    resp = requests.post(url=search_url, data=json.dumps(post_data), headers=headers, verify=False)
+    resp = requests.post(
+        url=search_url, data=json.dumps(post_data), headers=headers, verify=False
+    )
     deck_resp = json.loads(resp.text)
     # print(f"{deck_resp=}")
-    if not deck_resp['result']['deckList']:
+    if not deck_resp["result"]["deckList"]:
         return ()
-    post_data = {"commandName": "data.ycdb.searchDeckForMd",
-                 "params": {"targetId": f"{deck_resp['result']['deckList'][0]['cardgameId']}",
-                            "deckNo": f"{deck_resp['result']['deckList'][0]['deckNo']}", }}
+    post_data = {
+        "commandName": "data.ycdb.searchDeckForMd",
+        "params": {
+            "targetId": f"{deck_resp['result']['deckList'][0]['cardgameId']}",
+            "deckNo": f"{deck_resp['result']['deckList'][0]['deckNo']}",
+        },
+    }
 
-    resp = requests.post(url=detail_url, data=json.dumps(post_data), headers=headers, verify=False)
+    resp = requests.post(
+        url=detail_url, data=json.dumps(post_data), headers=headers, verify=False
+    )
 
     # print(resp.text)
 
     card_resp = json.loads(resp.text)
     mainCardListCid = []
     extraCardListCid = []
-    for cid in card_resp['result']['mainCardList']:
-        cardId = [cid['cardId']]
-        count = int(cid['count'])
+    for cid in card_resp["result"]["mainCardList"]:
+        cardId = [cid["cardId"]]
+        count = int(cid["count"])
         if cardId:
             mainCardListCid += cardId * count
 
-    for cid in card_resp['result']['extraCardList']:
-        cardId = [cid['cardId']]
-        count = int(cid['count'])
+    for cid in card_resp["result"]["extraCardList"]:
+        cardId = [cid["cardId"]]
+        count = int(cid["count"])
         if cardId:
             extraCardListCid += cardId * count
 
-    mainCardList = [y for y in [get_nonebot_plugin_masterduel_id_by_cid(int(x)) for x in mainCardListCid] if y]
-    exCardList = [y for y in [get_nonebot_plugin_masterduel_id_by_cid(int(x)) for x in extraCardListCid] if y]
+    mainCardList = [
+        y
+        for y in [
+            get_nonebot_plugin_masterduel_id_by_cid(int(x)) for x in mainCardListCid
+        ]
+        if y
+    ]
+    exCardList = [
+        y
+        for y in [
+            get_nonebot_plugin_masterduel_id_by_cid(int(x)) for x in extraCardListCid
+        ]
+        if y
+    ]
 
     return mainCardList, exCardList
 
@@ -299,17 +357,17 @@ def get_cai_ding(cardId: int):
     ygoCard = get_card_info_by_id(cardId)
     if not ygoCard:
         return []
-    url = f"https://ocg-rule.readthedocs.io/_/api/v2/search/?q=\"{ygoCard.name}\"&project=ocg-rule&version=latest&language=zh-cn"
+    url = f'https://ocg-rule.readthedocs.io/_/api/v2/search/?q="{ygoCard.name}"&project=ocg-rule&version=latest&language=zh-cn'
     resp = requests.get(url=url)
     resp_json = json.loads(resp.text)
     msg = []
-    for x in resp_json['results']:
-        title = x['title']
+    for x in resp_json["results"]:
+        title = x["title"]
         msg_temp = title
         content_list = []
-        for y in x['blocks']:
-            title_detail = y['title']
-            content = y['content']
+        for y in x["blocks"]:
+            title_detail = y["title"]
+            content = y["content"]
             content_list.append([title_detail, content])
         msg.append([msg_temp, content_list])
     return msg
@@ -338,7 +396,7 @@ def get_cai_ding_html(cardId: int) -> str:
             """
             detailList.append(detail_temp)
 
-        detailStr = '\n'.join(detailList)
+        detailStr = "\n".join(detailList)
         singe_temp = f"""
         <li class="module-item search-result-item">
             <p class="module-item-title">
@@ -348,7 +406,7 @@ def get_cai_ding_html(cardId: int) -> str:
         </li>
         """
         caiDingList.append(singe_temp)
-    caiDingStr = '\n'.join(caiDingList)
+    caiDingStr = "\n".join(caiDingList)
     sss = f"""
     <head>
     <!-- css -->
@@ -384,13 +442,15 @@ def get_cai_ding_html(cardId: int) -> str:
 def get_selas_time_by_id(cardId: int):
     resp = requests.get(f"https://ygocdb.com/card/{cardId}")
     pa = parsel.Selector(resp.text)
-    pack = (pa.xpath('/html/body/main/div/div[2]/div[2]/div[3]/div[1]/span/a/@href').get())
+    pack = pa.xpath(
+        "/html/body/main/div/div[2]/div[2]/div[3]/div[1]/span/a/@href"
+    ).get()
     print(f"https://ygocdb.com{pack}")
     resp = requests.get(f"https://ygocdb.com{pack}")
     pa = parsel.Selector(resp.text)
     # print(resp.text)
-    sale_time = pa.xpath('/html/body/main/div/div[1]/div/p/a/span[1]/text()').get()
-    count_sum = pa.xpath('/html/body/main/div/div[1]/div/p/a/span[2]/text()').get()
+    sale_time = pa.xpath("/html/body/main/div/div[1]/div/p/a/span[1]/text()").get()
+    count_sum = pa.xpath("/html/body/main/div/div[1]/div/p/a/span[2]/text()").get()
     return sale_time, count_sum, pack[6:]
 
 
@@ -398,12 +458,14 @@ def get_card_by_pack(pack: str):
     resp = requests.get(f"https://ygocdb.com/pack/{pack}")
     pa = parsel.Selector(resp.text)
     # print(resp.text)
-    card_htmls = pa.xpath('/html/body/main/div//div[contains(@class, "row card result")]').getall()
+    card_htmls = pa.xpath(
+        '/html/body/main/div//div[contains(@class, "row card result")]'
+    ).getall()
     card_ids = []
     for card_html in card_htmls:
         # print(card_html)
         # /html/body/main/div/div[3]/div[1]/a
-        card_id = parsel.Selector(card_html).xpath('//div[1]/a/@href').get()
+        card_id = parsel.Selector(card_html).xpath("//div[1]/a/@href").get()
         card_ids.append(card_id[6:])
     return card_ids
 
@@ -425,12 +487,16 @@ def crop_image_from_url(cardId: int):
 
 
 def get_ygo_rank(top: int):
-    rows = get_nonebot_plugin_masterduel(f"select * from ygorank order by count desc limit {top}")
+    rows = get_nonebot_plugin_masterduel(
+        f"select * from ygorank order by count desc limit {top}"
+    )
     return rows
 
 
 def ygo_rank_add(qq: int, name: str):
-    rows = get_nonebot_plugin_masterduel(f'select * from ygorank where user_id = "{qq}"')
+    rows = get_nonebot_plugin_masterduel(
+        f'select * from ygorank where user_id = "{qq}"'
+    )
     if rows:
         row = rows[0]
         print(row)
@@ -438,6 +504,9 @@ def ygo_rank_add(qq: int, name: str):
         count = row[2]
         count = int(count) + 1
         set_nonebot_plugin_masterduel(
-            f'update ygorank set count = "{count}", name = "{name}" where user_id = "{user_id}"')
+            f'update ygorank set count = "{count}", name = "{name}" where user_id = "{user_id}"'
+        )
     else:
-        set_nonebot_plugin_masterduel(f'insert into ygorank (user_id, name, count) VALUES ("{qq}","{name}",1)')
+        set_nonebot_plugin_masterduel(
+            f'insert into ygorank (user_id, name, count) VALUES ("{qq}","{name}",1)'
+        )

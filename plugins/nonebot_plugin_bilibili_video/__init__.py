@@ -56,25 +56,32 @@ def _make_cookies() -> dict:
 
 # ── B 站接口 ──────────────────────────────────────────────────────────────────
 
+
 async def fetch_latest_videos(uid: str, ps: int = 20) -> List[dict]:
     """
     通过动态接口获取 uid 最新投稿视频（type=8），只需 SESSDATA Cookie。
     返回 [{bvid, title, desc, pic, duration, play, comment, pubdate, url}, ...]
     """
     import json as _json
+
     try:
         async with aiohttp.ClientSession(
             headers=BASE_HEADERS, cookies=_make_cookies()
         ) as s:
             async with s.get(
                 "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history",
-                params={"host_uid": uid, "offset_dynamic_id": 0, "need_top": 0, "platform": "web"},
+                params={
+                    "host_uid": uid,
+                    "offset_dynamic_id": 0,
+                    "need_top": 0,
+                    "platform": "web",
+                },
                 timeout=aiohttp.ClientTimeout(total=15),
             ) as r:
                 data = await r.json(content_type=None)
                 if data.get("code") != 0:
                     nonebot.logger.warning(
-                        f"[bilibili_video] fetch uid={uid} code={data.get('code')} msg={data.get('message','')}"
+                        f"[bilibili_video] fetch uid={uid} code={data.get('code')} msg={data.get('message', '')}"
                     )
                     return []
                 cards = (data.get("data") or {}).get("cards") or []
@@ -87,17 +94,19 @@ async def fetch_latest_videos(uid: str, ps: int = 20) -> List[dict]:
                     card = _json.loads(c.get("card", "{}"))
                     bvid = desc.get("bvid", "")
                     stat = desc.get("stat", {})
-                    result.append({
-                        "bvid":    bvid,
-                        "title":   card.get("title", ""),
-                        "desc":    card.get("desc", ""),
-                        "pic":     card.get("pic", ""),
-                        "duration": card.get("duration", 0),   # 秒数
-                        "play":    stat.get("view", 0),
-                        "comment": stat.get("reply", 0),
-                        "pubdate": desc.get("timestamp", 0),
-                        "url":     f"https://www.bilibili.com/video/{bvid}",
-                    })
+                    result.append(
+                        {
+                            "bvid": bvid,
+                            "title": card.get("title", ""),
+                            "desc": card.get("desc", ""),
+                            "pic": card.get("pic", ""),
+                            "duration": card.get("duration", 0),  # 秒数
+                            "play": stat.get("view", 0),
+                            "comment": stat.get("reply", 0),
+                            "pubdate": desc.get("timestamp", 0),
+                            "url": f"https://www.bilibili.com/video/{bvid}",
+                        }
+                    )
                 return result
     except Exception as e:
         nonebot.logger.warning(f"[bilibili_video] fetch_latest_videos uid={uid}: {e}")
@@ -135,19 +144,21 @@ async def fetch_uname(uid: str) -> str:
 
 # ── 推送 ──────────────────────────────────────────────────────────────────────
 
+
 async def notify_groups(groups: list, messages: list):
     """
     groups: [{"groupId": "xxx", "isAtAll": bool}, ...]
     将 messages 拼成一条消息发送，isAtAll=True 时在消息头部插入 @全体成员
     """
     from nonebot.adapters.onebot.v11 import Message
+
     try:
         bot: Bot = nonebot.get_bot()
     except Exception:
         nonebot.logger.warning("[bilibili_video] no bot available")
         return
     for g in groups:
-        gid       = g["groupId"]
+        gid = g["groupId"]
         is_at_all = g.get("isAtAll", False)
 
         def _build(with_at: bool) -> Message:
@@ -164,25 +175,33 @@ async def notify_groups(groups: list, messages: list):
             await asyncio.sleep(0.5)
         except Exception as e:
             if is_at_all:
-                nonebot.logger.warning(f"[bilibili_video] send group {gid} with @all failed ({e})，降级重试")
+                nonebot.logger.warning(
+                    f"[bilibili_video] send group {gid} with @all failed ({e})，降级重试"
+                )
                 try:
                     await bot.send_group_msg(group_id=int(gid), message=_build(False))
                     await asyncio.sleep(0.5)
                 except Exception as e2:
-                    nonebot.logger.warning(f"[bilibili_video] send group {gid} retry failed: {e2}")
+                    nonebot.logger.warning(
+                        f"[bilibili_video] send group {gid} retry failed: {e2}"
+                    )
             else:
                 nonebot.logger.warning(f"[bilibili_video] send group {gid}: {e}")
 
 
 async def notify_new_video(uid: str, video: dict):
-    uname   = await fetch_uname(uid)
-    title   = video["title"]
-    desc    = video["desc"].strip()
-    url     = video["url"]
-    play    = video["play"]
+    uname = await fetch_uname(uid)
+    title = video["title"]
+    desc = video["desc"].strip()
+    url = video["url"]
+    play = video["play"]
     comment = video["comment"]
-    dur_sec  = video["duration"]
-    duration = f"{dur_sec // 60}:{dur_sec % 60:02d}" if isinstance(dur_sec, int) else str(dur_sec)
+    dur_sec = video["duration"]
+    duration = (
+        f"{dur_sec // 60}:{dur_sec % 60:02d}"
+        if isinstance(dur_sec, int)
+        else str(dur_sec)
+    )
     pubdate = datetime.fromtimestamp(video["pubdate"]).strftime("%Y-%m-%d %H:%M")
 
     # 播放量格式化
@@ -210,10 +229,13 @@ async def notify_new_video(uid: str, video: dict):
 
     group_ids = UIDS.get(uid, [])
     await notify_groups(group_ids, msgs)
-    nonebot.logger.info(f"[bilibili_video] uid={uid} ({uname}) 新视频 {video['bvid']} 已通知群 {group_ids}")
+    nonebot.logger.info(
+        f"[bilibili_video] uid={uid} ({uname}) 新视频 {video['bvid']} 已通知群 {group_ids}"
+    )
 
 
 # ── 定时轮询 ──────────────────────────────────────────────────────────────────
+
 
 @scheduler.scheduled_job("interval", seconds=INTERVAL, id="bilibili_video_poll")
 async def poll_new_videos():
@@ -231,20 +253,26 @@ async def poll_new_videos():
             await asyncio.sleep(2)
             continue
 
-        nonebot.logger.debug(f"[bilibili_video] uid={uid} 获取到 {len(videos)} 条视频，最新={videos[0]['bvid']} 《{videos[0]['title'][:20]}》")
+        nonebot.logger.debug(
+            f"[bilibili_video] uid={uid} 获取到 {len(videos)} 条视频，最新={videos[0]['bvid']} 《{videos[0]['title'][:20]}》"
+        )
 
         newest_bvid = videos[0]["bvid"]
 
         if uid not in initialized:
             latest_bvid[uid] = newest_bvid
             initialized[uid] = True
-            nonebot.logger.info(f"[bilibili_video] uid={uid} 初始化完成，最新视频={newest_bvid} 《{videos[0]['title'][:30]}》")
+            nonebot.logger.info(
+                f"[bilibili_video] uid={uid} 初始化完成，最新视频={newest_bvid} 《{videos[0]['title'][:30]}》"
+            )
             await asyncio.sleep(2)
             continue
 
         known_bvid = latest_bvid.get(uid, "")
         if newest_bvid == known_bvid:
-            nonebot.logger.debug(f"[bilibili_video] uid={uid} 无新视频（最新仍为 {known_bvid}）")
+            nonebot.logger.debug(
+                f"[bilibili_video] uid={uid} 无新视频（最新仍为 {known_bvid}）"
+            )
             await asyncio.sleep(2)
             continue
 
@@ -255,10 +283,14 @@ async def poll_new_videos():
                 break
             new_videos.append(v)
 
-        nonebot.logger.info(f"[bilibili_video] uid={uid} 发现 {len(new_videos)} 个新视频，准备推送")
+        nonebot.logger.info(
+            f"[bilibili_video] uid={uid} 发现 {len(new_videos)} 个新视频，准备推送"
+        )
 
         for v in reversed(new_videos):
-            nonebot.logger.info(f"[bilibili_video] 推送新视频 bvid={v['bvid']} 《{v['title'][:30]}》 -> 群 {UIDS.get(uid, [])}")
+            nonebot.logger.info(
+                f"[bilibili_video] 推送新视频 bvid={v['bvid']} 《{v['title'][:30]}》 -> 群 {UIDS.get(uid, [])}"
+            )
             await notify_new_video(uid, v)
             await asyncio.sleep(1)
 

@@ -6,11 +6,12 @@
 示例: python bazaar_user_scraper.py xikala 14
 """
 
-import sys
-import os
-import json
 import asyncio
+import json
+import os
+import sys
 from urllib.parse import quote
+
 from playwright.async_api import async_playwright
 
 BASE_URL = "https://bazaarapi.mrmao.life"
@@ -36,8 +37,8 @@ def calc_stats(history: list) -> dict:
     up_games = 0
     down_games = 0
     season_highest = 0
-    cur_streak = 0       # 当前连续上分
-    max_streak = 0       # 最大连续上分
+    cur_streak = 0  # 当前连续上分
+    max_streak = 0  # 最大连续上分
 
     for i, item in enumerate(history):
         r = item["rating"]
@@ -59,17 +60,17 @@ def calc_stats(history: list) -> dict:
 
     latest = history[-1]
     return {
-        "current_rating":  latest["rating"],
-        "current_rank":    latest.get("position", "-"),
-        "total_games":     total_games,
-        "up_games":        up_games,
-        "season_highest":  season_highest,
-        "win_rate":        round(win_rate, 2),
-        "cur_streak":      cur_streak,
-        "max_streak":      max_streak,
-        "first_record":    history[0]["timestamp"],
-        "last_record":     latest["timestamp"],
-        "record_count":    len(history),
+        "current_rating": latest["rating"],
+        "current_rank": latest.get("position", "-"),
+        "total_games": total_games,
+        "up_games": up_games,
+        "season_highest": season_highest,
+        "win_rate": round(win_rate, 2),
+        "cur_streak": cur_streak,
+        "max_streak": max_streak,
+        "first_record": history[0]["timestamp"],
+        "last_record": latest["timestamp"],
+        "record_count": len(history),
     }
 
 
@@ -82,11 +83,11 @@ def build_daily_detail(history: list) -> str:
     for i in range(1, len(history)):
         prev_r = history[i - 1]["rating"]
         curr_r = history[i]["rating"]
-        delta  = curr_r - prev_r
+        delta = curr_r - prev_r
         if delta != 0:
-            ts    = history[i]["timestamp"]   # "2026-04-17 14:06:18"
-            date  = ts[:10]
-            time  = ts[11:16]                 # "14:06"
+            ts = history[i]["timestamp"]  # "2026-04-17 14:06:18"
+            date = ts[:10]
+            time = ts[11:16]  # "14:06"
             games.append({"date": date, "time": time, "delta": delta, "rating": curr_r})
 
     # 按日期分组，取最近5天
@@ -98,23 +99,23 @@ def build_daily_detail(history: list) -> str:
     rows_html = ""
     for date in dates:
         day_games = by_date[date]
-        wins      = sum(1 for g in day_games if g["delta"] > 0)
-        losses    = sum(1 for g in day_games if g["delta"] < 0)
-        total     = len(day_games)
+        wins = sum(1 for g in day_games if g["delta"] > 0)
+        losses = sum(1 for g in day_games if g["delta"] < 0)
+        total = len(day_games)
         day_delta = sum(g["delta"] for g in day_games)
         end_rating = day_games[-1]["rating"]
 
-        delta_cls  = "dd-pos" if day_delta >= 0 else "dd-neg"
-        delta_str  = f"+{day_delta}" if day_delta > 0 else str(day_delta)
+        delta_cls = "dd-pos" if day_delta >= 0 else "dd-neg"
+        delta_str = f"+{day_delta}" if day_delta > 0 else str(day_delta)
 
         blocks_html = ""
         for g in day_games:
-            cls  = "blk-win" if g["delta"] > 0 else "blk-lose"
-            val  = f"+{g['delta']}" if g["delta"] > 0 else str(g["delta"])
+            cls = "blk-win" if g["delta"] > 0 else "blk-lose"
+            val = f"+{g['delta']}" if g["delta"] > 0 else str(g["delta"])
             blocks_html += f"""
             <div class="blk-wrap">
               <div class="blk {cls}">{val}</div>
-              <div class="blk-time">{g['time']}</div>
+              <div class="blk-time">{g["time"]}</div>
             </div>"""
 
         rows_html += f"""
@@ -139,8 +140,14 @@ def build_daily_detail(history: list) -> str:
   </div>"""
 
 
-def build_html(username: str, season_id: str, season_display: str,
-               stats: dict, title_info: dict, history: list) -> str:
+def build_html(
+    username: str,
+    season_id: str,
+    season_display: str,
+    stats: dict,
+    title_info: dict,
+    history: list,
+) -> str:
     """构建完整 HTML 页面（含 ECharts 图表）"""
 
     # 图表数据
@@ -287,8 +294,8 @@ def build_html(username: str, season_id: str, season_display: str,
       </div>
     </div>
     <div style="display:flex;align-items:center;">
-      {'<span class="title-badge">🎖️ ' + title_name + '</span>' if title_name else ''}
-      {'<span class="msg-badge">' + title_msg + '</span>' if title_msg else ''}
+      {'<span class="title-badge">🎖️ ' + title_name + "</span>" if title_name else ""}
+      {'<span class="msg-badge">' + title_msg + "</span>" if title_msg else ""}
     </div>
   </div>
 
@@ -296,38 +303,38 @@ def build_html(username: str, season_id: str, season_display: str,
   <div class="stats-grid">
     <div class="stat-cell">
       <div class="stat-label">🔍 当前分数</div>
-      <div class="stat-value c-blue">{s.get('current_rating', '-')}</div>
+      <div class="stat-value c-blue">{s.get("current_rating", "-")}</div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">🔎 当前排名</div>
-      <div class="stat-value c-blue">{s.get('current_rank', '-')}</div>
+      <div class="stat-value c-blue">{s.get("current_rank", "-")}</div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">🎮 总游玩局数</div>
-      <div class="stat-value c-purple">{s.get('total_games', '-')}</div>
+      <div class="stat-value c-purple">{s.get("total_games", "-")}</div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">📈 上分局数</div>
-      <div class="stat-value c-green">{s.get('up_games', '-')}</div>
+      <div class="stat-value c-green">{s.get("up_games", "-")}</div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">🏆 赛季最高分</div>
-      <div class="stat-value c-red">{s.get('season_highest', '-')}</div>
+      <div class="stat-value c-red">{s.get("season_highest", "-")}</div>
     </div>
   </div>
   <!-- 统计第二行 -->
   <div class="stats-grid-row2">
     <div class="stat-cell">
       <div class="stat-label">✨ 上分率</div>
-      <div class="stat-value c-gold">{s.get('win_rate', '-')}<span style="font-size:16px">%</span></div>
+      <div class="stat-value c-gold">{s.get("win_rate", "-")}<span style="font-size:16px">%</span></div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">🔥 当前连续上分</div>
-      <div class="stat-value c-orange">{s.get('cur_streak', '-')}</div>
+      <div class="stat-value c-orange">{s.get("cur_streak", "-")}</div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">🚀 最大连续上分</div>
-      <div class="stat-value c-red">{s.get('max_streak', '-')}</div>
+      <div class="stat-value c-red">{s.get("max_streak", "-")}</div>
     </div>
   </div>
 
@@ -343,7 +350,7 @@ def build_html(username: str, season_id: str, season_display: str,
   <!-- 底部 -->
   <div class="footer">
     数据来源：bazaar.mrmao.life &nbsp;|&nbsp; 记录数: {len(history)} &nbsp;|&nbsp;
-    {s.get('first_record', '')} ~ {s.get('last_record', '')}
+    {s.get("first_record", "")} ~ {s.get("last_record", "")}
   </div>
 
 </div>
@@ -444,7 +451,7 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
     html_path = os.path.join(out_dir, f"bazaar_{safe_name}_s{season_id}.html")
     png_path = os.path.join(out_dir, f"bazaar_{safe_name}_s{season_id}.png")
 
-    print(f"🔍 查询用户: {username}  |  赛季: Season {int(season_id)-1}")
+    print(f"🔍 查询用户: {username}  |  赛季: Season {int(season_id) - 1}")
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
@@ -466,7 +473,9 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
         resp_data = await fetch_json(page, comp_url, headers=_API_HEADERS)
 
         if not resp_data or not resp_data.get("success") or not resp_data.get("data"):
-            print(f"  ⚠ 未找到该用户在 Season {int(season_id)-1} 的排位记录（仅记录传奇段位以上）")
+            print(
+                f"  ⚠ 未找到该用户在 Season {int(season_id) - 1} 的排位记录（仅记录传奇段位以上）"
+            )
             await browser.close()
             return
 
@@ -474,7 +483,9 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
         history = api_data.get("ratingHistory", [])
 
         if not history:
-            print(f"  ⚠ 未找到该用户在 Season {int(season_id)-1} 的排位记录（仅记录传奇段位以上）")
+            print(
+                f"  ⚠ 未找到该用户在 Season {int(season_id) - 1} 的排位记录（仅记录传奇段位以上）"
+            )
             await browser.close()
             return
 
@@ -483,18 +494,22 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
         title_info = api_data.get("seasonTitleInfo") or {}
 
         if title_info.get("titleName"):
-            print(f"  🎖️ 称号: {title_info['titleName']} — {title_info.get('message','')}")
+            print(
+                f"  🎖️ 称号: {title_info['titleName']} — {title_info.get('message', '')}"
+            )
 
         # ── 2. 计算统计 ──
         stats = calc_stats(history)
-        print(f"  📊 当前分数: {stats['current_rating']}  |  排名: #{stats['current_rank']}  |  "
-              f"总局数: {stats['total_games']}  |  上分率: {stats['win_rate']}%")
+        print(
+            f"  📊 当前分数: {stats['current_rating']}  |  排名: #{stats['current_rank']}  |  "
+            f"总局数: {stats['total_games']}  |  上分率: {stats['win_rate']}%"
+        )
 
         # ── 3. 保存 JSON ──
         output_data = {
             "username": username,
             "season_id": int(season_id),
-            "season_display": f"Season {int(season_id)-1}",
+            "season_display": f"Season {int(season_id) - 1}",
             "title_info": title_info,
             "stats": stats,
             "history": history,
@@ -504,8 +519,10 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
             json.dump(output_data, f, ensure_ascii=False, indent=2)
 
         # ── 4. 生成 HTML ──
-        season_display = f"Season {int(season_id)-1}"
-        html_content = build_html(username, season_id, season_display, stats, title_info, history)
+        season_display = f"Season {int(season_id) - 1}"
+        html_content = build_html(
+            username, season_id, season_display, stats, title_info, history
+        )
         print(f"[3/4] HTML → {html_path}")
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
@@ -525,7 +542,9 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
         size = await card_page.evaluate(
             "({w: document.body.scrollWidth, h: document.body.scrollHeight})"
         )
-        await card_page.set_viewport_size({"width": size["w"] + 40, "height": size["h"] + 40})
+        await card_page.set_viewport_size(
+            {"width": size["w"] + 40, "height": size["h"] + 40}
+        )
         await card_page.wait_for_timeout(500)
         await card_page.screenshot(path=png_path, full_page=True)
         await card_page.close()
@@ -540,7 +559,9 @@ async def scrape_and_export(username: str, season_id: str = "15", out_dir: str =
 async def main():
     username = sys.argv[1] if len(sys.argv) > 1 else "xikala"
     season_id = sys.argv[2] if len(sys.argv) > 2 else "15"
-    out_dir = sys.argv[3] if len(sys.argv) > 3 else os.path.dirname(os.path.abspath(__file__))
+    out_dir = (
+        sys.argv[3] if len(sys.argv) > 3 else os.path.dirname(os.path.abspath(__file__))
+    )
     await scrape_and_export(username, season_id, out_dir)
 
 

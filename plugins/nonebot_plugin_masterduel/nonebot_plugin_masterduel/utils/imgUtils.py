@@ -1,18 +1,21 @@
-from PIL import Image
-import requests
-from io import BytesIO
 import base64
-import os, random, nonebot, time
+import os
+import random
+import time
 from collections import Counter
-from . import rarityUtils
+from io import BytesIO
+from typing import List
 
+import httpx
+import nonebot
+import requests
+from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from ..model.Card import YgoCard
-from typing import List
 from ..config import config
-import httpx
+from ..model.Card import YgoCard
+from . import rarityUtils
 
 nonebot_plugin_masterduel_root_dir = config.nonebot_plugin_masterduel_root_dir
 nonebot_plugin_masterduel_img_dir = config.nonebot_plugin_masterduel_img_dir
@@ -20,10 +23,10 @@ nonebot_plugin_masterduel_img_card_dir = config.nonebot_plugin_masterduel_img_ca
 
 
 def down_card_id(card_id: int):
-    url_image_url = f'https://cdn.233.momobako.com/ygopro/pics/{card_id}.jpg'
+    url_image_url = f"https://cdn.233.momobako.com/ygopro/pics/{card_id}.jpg"
     print(url_image_url)
     # 检查本地是否存在URL图片
-    local_img_path = f'{nonebot_plugin_masterduel_img_card_dir}\\{card_id}.jpg'
+    local_img_path = f"{nonebot_plugin_masterduel_img_card_dir}\\{card_id}.jpg"
 
     if not os.path.exists(local_img_path):
         # 否则，通过URL下载图片并保存到本地
@@ -37,15 +40,15 @@ def down_card_id(card_id: int):
 def pin_quality(card_id: int, quality: str):
     # 准备 URL 图片的地址
 
-    local_image_path = f'{nonebot_plugin_masterduel_img_dir}\\{quality}'
+    local_image_path = f"{nonebot_plugin_masterduel_img_dir}\\{quality}"
 
     local_img_path = down_card_id(card_id=card_id)
     # 加载本地图片
     if not quality:
         return local_img_path
-    url_image = Image.open(local_img_path).convert('RGBA')
+    url_image = Image.open(local_img_path).convert("RGBA")
 
-    local_image = Image.open(local_image_path).convert('RGBA')
+    local_image = Image.open(local_image_path).convert("RGBA")
     local_image.thumbnail((local_image.width * 0.5, local_image.height * 0.5))
 
     # 计算拼接后的图像大小
@@ -53,7 +56,7 @@ def pin_quality(card_id: int, quality: str):
     result_height = url_image.height + local_image.height
 
     # 创建空白图像作为拼接结果
-    result_image = Image.new('RGBA', (result_width, result_height))
+    result_image = Image.new("RGBA", (result_width, result_height))
 
     # 将URL图片粘贴到拼接结果的底部
     result_image.paste(url_image, (0, local_image.height))
@@ -62,14 +65,14 @@ def pin_quality(card_id: int, quality: str):
     result_image.paste(local_image, (url_image.width - local_image.width, 0))
 
     # 粘贴小蓝
-    xiaoLan_path = f'{nonebot_plugin_masterduel_img_dir}\\xiaolan'
-    xiaoLan_image = Image.open(xiaoLan_path).convert('RGBA')
+    xiaoLan_path = f"{nonebot_plugin_masterduel_img_dir}\\xiaolan"
+    xiaoLan_image = Image.open(xiaoLan_path).convert("RGBA")
     xiaoLan_image.thumbnail((xiaoLan_image.width * 0.36, xiaoLan_image.height * 0.36))
     result_image.paste(xiaoLan_image, (0, 0), xiaoLan_image)
 
     # 将拼接后的图像转换为Base64格式
     buffered = BytesIO()
-    result_image.save(buffered, format='PNG')
+    result_image.save(buffered, format="PNG")
 
     image_base64 = base64.b64encode(buffered.getvalue()).decode()
 
@@ -100,7 +103,7 @@ def down_img(path: str, url: str, name: str):
         full_path = os.path.join(path, name)
 
         # 将图片数据写入文件
-        with open(full_path, 'wb') as f:
+        with open(full_path, "wb") as f:
             f.write(response.content)
 
         # 如果需要，可以在这里添加使用PIL库对图片进行进一步处理的代码
@@ -118,11 +121,11 @@ def down_img(path: str, url: str, name: str):
 
 def screenshot(sss: str, pic_name):
     chrome_options = Options()
-    chrome_options.add_argument('headless')
+    chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     try:
-        name = str(random.randint(1, 999999999)) + '.html'
-        with open(name, 'w', encoding='utf-8') as f:
+        name = str(random.randint(1, 999999999)) + ".html"
+        with open(name, "w", encoding="utf-8") as f:
             f.write(sss)
         file_url = f"file:///{os.getcwd()}\\{name}"
         driver.get(file_url)
@@ -143,7 +146,7 @@ def screenshot(sss: str, pic_name):
 
 def screenshot_by_url(sss: str, pic_name):
     chrome_options = Options()
-    chrome_options.add_argument('headless')
+    chrome_options.add_argument("headless")
     driver = webdriver.Chrome(options=chrome_options)
     try:
         driver.get(sss)
@@ -248,11 +251,11 @@ def get_all_temp(cardListMain: None, cardListEx: None):
     for key, value in cardId2count.items():
         rarity = rarityUtils.get_rarity(int(key))
         if rarity == "UR":
-            UR += (30 * value)
+            UR += 30 * value
         if rarity == "SR":
-            SR += (30 * value)
+            SR += 30 * value
         tempList.append(get_singe_temp(int(key), value, rarity))
-    tempMainStr = '\n'.join(tempList)
+    tempMainStr = "\n".join(tempList)
 
     # 额外卡组
     if cardListEx:
@@ -261,11 +264,11 @@ def get_all_temp(cardListMain: None, cardListEx: None):
         for key, value in cardIdEx2count.items():
             rarity = rarityUtils.get_rarity(int(key))
             if rarity == "UR":
-                UR += (30 * value)
+                UR += 30 * value
             if rarity == "SR":
-                SR += (30 * value)
+                SR += 30 * value
             tempExList.append(get_singe_temp(int(key), value, rarity))
-        tempExStr = '\n'.join(tempExList)
+        tempExStr = "\n".join(tempExList)
     else:
         tempExStr = ""
 
@@ -423,7 +426,6 @@ def get_singe_temp(cardId: int, count: int, rarity: str):
         limit_temp = ""
 
     if rarity:
-
         rarityStr = f"""
         <div class="rarity">
             <div class="rarity-item"><img decoding="async"

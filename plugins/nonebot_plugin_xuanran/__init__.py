@@ -1,7 +1,8 @@
 import base64
+
 import nonebot
-from nonebot.plugin import on_regex
 from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
+from nonebot.plugin import on_regex
 
 xr = on_regex(pattern=r"^xr ")
 
@@ -10,7 +11,10 @@ xr = on_regex(pattern=r"^xr ")
 async def xr_rev(bot: Bot, event: Event):
     url = str(event.message).strip()[3:].strip()
     if not url:
-        await bot.send(event=event, message=MessageSegment.text("请输入 URL，例如：xr https://example.com"))
+        await bot.send(
+            event=event,
+            message=MessageSegment.text("请输入 URL，例如：xr https://example.com"),
+        )
         return
     if not (url.startswith("http://") or url.startswith("https://")):
         url = f"https://{url}"
@@ -33,6 +37,7 @@ async def xr_rev(bot: Bot, event: Event):
 async def screenshot(url: str) -> bytes:
     """在线程池中运行同步 Playwright，规避 Windows ProactorEventLoop 限制"""
     import asyncio
+
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, _screenshot_sync, url)
 

@@ -1,7 +1,7 @@
 import nonebot
 from nonebot import on_message
-from nonebot.rule import Rule
 from nonebot.adapters.onebot.v11 import Bot, Event, Message
+from nonebot.rule import Rule
 
 global_config = nonebot.get_driver().config
 config = global_config.dict()

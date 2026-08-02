@@ -1,22 +1,27 @@
 import os
 import random
-import re, os
+import re
 import time
 
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment, Message, GroupMessageEvent, MessageEvent
-from nonebot.plugin import on_regex, on_message
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    Event,
+    GroupMessageEvent,
+    Message,
+    MessageEvent,
+    MessageSegment,
+)
+from nonebot.params import Depends
+from nonebot.plugin import on_message, on_regex
 from nonebot.rule import Rule, to_me
 from nonebot.typing import T_State
-from nonebot.params import Depends
+from nonebot_plugin_userinfo import get_user_info
+from nonebot_plugin_waiter import waiter
 
 from .config import config
 from .mapper import *
 from .model.Card import YgoCard
-from .utils import imgUtils
-from .utils import rarityUtils
-
-from nonebot_plugin_waiter import waiter
-from nonebot_plugin_userinfo import get_user_info
+from .utils import imgUtils, rarityUtils
 
 nonebot_plugin_masterduel_root_dir = config.nonebot_plugin_masterduel_root_dir
 nonebot_plugin_masterduel_img_dir = config.nonebot_plugin_masterduel_img_dir
@@ -80,15 +85,15 @@ async def master_duel_rev(bot: Bot, event: Event, state: T_State):
     ygoCard = get_ygo(cmd)
     if ygoCard:
         await send_card(bot, event, ygoCard)
-        state['alias'] = "None"
+        state["alias"] = "None"
         return
     else:
         ygoCardList = mapper.get_card_info_like_names(cmd)
         if not ygoCardList:
             await bot.send(event, MessageSegment.text("未查询到卡片"))
-            state['alias'] = "None"
+            state["alias"] = "None"
             return
-        state['alias_name'] = cmd
+        state["alias_name"] = cmd
         await lck(bot, event, cmd, extrMsg="\n输入序号即可设置外号")
         count = set()
         ygoCardList_new = []
@@ -102,20 +107,20 @@ async def master_duel_rev(bot: Bot, event: Event, state: T_State):
         for card in ygoCardList_new:
             state[str(seq)] = str(card.id)
             seq += 1
-        state['count'] = len(ygoCardList)
+        state["count"] = len(ygoCardList)
         print(state)
 
 
 @master_duel.got("alias")
 @master_duel.got("alias")
 async def get_setu(bot: Bot, event: MessageEvent, state: T_State):
-    if state['alias'] == "None":
+    if state["alias"] == "None":
         return
     seq = event.get_plaintext().strip()
-    count = state['count']
+    count = state["count"]
     if seq.isdigit() and 1 <= int(seq) <= count:
         card_id = state[str(seq)]
-        alias = state['alias_name']
+        alias = state["alias_name"]
         await alias_card(bot, event, f"{int(card_id)} {alias}")
 
 
@@ -168,7 +173,9 @@ def get_ygo(cmd: str):
     return ygoCard
 
 
-async def send_card(bot: Bot, event: Event, ygoCard: YgoCard, pack: bool = True, desc: bool = True):
+async def send_card(
+    bot: Bot, event: Event, ygoCard: YgoCard, pack: bool = True, desc: bool = True
+):
     if ygoCard:
         messageSegment = await get_send_msg(ygoCard, pack, desc)
         await retry_send(bot, event, messageSegment)
@@ -177,14 +184,17 @@ async def send_card(bot: Bot, event: Event, ygoCard: YgoCard, pack: bool = True,
         if os.path.exists(directory):
             files = os.listdir(directory)
             file = directory + "\\" + random.choice(files)
-            await retry_send(bot, event,
-                             MessageSegment.image(file))  # await bot.send(event, MessageSegment.image(file))
+            await retry_send(
+                bot, event, MessageSegment.image(file)
+            )  # await bot.send(event, MessageSegment.image(file))
 
     else:
         await retry_send(bot, event, MessageSegment.text("未查询到卡片"))
 
 
-async def get_send_msg(card: YgoCard, pack: bool = True, desc: bool = True) -> MessageSegment:
+async def get_send_msg(
+    card: YgoCard, pack: bool = True, desc: bool = True
+) -> MessageSegment:
     pack_name = None
     rarity = rarityUtils.get_rarity(card.id)
     urlBase64 = imgUtils.pin_quality(int(card.id), rarity)
@@ -194,7 +204,9 @@ async def get_send_msg(card: YgoCard, pack: bool = True, desc: bool = True) -> M
     msg = MessageSegment.text(f"卡号：{card.id}\n")
     if pack:
         ban_msg = mapper.get_ban_msg(card.id)
-        msg += MessageSegment.text(f"发售时间：{sale_time}\n{ban_msg}卡包号：{pack_name}\n{card.name}\n")
+        msg += MessageSegment.text(
+            f"发售时间：{sale_time}\n{ban_msg}卡包号：{pack_name}\n{card.name}\n"
+        )
     if not rarity:
         msg += MessageSegment.text("暂未登录MD")
     msg += MessageSegment.image(urlBase64)
@@ -255,25 +267,28 @@ async def master_duel_push_img_rev(bot: Bot, event: MessageEvent, state: T_State
     print("22222")
     card_id = event.get_plaintext().strip().split(" ")[-1].strip()
     if card_id:
-        state['card_id'] = card_id
+        state["card_id"] = card_id
         ygoCard = mapper.get_card_info_by_id(int(card_id))
         if not ygoCard:
             await bot.send(event=event, message="没有找到这张卡")
-            state['img'] = "None"
+            state["img"] = "None"
             return
 
 
 @master_duel_push_img.got("img", prompt="图呢？")
 async def master_duel_push_img_got(bot: Bot, event: MessageEvent, state: T_State):
-    if state['img'] == "None":
+    if state["img"] == "None":
         return
     msg = event.get_message()
-    card_id = state['card_id']
+    card_id = state["card_id"]
     try:
         if msg[0].type == "image":
             url = msg[0].data["url"]  # 图片链接
-            imgUtils.down_img(f"{nonebot_plugin_masterduel_img_dir}\\{card_id}\\", url,
-                              f"{random.randint(1, 10000000)}.jpg")
+            imgUtils.down_img(
+                f"{nonebot_plugin_masterduel_img_dir}\\{card_id}\\",
+                url,
+                f"{random.randint(1, 10000000)}.jpg",
+            )
             await bot.send(event=event, message="上传成功！")
     except Exception as e:
         await bot.send(event=event, message="错误的上传图片")
@@ -313,14 +328,16 @@ async def cai_ding_rev(bot: Bot, event: Event):
         htmlStr = get_cai_ding_html(ygoCard.id)
         pngName = f"{os.getcwd()}\\{random.randint(1, 99999999999)}.png"
         imgUtils.screenshot(htmlStr, pngName)
-        await bot.send(event=event, message=messageSegment + MessageSegment.image(pngName))
+        await bot.send(
+            event=event, message=messageSegment + MessageSegment.image(pngName)
+        )
         os.remove(pngName)
     else:
         await bot.send(event=event, message="请输入正确的卡密")
 
 
 def chunk_string(s, chunk_size):
-    return [s[i:i + chunk_size] for i in range(0, len(s), chunk_size)]
+    return [s[i : i + chunk_size] for i in range(0, len(s), chunk_size)]
 
 
 card_pack = on_regex(pattern="^卡包")
@@ -379,10 +396,15 @@ async def cai_card_rev(bot: Bot, event: Event):
                 return cmd[2:].strip(), user_info.user_id, user_info.user_name
 
         async for resp in check(timeout=100, retry=4, prompt="错误喔，请仔细看看捏"):
-
             if resp is None:
                 try:
-                    await retry_send(bot, event, MessageSegment.text("上述题目已失效 全部回答错误！！！公布答案"))
+                    await retry_send(
+                        bot,
+                        event,
+                        MessageSegment.text(
+                            "上述题目已失效 全部回答错误！！！公布答案"
+                        ),
+                    )
                     ygoCard = get_card_info_by_id(cardId)
                     await send_card(bot, event, ygoCard, pack=False, desc=False)
                 finally:
@@ -392,7 +414,11 @@ async def cai_card_rev(bot: Bot, event: Event):
             cmd_, user_id, user_name = resp
 
             if resp == ("下一题", 1, 1):
-                await retry_send(bot, event, MessageSegment.text("上述题目已失效 全部回答错误！！！公布答案"))
+                await retry_send(
+                    bot,
+                    event,
+                    MessageSegment.text("上述题目已失效 全部回答错误！！！公布答案"),
+                )
                 ygoCard = get_card_info_by_id(cardId)
                 await send_card(bot, event, ygoCard, pack=False, desc=False)
                 raise Exception("下一题")
@@ -405,12 +431,19 @@ async def cai_card_rev(bot: Bot, event: Event):
                     pass
                 if int(ygoCard.id) == int(cardId):
                     mapper.ygo_rank_add(int(user_id), user_name)
-                    await retry_send(bot, event,
-                                     MessageSegment.text(f"牛逼啊，回答正确了 积分+1  输入\"游戏王高手排名\" 查看排名"),
-                                     user_id)
+                    await retry_send(
+                        bot,
+                        event,
+                        MessageSegment.text(
+                            f'牛逼啊，回答正确了 积分+1  输入"游戏王高手排名" 查看排名'
+                        ),
+                        user_id,
+                    )
                     break
         else:
-            await retry_send(bot, event, MessageSegment.text("全部回答错误！！！公布答案"))
+            await retry_send(
+                bot, event, MessageSegment.text("全部回答错误！！！公布答案")
+            )
             ygoCard = get_card_info_by_id(cardId)
             try:
                 await send_card(bot, event, ygoCard, pack=False, desc=False)
@@ -460,9 +493,16 @@ async def retry_send(bot: Bot, event: Event, msg: MessageSegment, user_id: int =
 
 
 # 合并消息
-async def send_forward_msg_group(bot: Bot, event: GroupMessageEvent, name: str, msgs: list):
+async def send_forward_msg_group(
+    bot: Bot, event: GroupMessageEvent, name: str, msgs: list
+):
     def to_json(msg):
-        return {"type": "node", "data": {"name": name, "uin": bot.self_id, "content": msg}}
+        return {
+            "type": "node",
+            "data": {"name": name, "uin": bot.self_id, "content": msg},
+        }
 
     messages = [to_json(msg) for msg in msgs]
-    await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=messages)
+    await bot.call_api(
+        "send_group_forward_msg", group_id=event.group_id, messages=messages
+    )

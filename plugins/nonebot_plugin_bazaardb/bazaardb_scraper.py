@@ -21,38 +21,38 @@ import re
 import sys
 from typing import Optional
 from urllib.parse import quote
-from playwright.async_api import async_playwright
 
+from playwright.async_api import async_playwright
 
 # ─────────────────────────────────────────────
 # 词条颜色映射
 # ─────────────────────────────────────────────
 ENCHANT_THEME = {
-    "黄金":   "enc-golden",
-    "沉重":   "enc-slow",
-    "寒冰":   "enc-freeze",
-    "疾速":   "enc-haste",
-    "护盾":   "enc-shield",
-    "回复":   "enc-heal",
-    "毒素":   "enc-poison",
-    "炽焰":   "enc-burn",
-    "闪亮":   "enc-charge",
-    "致命":   "enc-crit",
-    "辉耀":   "enc-radiant",
-    "长青":   "enc-evergreen",
+    "黄金": "enc-golden",
+    "沉重": "enc-slow",
+    "寒冰": "enc-freeze",
+    "疾速": "enc-haste",
+    "护盾": "enc-shield",
+    "回复": "enc-heal",
+    "毒素": "enc-poison",
+    "炽焰": "enc-burn",
+    "闪亮": "enc-charge",
+    "致命": "enc-crit",
+    "辉耀": "enc-radiant",
+    "长青": "enc-evergreen",
 }
 
 HIGHLIGHT_RULES = [
-    (r"(减速)",       "kw-slow"),
-    (r"(冻结)",       "kw-freeze"),
-    (r"(加速)",       "kw-haste"),
-    (r"(护盾)",       "kw-shield"),
-    (r"(治疗)",       "kw-heal"),
-    (r"(剧毒)",       "kw-poison"),
-    (r"(灼烧)",       "kw-burn"),
-    (r"(充能)",       "kw-charge"),
-    (r"(暴击率)",     "kw-crit"),
-    (r"(伤害)",       "kw-dmg"),
+    (r"(减速)", "kw-slow"),
+    (r"(冻结)", "kw-freeze"),
+    (r"(加速)", "kw-haste"),
+    (r"(护盾)", "kw-shield"),
+    (r"(治疗)", "kw-heal"),
+    (r"(剧毒)", "kw-poison"),
+    (r"(灼烧)", "kw-burn"),
+    (r"(充能)", "kw-charge"),
+    (r"(暴击率)", "kw-crit"),
+    (r"(伤害)", "kw-dmg"),
     (r"(生命再生量)", "kw-life"),
     (r"(\d+(?:\.\d+)?%?)", "kw-val"),
 ]
@@ -78,37 +78,37 @@ def enchant_theme(name: str) -> str:
 
 # 词条英文名 → 中文名映射
 ENCHANT_NAME_MAP = {
-    "Golden":      "黄金",
-    "Heavy":       "沉重",
-    "Icy":         "寒冰",
-    "Turbo":       "疾速",
-    "Shielded":    "护盾",
+    "Golden": "黄金",
+    "Heavy": "沉重",
+    "Icy": "寒冰",
+    "Turbo": "疾速",
+    "Shielded": "护盾",
     "Restorative": "回复",
-    "Toxic":       "毒素",
-    "Fiery":       "炽焰",
-    "Shiny":       "闪亮",
-    "Deadly":      "致命",
-    "Radiant":     "辉耀",
-    "Obsidian":    "黑曜",
-    "Mossy":       "长青",
+    "Toxic": "毒素",
+    "Fiery": "炽焰",
+    "Shiny": "闪亮",
+    "Deadly": "致命",
+    "Radiant": "辉耀",
+    "Obsidian": "黑曜",
+    "Mossy": "长青",
 }
 
 # 英雄英文名 → 中文名映射
 HERO_NAME_MAP = {
-    "Dooley":    "杜利",
+    "Dooley": "杜利",
     "Pygmalien": "皮格马利翁",
-    "Stelle":    "斯黛尔",
-    "Jules":     "朱尔斯",
-    "Mak":       "马克",
-    "Vanessa":   "凡妮莎",
-    "Common":    "",
+    "Stelle": "斯黛尔",
+    "Jules": "朱尔斯",
+    "Mak": "马克",
+    "Vanessa": "凡妮莎",
+    "Common": "",
 }
 
 # 品质档位英文 → 中文
 TIER_NAME_MAP = {
-    "Bronze":  "青铜",
-    "Silver":  "白银",
-    "Gold":    "黄金",
+    "Bronze": "青铜",
+    "Silver": "白银",
+    "Gold": "黄金",
     "Diamond": "钻石",
     "Legendary": "传奇",
 }
@@ -139,7 +139,9 @@ def resolve_tooltip_value(replacement_spec: dict, tier: Optional[str] = None) ->
     return " » ".join(parts) if parts else "?"
 
 
-def render_tooltip_text(text: str, replacements: dict, tier: Optional[str] = None) -> str:
+def render_tooltip_text(
+    text: str, replacements: dict, tier: Optional[str] = None
+) -> str:
     """将 tooltip 模板文本中的占位符替换为实际数值。"""
     for placeholder, spec in replacements.items():
         # 跳过 .targets 类型的占位符（目标数量，通常不显示在描述里）
@@ -280,12 +282,14 @@ def parse_monster_card(raw: dict) -> dict:
     # 携带物品
     items = []
     for board_item in meta.get("board", []):
-        items.append({
-            "name": board_item.get("title", ""),
-            "img_src": board_item.get("art", ""),
-            "img_blur": board_item.get("artBlur", ""),
-            "url": f"https://bazaardb.gg{board_item.get('url', '')}",
-        })
+        items.append(
+            {
+                "name": board_item.get("title", ""),
+                "img_src": board_item.get("art", ""),
+                "img_blur": board_item.get("artBlur", ""),
+                "url": f"https://bazaardb.gg{board_item.get('url', '')}",
+            }
+        )
 
     img_src = raw.get("Art", "")
     img_blur = raw.get("ArtBlur", "")
@@ -309,7 +313,7 @@ def _extract_json_array(text: str, key: str) -> list[dict]:
     """
     在 text 中找到 '"<key>":[' 并用括号匹配提取完整 JSON 数组。
     """
-    search = f'"{key}":['  
+    search = f'"{key}":['
     pc_idx = text.find(search)
     if pc_idx < 0:
         return []
@@ -354,13 +358,13 @@ def extract_page_cards_from_html(html: str, category: str = "items") -> list[dic
     # "cards" 需要精确匹配 "cards":[{"Id": 避免匹配到 UI 渲染数据里的 tag 描述
     if category == "monsters":
         field_candidates = [
-            ("cards",     '"cards":[{"Id":'),
+            ("cards", '"cards":[{"Id":'),
             ("pageCards", '"pageCards":'),
         ]
     else:
         field_candidates = [
             ("pageCards", '"pageCards":'),
-            ("cards",     '"cards":[{"Id":'),
+            ("cards", '"cards":[{"Id":'),
         ]
 
     for field_key, search_pattern in field_candidates:
@@ -389,8 +393,8 @@ def build_item_card(item: dict) -> str:
         theme = enchant_theme(enc["name"])
         enc_cells += f"""
         <div class="enchant-cell {theme}">
-          <div class="enchant-name">{enc['name']}</div>
-          <div class="enchant-desc">{highlight(enc['description'])}</div>
+          <div class="enchant-name">{enc["name"]}</div>
+          <div class="enchant-desc">{highlight(enc["description"])}</div>
         </div>"""
 
     type_tags_html = ""
@@ -415,25 +419,29 @@ def build_item_card(item: dict) -> str:
     passive_skills = item.get("passive_skills", [])
     passive_html = ""
     for skill in passive_skills:
-        passive_html += f'<div class="skill-line skill-passive">{highlight(skill)}</div>'
+        passive_html += (
+            f'<div class="skill-line skill-passive">{highlight(skill)}</div>'
+        )
 
     skills_html = active_html + passive_html
     if not skills_html:
         desc = item.get("description", "")
         if desc:
-            skills_html = f'<div class="skill-line skill-passive">{highlight(desc)}</div>'
+            skills_html = (
+                f'<div class="skill-line skill-passive">{highlight(desc)}</div>'
+            )
 
     return f"""
   <div class="card item-card">
     <div class="card-header">
       <div class="item-image-wrap">
-        <img class="img-blur" src="{item['img_blur']}" alt="">
-        <img class="img-main" src="{item['img_src']}" alt="{item['name']}">
+        <img class="img-blur" src="{item["img_blur"]}" alt="">
+        <img class="img-main" src="{item["img_src"]}" alt="{item["name"]}">
       </div>
       <div class="item-meta">
         <div class="item-name-row">
-          <span class="item-name">{item['name']}</span>
-          {'<span class="hero-tag">' + item['hero_tag'] + '</span>' if item['hero_tag'] else ''}
+          <span class="item-name">{item["name"]}</span>
+          {'<span class="hero-tag">' + item["hero_tag"] + "</span>" if item["hero_tag"] else ""}
         </div>
         <div class="type-tags">{type_tags_html}</div>
         {cd_html}
@@ -463,7 +471,13 @@ def build_monster_card(monster: dict) -> str:
             xp_line = line
 
     tier = monster.get("tier", "")
-    tier_color_map = {"黄金": "#d4a820", "白银": "#a0b8c8", "青铜": "#c87840", "钻石": "#60d0f0", "传奇": "#e060e0"}
+    tier_color_map = {
+        "黄金": "#d4a820",
+        "白银": "#a0b8c8",
+        "青铜": "#c87840",
+        "钻石": "#60d0f0",
+        "传奇": "#e060e0",
+    }
     tier_color = tier_color_map.get(tier, "#a0a0a0")
 
     items_html = ""
@@ -471,10 +485,10 @@ def build_monster_card(monster: dict) -> str:
         items_html += f"""
         <div class="monster-item-slot">
           <div class="monster-item-img-wrap">
-            <img class="img-blur" src="{it['img_blur']}" alt="">
-            <img class="img-main" src="{it['img_src']}" alt="{it['name']}">
+            <img class="img-blur" src="{it["img_blur"]}" alt="">
+            <img class="img-main" src="{it["img_src"]}" alt="{it["name"]}">
           </div>
-          <div class="monster-item-name">{it['name']}</div>
+          <div class="monster-item-name">{it["name"]}</div>
         </div>"""
 
     return f"""
@@ -482,25 +496,25 @@ def build_monster_card(monster: dict) -> str:
     <div class="monster-header">
       <div class="monster-left">
         <div class="monster-portrait-wrap">
-          <img class="img-blur" src="{monster['img_blur']}" alt="">
-          <img class="img-main" src="{monster['img_src']}" alt="{monster['name']}">
+          <img class="img-blur" src="{monster["img_blur"]}" alt="">
+          <img class="img-main" src="{monster["img_src"]}" alt="{monster["name"]}">
         </div>
         <div class="monster-meta">
           <div class="monster-name-row">
-            <span class="monster-name">{monster['name']}</span>
-            {'<span class="tier-tag" style="color:' + tier_color + ';border-color:' + tier_color + '">' + tier + '</span>' if tier else ''}
+            <span class="monster-name">{monster["name"]}</span>
+            {'<span class="tier-tag" style="color:' + tier_color + ";border-color:" + tier_color + '">' + tier + "</span>" if tier else ""}
           </div>
           <div class="monster-level">{level_line}</div>
           <div class="monster-rewards">
-            {('<span class="reward-gold">⬡ ' + gold_line + '</span>') if gold_line else ''}
-            {('<span class="reward-xp">◆ ' + xp_line + '</span>') if xp_line else ''}
+            {('<span class="reward-gold">⬡ ' + gold_line + "</span>") if gold_line else ""}
+            {('<span class="reward-xp">◆ ' + xp_line + "</span>") if xp_line else ""}
           </div>
         </div>
       </div>
       <div class="monster-right">
         <div class="monster-hp">
           <span class="hp-icon">♥</span>
-          <span class="hp-value">{monster['hp']}</span>
+          <span class="hp-value">{monster["hp"]}</span>
         </div>
         <div class="monster-items-row">{items_html}
         </div>
@@ -807,12 +821,16 @@ async def scrape_and_export(key: str, out_dir: str = "."):
     safe_key = key.replace("/", "_").replace("\\", "_")
     json_path = os.path.join(out_dir, f"bazaardb_{safe_key}.json")
     html_path = os.path.join(out_dir, f"bazaardb_{safe_key}.html")
-    png_path  = os.path.join(out_dir, f"bazaardb_{safe_key}.png")
+    png_path = os.path.join(out_dir, f"bazaardb_{safe_key}.png")
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
-            args=["--no-sandbox", "--disable-blink-features=AutomationControlled", "--disable-dev-shm-usage"],
+            args=[
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+            ],
         )
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -823,8 +841,10 @@ async def scrape_and_export(key: str, out_dir: str = "."):
         # ── 步骤 1 & 2：并行获取物品和怪物数据 ──
         # 数据内嵌在 Next.js Flight <script> 标签里，page.content() 直接读取
         print("[1/3] 获取数据（物品 + 怪物并行）...")
-        items_task    = asyncio.create_task(fetch_via_page_content(context, "items",    key))
-        monsters_task = asyncio.create_task(fetch_via_page_content(context, "monsters", key))
+        items_task = asyncio.create_task(fetch_via_page_content(context, "items", key))
+        monsters_task = asyncio.create_task(
+            fetch_via_page_content(context, "monsters", key)
+        )
         items_raw, monsters_raw = await asyncio.gather(items_task, monsters_task)
 
         # ── 步骤 3：转换数据结构 ──
@@ -835,19 +855,27 @@ async def scrape_and_export(key: str, out_dir: str = "."):
         for raw in items_raw:
             card_type = raw.get("Type", "")
             monster_meta = raw.get("MonsterMetadata")
-            if card_type in MONSTER_TYPES or (monster_meta and monster_meta != "$undefined"):
+            if card_type in MONSTER_TYPES or (
+                monster_meta and monster_meta != "$undefined"
+            ):
                 parsed = parse_monster_card(raw)
             else:
                 parsed = parse_item_card(raw)
                 # 过滤掉没有词条也没有描述的空物品
-                if not parsed["enchantments"] and not parsed["description"] and not parsed["active_skills"]:
+                if (
+                    not parsed["enchantments"]
+                    and not parsed["description"]
+                    and not parsed["active_skills"]
+                ):
                     continue
             all_records.append(parsed)
 
         for raw in monsters_raw:
             card_type = raw.get("Type", "")
             monster_meta = raw.get("MonsterMetadata")
-            if card_type in MONSTER_TYPES or (monster_meta and monster_meta != "$undefined"):
+            if card_type in MONSTER_TYPES or (
+                monster_meta and monster_meta != "$undefined"
+            ):
                 parsed = parse_monster_card(raw)
                 all_records.append(parsed)
 
@@ -868,20 +896,26 @@ async def scrape_and_export(key: str, out_dir: str = "."):
             f.write(html_content)
 
         card_page = await context.new_page()
-        await card_page.goto(f"file://{os.path.abspath(html_path)}", wait_until="domcontentloaded")
+        await card_page.goto(
+            f"file://{os.path.abspath(html_path)}", wait_until="domcontentloaded"
+        )
         try:
             await card_page.wait_for_load_state("networkidle", timeout=12000)
         except Exception:
             pass
         await card_page.wait_for_timeout(800)
 
-        size = await card_page.evaluate("({w: document.body.scrollWidth, h: document.body.scrollHeight})")
-        await card_page.set_viewport_size({"width": size["w"] + 40, "height": size["h"] + 40})
+        size = await card_page.evaluate(
+            "({w: document.body.scrollWidth, h: document.body.scrollHeight})"
+        )
+        await card_page.set_viewport_size(
+            {"width": size["w"] + 40, "height": size["h"] + 40}
+        )
         await card_page.screenshot(path=png_path, full_page=True)
         await card_page.close()
         await browser.close()
 
-    n_items    = len([r for r in all_records if r["type"] == "item"])
+    n_items = len([r for r in all_records if r["type"] == "item"])
     n_monsters = len([r for r in all_records if r["type"] == "monster"])
     print(f"\n✅ 完成！")
     print(f"   JSON : {json_path}")
@@ -892,7 +926,9 @@ async def scrape_and_export(key: str, out_dir: str = "."):
 
 async def main():
     key = sys.argv[1] if len(sys.argv) > 1 else "光纤"
-    out_dir = sys.argv[2] if len(sys.argv) > 2 else os.path.dirname(os.path.abspath(__file__))
+    out_dir = (
+        sys.argv[2] if len(sys.argv) > 2 else os.path.dirname(os.path.abspath(__file__))
+    )
     print(f"搜索关键词: {key}")
     await scrape_and_export(key, out_dir)
 

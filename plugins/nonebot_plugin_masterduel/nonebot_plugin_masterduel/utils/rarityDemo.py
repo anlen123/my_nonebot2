@@ -1,12 +1,13 @@
 import json
 import sqlite3
+
 import requests
 
 
 def set_rarity(sql: str):
     # 连接到 SQLite 数据库
     print(sql)
-    conn = sqlite3.connect('../nonebot_plugin_masterduel.cdb')
+    conn = sqlite3.connect("../nonebot_plugin_masterduel.cdb")
 
     # 创建一个 Cursor 对象，用于执行 SQL 命令
     cursor = conn.cursor()
@@ -30,7 +31,7 @@ def create_rarity():
     """
     # 连接到 SQLite 数据库
     print(sql)
-    conn = sqlite3.connect('../nonebot_plugin_masterduel.cdb')
+    conn = sqlite3.connect("../nonebot_plugin_masterduel.cdb")
 
     # 创建一个 Cursor 对象，用于执行 SQL 命令
     cursor = conn.cursor()
@@ -50,7 +51,9 @@ def delete_rarity():
     """
     # 连接到 SQLite 数据库
     print(sql)
-    conn = sqlite3.connect('/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/nonebot_plugin_masterduel.cdb')
+    conn = sqlite3.connect(
+        "/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/nonebot_plugin_masterduel.cdb"
+    )
 
     # 创建一个 Cursor 对象，用于执行 SQL 命令
     cursor = conn.cursor()
@@ -64,7 +67,7 @@ def delete_rarity():
     conn.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         delete_rarity()
     except:
@@ -74,13 +77,14 @@ if __name__ == '__main__':
     except:
         pass
     resp = requests.get(
-        "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/CardList.json")
-
+        "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/CardList.json"
+    )
 
     cardJson = json.loads(resp.text)
 
     resp = requests.get(
-        "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/YdkIds.txt")
+        "https://raw.githubusercontent.com/pixeltris/YgoMaster/91d3e5f9d58c63bb8c47ef33f1da3a81951139d9/YgoMaster/Data/YdkIds.txt"
+    )
 
     txt = resp.text.split("\n")
 
@@ -103,4 +107,6 @@ if __name__ == '__main__':
                 # print(rarityId)
                 if rarityId:
                     print(rarityId)
-                    set_rarity(f'insert into rarity(id,rarity) values ({int(cardId)},"{rarityId}")')
+                    set_rarity(
+                        f'insert into rarity(id,rarity) values ({int(cardId)},"{rarityId}")'
+                    )
