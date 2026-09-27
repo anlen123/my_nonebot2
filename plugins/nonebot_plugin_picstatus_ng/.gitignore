@@ -1,0 +1,9 @@
+/.vscode/
+/.idea/
+/.run/
+/venv/
+/testnb2/
+.pdm-python
+build/
+__pycache__
+/nonebot_plugin_picstatus_ng/res/picstatus-debug.html

@@ -1,0 +1,193 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/python
+# Edit at https://www.toptal.com/developers/gitignore?templates=python
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+pytestdebug.log
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+doc/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.*
+!.env.example
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# End of https://www.toptal.com/developers/gitignore/api/python
+accounts/
+
+data/images
+data/leveldb-v3
+data/videos
+gocq
+/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/img/card_dir/
+/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/img/cai/
+.env.dev
+/picture/card
+
+# ── 运行期生成物（不入库）──────────────────────────────────────────────────────
+# 巴扎卡牌库缓存：过期自动重拉，没必要进版本库
+/plugins/bazaardb/cache/
+# AI 早报每天生成的图片与去重记录
+/data/ai_news/*.png
+/data/ai_news/run_now
+/data/ai_news/run_now.stamp
+/data/ai_news/seen.json
+# 记事本插件的用户数据
+/data/note/
+# claude_claw 的会话库与调试残留
+/plugins/claude_claw/claw_sessions.db
+/claw_test1.json
+# 聊天记录数据库（运行期生成，含隐私内容，不入库）
+/chat_history.db
+/chat_gemini_history.db
+# 词云脚本的默认输出图
+/plugins/bilibili_live/wordcloud.png
+
+# ── 以下为 2026-09-27 重建为「纯代码库」时新增 ──────────────────────────────
+# 运行数据（AI 早报图片、记事本、宝可梦等用户数据）
+/data/
+# 卡牌图片缓存（运行期下载，不入库）
+/picture/
+/plugins/nonebot_plugin_masterduel/nonebot_plugin_masterduel/img/
+# 插件数据库（体积大，按需自行下载）
+*.db
+*.cdb
+# 渲染字体（本机自带 simsun.ttc，不入库）
+simsun.ttc
+*.ttc
+# 日志与会话
+*.log
+bot.log
+*.session
+# IDE 配置
+/.idea/
+/.vscode/
+

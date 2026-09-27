@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "my_nonebot2"
+version = "0.1.0"
+description = "基于 nonebot2 + OneBot v11 的 QQ 机器人"
+authors = []
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+nonebot2 = "^2.4.0"
+nonebot-adapter-onebot = "^2.4.0"
+nonebot-plugin-apscheduler = "^0.5.0"
+
+[tool.poetry.group.dev.dependencies]
+nb-cli = "^1.0.0"
+
+# 插件全部由 bot.py 显式加载（见那里的 PLUGINS 元组），这里不放开目录扫描，
+# 否则 `nb run` 会和 bot.py 重复加载同一批插件。
+[tool.nonebot]
+plugin_dirs = []
+adapters = [
+    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" }
+]
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

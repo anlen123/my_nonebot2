@@ -1,0 +1,13 @@
+# 使用 gitignore 语法：先忽略全部，再按需放开
+*
+
+!.github/**
+!.pre-commit-config.yaml
+!justfile
+!.gitignore
+!cliff.toml
+
+# 不同步模板初始化工作流与仓库本地指令
+.github/workflows/initialize.yml
+.github/instructions/**
+
