@@ -95,4 +95,11 @@ def load_config() -> dict[str, Any]:
         nonebot.logger.warning(f"[bilibili_live] BILIBILI_LIVE_INTERVAL 非法，回落 60 秒：{exc}")
         interval = 60
 
-    return {"bilibili_live_uids": uids, "bilibili_live_interval": interval}
+    # BILIBILI_SESSDATA：弹幕历史接口在境外出口下必须带登录态才返回内容（匿名恒 0 条）
+    sessdata = raw.get("BILIBILI_SESSDATA", os.environ.get("BILIBILI_SESSDATA", "")).strip()
+
+    return {
+        "bilibili_live_uids": uids,
+        "bilibili_live_interval": interval,
+        "bilibili_live_sessdata": sessdata,
+    }

@@ -19,9 +19,12 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import json
 import os
+import time
 from collections import Counter
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Optional, TypedDict
 
 import aiohttp
@@ -50,6 +53,8 @@ from nonebot_plugin_apscheduler import scheduler
 _cfg = load_config()
 UIDS: dict[str, list[dict[str, Any]]] = _cfg["bilibili_live_uids"]
 INTERVAL: int = _cfg["bilibili_live_interval"]
+# 弹幕历史接口在「出口在境外」的情况下，匿名请求恒返回 0 条，带上登录态才会给内容
+SESSDATA: str = _cfg.get("bilibili_live_sessdata", "")
 
 # ── B 站接口 ──────────────────────────────────────────────────────────────────
 ROOM_INFO_URL = "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld"
@@ -84,6 +89,11 @@ HEADERS = {
     "Referer": "https://live.bilibili.com",
 }
 
+# 取弹幕要带登录态：本机出口在境外，匿名请求弹幕历史恒为 0 条，带上 SESSDATA 才有内容
+DANMAKU_HEADERS = dict(HEADERS)
+if SESSDATA:
+    DANMAKU_HEADERS["Cookie"] = f"SESSDATA={SESSDATA}"
+
 # ── 运行时状态 ────────────────────────────────────────────────────────────────
 # 上一轮轮询到的开播状态，用来识别开播/下播跳变
 live_status: dict[str, bool] = {uid: False for uid in UIDS}
@@ -116,16 +126,145 @@ last_live_session: dict[str, dict[str, Any]] = {}
 offline_streak: dict[str, int] = {}
 
 
+# ── 状态落盘 ──────────────────────────────────────────────────────────────────
+# 机器人重启（或崩溃）时内存里的会话就没了；把在场次状态写到 data/ 下，
+# 重启回来后接着算时长与弹幕统计。data/ 已被 .gitignore 覆盖，不会入库。
+STATE_FILE = Path("data") / "bilibili_live_state.json"
+STATE_VERSION = 1
+DANMAKU_TEXT_KEEP = 2000     # 落盘时最多保留多少条弹幕原文（供词云）
+SEEN_DANMAKU_KEEP = 5000     # 落盘时最多保留多少条去重键
+COUNTER_KEEP = 300           # 落盘时最多保留多少个发言用户（按条数取前列）
+STATE_SAVE_MIN_GAP = 20.0    # 两次落盘的最小间隔（秒），避免高频写盘
+
+_last_state_save: float = 0.0
+
+
+def _state_path() -> Path:
+    """状态文件路径；以仓库根目录为基准（插件运行时的当前目录就是仓库根）。"""
+    return Path.cwd() / STATE_FILE
+
+
+def _session_to_state(session: Any, live: bool, ended_at: Optional[datetime]) -> dict[str, Any]:
+    """把一个会话转成可 JSON 化的结构。"""
+    counter = session.get("danmaku_counter") or Counter()
+    top_counter = dict(counter.most_common(COUNTER_KEEP))
+    return {
+        "live": live,
+        "start_time": session["start_time"].isoformat(),
+        "room_id": session.get("room_id", ""),
+        "uname": session.get("uname", ""),
+        "fans_start": int(session.get("fans_start") or 0),
+        "danmaku_counter": top_counter,
+        "danmaku_texts": list(session.get("danmaku_texts") or [])[-DANMAKU_TEXT_KEEP:],
+        "seen_danmaku": sorted(session.get("seen_danmaku") or set())[-SEEN_DANMAKU_KEEP:],
+        "online_samples": [list(item) for item in (session.get("online_samples") or [])][-MAX_ONLINE_SAMPLES:],
+        "ended_at": ended_at.isoformat() if ended_at else None,
+    }
+
+
+def _state_to_session(raw: dict[str, Any], ended_at: datetime) -> dict[str, Any]:
+    """把落盘的结构还原成内存中的会话（含续接所需的 ended_at）。"""
+    counter = Counter(
+        {str(name): int(count) for name, count in (raw.get("danmaku_counter") or {}).items()}
+    )
+    samples = [
+        (str(label), int(value))
+        for label, value in (raw.get("online_samples") or [])
+        if isinstance(label, str)
+    ]
+    return {
+        "start_time": datetime.fromisoformat(raw["start_time"]),
+        "room_id": raw.get("room_id", ""),
+        "uname": raw.get("uname", ""),
+        "fans_start": int(raw.get("fans_start") or 0),
+        "danmaku_counter": counter,
+        "seen_danmaku": set(raw.get("seen_danmaku") or []),
+        "danmaku_texts": [str(text) for text in (raw.get("danmaku_texts") or [])],
+        "online_samples": samples,
+        "last_hourly_notify": datetime.now(),
+        "resumed": False,
+        "ended_at": ended_at,
+    }
+
+
+def _save_state(force: bool = False) -> None:
+    """把当前的直播中会话与下播快照写到磁盘；任何异常都只记日志，不影响直播监控。"""
+    global _last_state_save
+    now = time.monotonic()
+    if not force and now - _last_state_save < STATE_SAVE_MIN_GAP:
+        return
+    _last_state_save = now
+    try:
+        sessions: dict[str, Any] = {}
+        for uid, session in live_session.items():
+            sessions[uid] = _session_to_state(session, live=True, ended_at=None)
+        for uid, snapshot in last_live_session.items():
+            if uid in sessions:
+                continue
+            sessions[uid] = _session_to_state(
+                snapshot, live=False, ended_at=snapshot.get("ended_at")
+            )
+        payload = {"version": STATE_VERSION, "saved_at": datetime.now().isoformat(), "sessions": sessions}
+        path = _state_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as exc:  # noqa: BLE001 — 落盘失败不该影响直播监控本身
+        nonebot.logger.warning(f"[bilibili_live] 状态落盘失败：{type(exc).__name__} {exc}")
+
+
+def _load_state() -> None:
+    """启动时读回落盘状态，让重启前后算同一场直播（时长与弹幕统计接着累加）。"""
+    path = _state_path()
+    if not path.exists():
+        return
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        saved_at = datetime.fromisoformat(payload.get("saved_at")) if payload.get("saved_at") else datetime.now()
+        restored_live = restored_ended = dropped = 0
+        for uid, raw in (payload.get("sessions") or {}).items():
+            if not isinstance(raw, dict) or not raw.get("start_time"):
+                continue
+            try:
+                if raw.get("live"):
+                    # 停机前还在直播：以落盘时间为「上次结束时间」，重启后照常续接
+                    last_live_session[uid] = _state_to_session(raw, saved_at)
+                    restored_live += 1
+                else:
+                    ended_at = datetime.fromisoformat(raw["ended_at"]) if raw.get("ended_at") else saved_at
+                    if (datetime.now() - ended_at).total_seconds() > RESUME_WINDOW_SECONDS:
+                        dropped += 1
+                        continue
+                    last_live_session[uid] = _state_to_session(raw, ended_at)
+                    restored_ended += 1
+            except (KeyError, ValueError, TypeError) as exc:
+                nonebot.logger.warning(f"[bilibili_live] 状态里 uid={uid} 的记录读不动，跳过：{exc}")
+        if restored_live or restored_ended or dropped:
+            nonebot.logger.info(
+                f"[bilibili_live] 已恢复落盘状态：在场次 {restored_live} 个、"
+                f"可续接的旧场次 {restored_ended} 个、过期丢弃 {dropped} 个"
+            )
+    except Exception as exc:  # noqa: BLE001
+        nonebot.logger.warning(f"[bilibili_live] 读回落盘状态失败：{type(exc).__name__} {exc}")
+
+
+_load_state()
+
+
 # ── B 站接口 ──────────────────────────────────────────────────────────────────
-async def _fetch_data(url: str, params: dict[str, Any], label: str) -> Any:
+async def _fetch_data(
+    url: str,
+    params: dict[str, Any],
+    label: str,
+    headers: Optional[dict[str, str]] = None,
+) -> Any:
     """GET 一个 B 站接口，返回响应里的 data 字段；失败只记日志并返回 None。
 
     label 用于日志定位（带上 uid / room_id）；接口返回 code != 0 也算失败。
     走 direct_net 的直连会话并自带重试 —— 这台机器到 B 站的握手时好时坏，
-    单次失败不代表对方挂了。
+    单次失败不代表对方挂了。headers 不给就用默认请求头。
     """
     try:
-        payload = await direct_net.fetch_json(url, params, HEADERS, REQUEST_TIMEOUT)
+        payload = await direct_net.fetch_json(url, params, headers or HEADERS, REQUEST_TIMEOUT)
     except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as exc:
         nonebot.logger.warning(f"[bilibili_live] {label} 请求失败（已重试）：{exc}")
         return None
@@ -155,11 +294,15 @@ async def fetch_user_card(uid: str) -> tuple[str, int]:
 
 
 async def fetch_danmaku_with_user(room_id: int) -> list[tuple[str, str]]:
-    """取最近的弹幕历史，返回 [(用户名, 弹幕原文), ...]，只保留有内容的弹幕。"""
+    """取最近的弹幕历史，返回 [(用户名, 弹幕原文), ...]，只保留有内容的弹幕。
+
+    必须带 SESSDATA：同一台机器、同一个房间，匿名请求固定 0 条，登录态才有数据。
+    """
     data = await _fetch_data(
         DANMAKU_URL,
         {"roomid": room_id, "csrf_token": "", "csrf": "", "visit_id": ""},
         f"fetch_danmaku room={room_id}",
+        DANMAKU_HEADERS,
     )
     if not isinstance(data, dict):
         return []
@@ -458,6 +601,7 @@ async def on_live_end(uid: str, info: dict[str, Any]) -> None:
             nonebot.logger.warning(f"[bilibili_live] uid={uid} 在线人数折线图渲染失败，跳过")
 
     await notify_groups(UIDS.get(uid, []), messages, at_all=False)
+    _save_state(force=True)
     nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 下播")
 
 
@@ -585,6 +729,8 @@ async def poll_live_status() -> None:
 
         await _process_transition(uid, info, is_live)
 
+    # 轮询结束后落盘一次：重启回来还能接着算这一场的时长与弹幕
+    _save_state()
     nonebot.logger.debug("[bilibili_live] 本轮轮询结束")
 
 
