@@ -1,9 +1,10 @@
 """bilibili_live —— B 站直播监控插件
 
 功能：
-  * 开播通知：封面图 + 标题 + 直播间链接（可按群配置 @全体）；
+  * 开播通知：一张可爱卡片图（封面 + UP 主 + 标题 + 在线人数 + 直播间链接，可按群配置 @全体）；
   * 下播通知：UP 主、时长、粉丝数变化、弹幕排行榜与词云图；
-  * 直播中每小时播报：已播时长、当前在线人数、直播间链接。
+  * 直播中每小时播报：已播时长、当前在线人数、直播间链接；
+  * 群聊「开播」关键词：先回一条 td，再把本群配置里正在直播的 UP 主逐个按开播通知发出来。
 
 配置（.env.dev / .env.prod）：
   BILIBILI_LIVE_UIDS={"uid": [{"groupId": "群号", "isAtAll": true}]}   # 也兼容 ["群号", ...] 旧写法
@@ -18,6 +19,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import os
 from collections import Counter
 from datetime import datetime
 from typing import Any, Optional, TypedDict
@@ -25,9 +27,20 @@ from typing import Any, Optional, TypedDict
 import aiohttp
 import nonebot
 from nonebot import require
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    GroupMessageEvent,
+    Message,
+    MessageEvent,
+    MessageSegment,
+)
+from nonebot.plugin import on_message
+from nonebot.rule import Rule
 
+from . import direct_net
 from .config import load_config
+from .live_card import build_hourly_card, build_live_card
+from .online_chart import build_online_chart
 from .wordcloud_generator import build_wordcloud_from_texts
 
 require("nonebot_plugin_apscheduler")
@@ -47,6 +60,20 @@ REQUEST_TIMEOUT = 10    # 单次接口请求超时（秒）
 COVER_TIMEOUT = 15      # 封面图下载超时（秒）
 SEND_GAP = 0.5          # 同一条通知发给多个群之间的间隔（秒），避免撞上风控
 HOURLY_REPORT_SECONDS = 3600   # 直播中每小时播报的间隔（秒）
+
+# 下播后在多少秒内重新开播算「同一场」：时长与弹幕统计续接，不从头再来（默认 30 分钟）
+RESUME_WINDOW_SECONDS = int(os.environ.get("BILIBILI_LIVE_RESUME_WINDOW", "1800"))
+# 连续几轮没在播才认定真下播：接口抖动一次就切场的话，时长和榜单会被切碎（默认 2 轮）
+OFFLINE_CONFIRM_POLLS = int(os.environ.get("BILIBILI_LIVE_OFFLINE_CONFIRM", "2"))
+# 在线人数采样点上限，超长直播（十几小时）也只会占这点内存
+MAX_ONLINE_SAMPLES = 2000
+
+# ── 群聊「开播」关键词 ────────────────────────────────────────────────────────
+OPENLIVE_KEYWORD = "开播"       # 群聊消息里出现这两个字就触发
+OPENLIVE_REPLY = "td"          # 触发后先回的一条纯文本（小写）
+OPENLIVE_PRIORITY = 5          # 越小越先拿到消息；不阻断后续匹配器
+OPENLIVE_NOTIFY_WHEN_EMPTY = False   # 本群没配置 / 没有在播的 UP 主时，是否也回一句
+OPENLIVE_RETRIES = 3                 # 手动查询的重试次数（B 站接口偶发握手失败，手动查询只打一次）
 
 HEADERS = {
     "User-Agent": (
@@ -76,9 +103,17 @@ class LiveSession(TypedDict):
     seen_danmaku: set[str]          # "用户名:弹幕原文" 去重键
     danmaku_texts: list[str]        # 弹幕原文，供词云使用
     last_hourly_notify: datetime
+    online_samples: list[tuple[str, int]]   # [(HH:MM, 在线人数), ...]，下播折线图用
+    resumed: bool                   # 是否是续接上一场（只影响日志措辞）
 
 
 live_session: dict[str, LiveSession] = {}
+
+# 上一场结束后的快照：短时间内重新开播要续接时长与弹幕统计，见 _open_session
+last_live_session: dict[str, dict[str, Any]] = {}
+
+# 「连续几轮没在播」的计数，用于把瞬时抖动和真下播区分开
+offline_streak: dict[str, int] = {}
 
 
 # ── B 站接口 ──────────────────────────────────────────────────────────────────
@@ -86,15 +121,13 @@ async def _fetch_data(url: str, params: dict[str, Any], label: str) -> Any:
     """GET 一个 B 站接口，返回响应里的 data 字段；失败只记日志并返回 None。
 
     label 用于日志定位（带上 uid / room_id）；接口返回 code != 0 也算失败。
+    走 direct_net 的直连会话并自带重试 —— 这台机器到 B 站的握手时好时坏，
+    单次失败不代表对方挂了。
     """
     try:
-        async with aiohttp.ClientSession(headers=HEADERS) as session:
-            async with session.get(
-                url, params=params, timeout=aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)
-            ) as response:
-                payload = await response.json(content_type=None)
+        payload = await direct_net.fetch_json(url, params, HEADERS, REQUEST_TIMEOUT)
     except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as exc:
-        nonebot.logger.warning(f"[bilibili_live] {label} 请求失败：{exc}")
+        nonebot.logger.warning(f"[bilibili_live] {label} 请求失败（已重试）：{exc}")
         return None
     if not isinstance(payload, dict) or payload.get("code") != 0:
         nonebot.logger.warning(f"[bilibili_live] {label} 返回异常：{str(payload)[:120]}")
@@ -139,15 +172,11 @@ async def fetch_danmaku_with_user(room_id: int) -> list[tuple[str, str]]:
 
 async def fetch_cover_base64(url: str) -> Optional[str]:
     """把封面图下载成 base64 —— QQ 不认 B 站的图片直链，只能自己下回来发。"""
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                url, timeout=aiohttp.ClientTimeout(total=COVER_TIMEOUT)
-            ) as response:
-                return base64.b64encode(await response.read()).decode()
-    except (aiohttp.ClientError, asyncio.TimeoutError) as exc:
-        nonebot.logger.warning(f"[bilibili_live] 下载封面失败：{exc}")
+    data = await direct_net.fetch_bytes(url, HEADERS, COVER_TIMEOUT)
+    if data is None:
+        nonebot.logger.warning("[bilibili_live] 下载封面失败（已重试）")
         return None
+    return base64.b64encode(data).decode()
 
 
 # ── 文案格式 ──────────────────────────────────────────────────────────────────
@@ -217,35 +246,118 @@ async def notify_groups(
 
 
 # ── 会话 ──────────────────────────────────────────────────────────────────────
-def _open_session(uid: str, info: dict[str, Any], uname: str, fans: int) -> None:
-    """开播（或插件启动时已经在播）时建会话，供下播汇总与每小时播报使用。"""
+def _record_online(session: Any, online: Any) -> None:
+    """记一个在线人数采样点，供下播折线图使用；同一分钟同一数值不重复记。"""
+    try:
+        value = int(online)
+    except (TypeError, ValueError):
+        return
+    if value < 0:
+        return
+    samples: list[tuple[str, int]] = session.setdefault("online_samples", [])
+    label = datetime.now().strftime("%H:%M")
+    if samples and samples[-1] == (label, value):
+        return
+    samples.append((label, value))
+    if len(samples) > MAX_ONLINE_SAMPLES:
+        del samples[: len(samples) - MAX_ONLINE_SAMPLES]
+
+
+def _open_session(
+    uid: str,
+    info: dict[str, Any],
+    uname: str,
+    fans: int,
+    *,
+    allow_resume: bool = True,
+) -> bool:
+    """开播（或插件启动时已经在播）时建会话，供下播汇总与每小时播报使用。
+
+    如果这个 uid 刚下播不久（RESUME_WINDOW_SECONDS 内）又重新开播 —— 主播下播喘口气
+    又开、或接口抖了一下 —— 就续接上一场的时长与弹幕统计，不从头再来。
+    返回 True 表示这次是续接。
+    """
+    now = datetime.now()
+    previous = last_live_session.pop(uid, None) if allow_resume else None
+    if previous:
+        gap = (now - previous["ended_at"]).total_seconds()
+        if gap <= RESUME_WINDOW_SECONDS:
+            start_time = previous.get("start_time", now)
+            live_session[uid] = {
+                "start_time": start_time,
+                "room_id": info.get("roomid") or previous.get("room_id", ""),
+                "uname": uname,
+                "fans_start": previous.get("fans_start", fans),
+                "danmaku_counter": previous.get("danmaku_counter", Counter()),
+                "seen_danmaku": previous.get("seen_danmaku", set()),
+                "danmaku_texts": previous.get("danmaku_texts", []),
+                "online_samples": previous.get("online_samples", []),
+                "last_hourly_notify": now,
+                "resumed": True,
+            }
+            _record_online(live_session[uid], info.get("online"))
+            nonebot.logger.info(
+                f"[bilibili_live] uid={uid} ({uname}) 距上次下播 {int(gap)}s，续接同一场："
+                f"已播 {fmt_duration(int((now - start_time).total_seconds()))}，"
+                f"已有弹幕 {sum(live_session[uid]['danmaku_counter'].values())} 条"
+            )
+            return True
+        nonebot.logger.info(
+            f"[bilibili_live] uid={uid} 距上次下播 {int(gap)}s"
+            f"（超过 {RESUME_WINDOW_SECONDS}s），算作新的一场"
+        )
+
     live_session[uid] = {
-        "start_time": datetime.now(),
+        "start_time": now,
         "room_id": info.get("roomid", ""),
         "uname": uname,
         "fans_start": fans,
         "danmaku_counter": Counter(),
         "seen_danmaku": set(),
         "danmaku_texts": [],
-        "last_hourly_notify": datetime.now(),
+        "last_hourly_notify": now,
+        "online_samples": [],
+        "resumed": False,
     }
+    _record_online(live_session[uid], info.get("online"))
+    return False
 
 
 # ── 开播 / 下播 ───────────────────────────────────────────────────────────────
-async def on_live_start(uid: str, info: dict[str, Any]) -> None:
-    """开播通知：封面图 + 标题 + 直播间链接。"""
-    uname, fans = await fetch_user_card(uid)
-    _open_session(uid, info, uname, fans)
+async def build_live_notice(uid: str, info: dict[str, Any], uname: str) -> list[MessageSegment]:
+    """开播通知的内容：一张可爱卡片图；渲染失败时退回「封面图 + 文字」。
 
+    定时轮询的开播推送、群聊「开播」关键词的手动查询共用这一份，保证两处内容一致。
+    """
     live_url = f"https://live.bilibili.com/{info.get('roomid', '')}"
 
-    messages: list[MessageSegment] = []
     cover_url = info.get("cover", "")
-    if cover_url:
-        cover_b64 = await fetch_cover_base64(cover_url)
-        if cover_b64:
-            messages.append(MessageSegment.image(f"base64://{cover_b64}"))
+    cover_b64 = await fetch_cover_base64(cover_url) if cover_url else None
 
+    online = int(info.get("online") or 0)
+    card_jpeg = None
+    try:
+        card_jpeg = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: build_live_card(
+                uname=uname,
+                title=str(info.get("title") or "未知标题"),
+                room_id=info.get("roomid", ""),
+                online_text=fmt_fans(online) if online else "",
+                cover_bytes=base64.b64decode(cover_b64) if cover_b64 else None,
+            ),
+        )
+    except Exception as exc:  # noqa: BLE001 — 出图失败不能影响通知本身
+        nonebot.logger.warning(
+            f"[bilibili_live] uid={uid} 开播卡片渲染异常（{type(exc).__name__} {exc}），退回文字版"
+        )
+
+    if card_jpeg:
+        return [MessageSegment.image(f"base64://{base64.b64encode(card_jpeg).decode()}")]
+
+    messages: list[MessageSegment] = []
+    if cover_b64:
+        messages.append(MessageSegment.image(f"base64://{cover_b64}"))
     messages.append(
         MessageSegment.text(
             f"🔴 {uname} 开播啦！\n"
@@ -253,14 +365,26 @@ async def on_live_start(uid: str, info: dict[str, Any]) -> None:
             f"🔗 {live_url}"
         )
     )
+    return messages
 
+
+async def on_live_start(uid: str, info: dict[str, Any]) -> None:
+    """开播通知：一张开播卡片（封面 + 名字 + 标题 + 在线人数 + 直播间链接）。"""
+    uname, fans = await fetch_user_card(uid)
+    _open_session(uid, info, uname, fans)
+
+    messages = await build_live_notice(uid, info, uname)
     await notify_groups(UIDS.get(uid, []), messages)
     nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 开播")
 
 
 async def on_live_end(uid: str, info: dict[str, Any]) -> None:
-    """下播通知：时长、粉丝数变化、弹幕排行榜，末尾附词云图。"""
+    """下播通知：时长、粉丝数变化、弹幕排行榜，末尾附词云图与在线人数折线图。"""
     session = live_session.pop(uid, {})
+    if session:
+        _record_online(session, info.get("online"))
+        # 留一份快照：短时间内重新开播要续接时长与弹幕统计（见 _open_session）
+        last_live_session[uid] = {**session, "ended_at": datetime.now()}
     uname = session.get("uname", uid)
     room_id = session.get("room_id") or info.get("roomid", 0)
 
@@ -320,6 +444,19 @@ async def on_live_end(uid: str, info: dict[str, Any]) -> None:
                 MessageSegment.image(f"base64://{base64.b64encode(wordcloud_png).decode()}")
             )
 
+    # 在线人数折线图：直播中每个轮询周期采一个点，两点以上才画得成线
+    samples = session.get("online_samples", [])
+    if len(samples) >= 2:
+        chart_jpeg = await asyncio.get_event_loop().run_in_executor(
+            None, build_online_chart, samples, uname, duration_str
+        )
+        if chart_jpeg:
+            messages.append(
+                MessageSegment.image(f"base64://{base64.b64encode(chart_jpeg).decode()}")
+            )
+        else:
+            nonebot.logger.warning(f"[bilibili_live] uid={uid} 在线人数折线图渲染失败，跳过")
+
     await notify_groups(UIDS.get(uid, []), messages, at_all=False)
     nonebot.logger.info(f"[bilibili_live] uid={uid} ({uname}) 下播")
 
@@ -342,7 +479,7 @@ async def update_session_danmaku(uid: str, room_id: int) -> None:
 
 
 async def send_hourly_report(uid: str, info: dict[str, Any]) -> None:
-    """直播中每小时播报：已播时长、当前在线人数、直播间链接。"""
+    """直播中每小时播报：封面 + 已播时长 / 在线人数 + 最近 10 条弹幕，合成一张可爱卡片。"""
     session = live_session.get(uid)
     if not session:
         return
@@ -350,15 +487,54 @@ async def send_hourly_report(uid: str, info: dict[str, Any]) -> None:
     uname = session.get("uname", uid)
     duration = fmt_duration(int((datetime.now() - session["start_time"]).total_seconds()))
     online = info.get("online", 0)
-    live_url = f"https://live.bilibili.com/{session.get('room_id', '')}"
+    room_id = session.get("room_id", "")
+    live_url = f"https://live.bilibili.com/{room_id}"
 
-    text = (
-        f"📡 {uname} 正在直播\n"
-        f"⏱️ 目前已播 {duration}\n"
-        f"👥 当前在线人数：{fmt_fans(online) if online else '未知'}\n"
-        f"🔗 {live_url}"
-    )
-    await notify_groups(UIDS.get(uid, []), [MessageSegment.text(text)], at_all=False)
+    # 封面 + 最近弹幕；取不到也不影响播报（会退回文字版）
+    cover_url = info.get("cover", "")
+    cover_b64 = await fetch_cover_base64(cover_url) if cover_url else None
+    danmaku: list[tuple[str, str]] = []
+    if room_id:
+        try:
+            danmaku = await fetch_danmaku_with_user(int(room_id))
+        except Exception as exc:  # noqa: BLE001 — 弹幕抓不到就只出封面
+            nonebot.logger.warning(
+                f"[bilibili_live] uid={uid} 播报卡抓弹幕失败（{type(exc).__name__} {exc}）"
+            )
+
+    card_jpeg = None
+    try:
+        card_jpeg = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: build_hourly_card(
+                uname=uname,
+                duration_text=duration,
+                online_text=fmt_fans(online) if online else "",
+                room_id=room_id,
+                cover_bytes=base64.b64decode(cover_b64) if cover_b64 else None,
+                danmaku=danmaku,
+            ),
+        )
+    except Exception as exc:  # noqa: BLE001 — 出图失败不能影响播报本身
+        nonebot.logger.warning(
+            f"[bilibili_live] uid={uid} 播报卡片渲染异常（{type(exc).__name__} {exc}），退回文字版"
+        )
+
+    if card_jpeg:
+        await notify_groups(
+            UIDS.get(uid, []),
+            [MessageSegment.image(f"base64://{base64.b64encode(card_jpeg).decode()}")],
+            at_all=False,
+        )
+    else:
+        text = (
+            f"📡 {uname} 正在直播\n"
+            f"⏱️ 目前已播 {duration}\n"
+            f"👥 当前在线人数：{fmt_fans(online) if online else '未知'}\n"
+            f"🔗 {live_url}"
+        )
+        await notify_groups(UIDS.get(uid, []), [MessageSegment.text(text)], at_all=False)
+
     session["last_hourly_notify"] = datetime.now()
     nonebot.logger.info(f"[bilibili_live] uid={uid} 每小时播报已发送")
 
@@ -407,37 +583,160 @@ async def poll_live_status() -> None:
                 nonebot.logger.info(f"[bilibili_live] uid={uid} 初始化完成，当前未直播")
             continue
 
-        if is_live and not was_live:
-            nonebot.logger.info(f"[bilibili_live] uid={uid} 检测到开播，触发开播通知")
-            live_status[uid] = True
-            await on_live_start(uid, info)
-
-        elif not is_live and was_live:
-            nonebot.logger.info(f"[bilibili_live] uid={uid} 检测到下播，触发下播通知")
-            live_status[uid] = False
-            await on_live_end(uid, info)
-
-        elif is_live and uid in live_session:
-            session = live_session[uid]
-
-            room_id = session.get("room_id")
-            if room_id:
-                before = sum(session["danmaku_counter"].values())
-                await update_session_danmaku(uid, int(room_id))
-                after = sum(session["danmaku_counter"].values())
-                if after > before:
-                    nonebot.logger.debug(
-                        f"[bilibili_live] uid={uid} 新增弹幕 {after - before} 条，累计 {after} 条"
-                    )
-
-            last = session.get("last_hourly_notify")
-            if last and (datetime.now() - last).total_seconds() >= HOURLY_REPORT_SECONDS:
-                nonebot.logger.info(f"[bilibili_live] uid={uid} 触发每小时播报")
-                await send_hourly_report(uid, info)
+        await _process_transition(uid, info, is_live)
 
     nonebot.logger.debug("[bilibili_live] 本轮轮询结束")
 
 
+async def _process_transition(uid: str, info: dict[str, Any], is_live: bool) -> None:
+    """按本轮状态处理开播/下播跳变：通知、下播去抖、在线采样、每小时播报。
+
+    单独抽出来是为了能直接驱动它做行为验证（不用真等一轮轮询）。
+    """
+    was_live = live_status.get(uid, False)
+
+    if is_live and not was_live:
+        nonebot.logger.info(f"[bilibili_live] uid={uid} 检测到开播，触发开播通知")
+        offline_streak.pop(uid, None)
+        live_status[uid] = True
+        await on_live_start(uid, info)
+        return
+
+    if not is_live and was_live:
+        # 接口偶发抖动会让 liveStatus 闪一下 0；连续 OFFLINE_CONFIRM_POLLS 轮都没在播
+        # 才认定真下播，否则会把一场直播切碎，时长与弹幕榜单都要被切两半
+        offline_streak[uid] = offline_streak.get(uid, 0) + 1
+        if offline_streak[uid] >= OFFLINE_CONFIRM_POLLS:
+            nonebot.logger.info(
+                f"[bilibili_live] uid={uid} 连续 {offline_streak[uid]} 轮未在播，触发下播通知"
+            )
+            offline_streak[uid] = 0
+            live_status[uid] = False
+            await on_live_end(uid, info)
+        else:
+            nonebot.logger.info(
+                f"[bilibili_live] uid={uid} 本轮未在播（第 {offline_streak[uid]} 轮），"
+                f"等下一轮确认，先不下播"
+            )
+        return
+
+    if is_live and uid in live_session:
+        session = live_session[uid]
+        if offline_streak.pop(uid, None):
+            nonebot.logger.info(f"[bilibili_live] uid={uid} 抖动结束，仍在直播，会话保持不变")
+
+        _record_online(session, info.get("online"))
+
+        room_id = session.get("room_id")
+        if room_id:
+            before = sum(session["danmaku_counter"].values())
+            await update_session_danmaku(uid, int(room_id))
+            after = sum(session["danmaku_counter"].values())
+            if after > before:
+                nonebot.logger.debug(
+                    f"[bilibili_live] uid={uid} 新增弹幕 {after - before} 条，累计 {after} 条"
+                )
+
+        last = session.get("last_hourly_notify")
+        if last and (datetime.now() - last).total_seconds() >= HOURLY_REPORT_SECONDS:
+            nonebot.logger.info(f"[bilibili_live] uid={uid} 触发每小时播报")
+            await send_hourly_report(uid, info)
+
+
+# ── 群聊「开播」关键词：手动查一遍本群在播的 UP 主 ──────────────────────────────
+def _has_openlive_keyword(event: MessageEvent) -> bool:
+    """群聊消息的纯文本里含「开播」两个字就触发；私聊不触发。"""
+    return isinstance(event, GroupMessageEvent) and OPENLIVE_KEYWORD in event.get_plaintext()
+
+
+def uids_of_group(group_id: str) -> list[str]:
+    """反查某个群绑定了哪些 uid。
+
+    每次调用都重读 .env，所以改监控名单不用重启机器人（与轮询用的是同一份配置）。
+    """
+    uids_map = load_config()["bilibili_live_uids"]
+    return sorted(
+        uid
+        for uid, groups in uids_map.items()
+        if any(str(group.get("groupId", "")) == group_id for group in groups)
+    )
+
+
+openlive_cmd = on_message(rule=Rule(_has_openlive_keyword), priority=OPENLIVE_PRIORITY, block=False)
+
+
+async def _fetch_room_for_manual_query(uid: str) -> Optional[dict[str, Any]]:
+    """手动查询专用的取数：失败重试 OPENLIVE_RETRIES 次。
+
+    定时轮询每 60 秒会自己重来一次，不需要重试；手动查询只打一次，
+    不重试的话偶发握手失败会表现为「一个在播的都没查出来」。
+    """
+    for attempt in range(1, OPENLIVE_RETRIES + 1):
+        info = await fetch_room_info(uid)
+        if info is not None:
+            return info
+        if attempt < OPENLIVE_RETRIES:
+            await asyncio.sleep(1.5)
+    nonebot.logger.warning(f"[bilibili_live] uid={uid} 重试 {OPENLIVE_RETRIES} 次仍取不到直播状态")
+    return None
+
+
+@openlive_cmd.handle()
+async def handle_openlive_keyword(bot: Bot, event: GroupMessageEvent) -> None:
+    """群里出现「开播」：先回一条 td，再把本群在播的 UP 主按开播通知发出来。
+
+    这里不发 @全体（手动查询不该炸群），与下播通知、每小时播报的取法一致。
+    """
+    group_id = str(event.group_id)
+    try:
+        await openlive_cmd.send(OPENLIVE_REPLY)
+    except Exception as exc:  # noqa: BLE001 — 发不出去就没必要继续查
+        nonebot.logger.warning(f"[bilibili_live] 群 {group_id} 发送 {OPENLIVE_REPLY} 失败：{exc}")
+        return
+
+    uids = uids_of_group(group_id)
+    if not uids:
+        nonebot.logger.info(f"[bilibili_live] 群 {group_id} 没有配置开播监控")
+        if OPENLIVE_NOTIFY_WHEN_EMPTY:
+            await openlive_cmd.send("本群还没有配置 B 站开播监控")
+        return
+
+    nonebot.logger.info(f"[bilibili_live] 群 {group_id} 触发「开播」查询，监控 uid {uids}")
+
+    results = await asyncio.gather(*(_fetch_room_for_manual_query(uid) for uid in uids))
+    live_infos = [
+        (uid, info)
+        for uid, info in zip(uids, results)
+        if isinstance(info, dict) and info.get("liveStatus") == 1
+    ]
+    failed = [uid for uid, info in zip(uids, results) if info is None]
+    if failed:
+        nonebot.logger.warning(f"[bilibili_live] 群 {group_id} 这些 uid 没查到直播状态：{failed}")
+    if not live_infos:
+        nonebot.logger.info(
+            f"[bilibili_live] 群 {group_id} 配置的 {len(uids)} 个 uid 当前都没在播"
+            + (f"（其中 {len(failed)} 个查询失败）" if failed else "")
+        )
+        if OPENLIVE_NOTIFY_WHEN_EMPTY:
+            await openlive_cmd.send("本群监控的 UP 主当前都没有开播")
+        return
+
+    for uid, info in live_infos:
+        uname, _ = await fetch_user_card(uid)
+        try:
+            await bot.send_group_msg(
+                group_id=int(group_id),
+                message=_compose(await build_live_notice(uid, info, uname), False),
+            )
+            await asyncio.sleep(SEND_GAP)
+        except Exception as exc:  # noqa: BLE001 — 单个 UP 主发失败不影响其他
+            nonebot.logger.warning(f"[bilibili_live] 群 {group_id} 发送 uid={uid} 开播通知失败：{exc}")
+    nonebot.logger.info(
+        f"[bilibili_live] 群 {group_id} 已发出 {len(live_infos)} 个在播 UP 主的开播通知"
+    )
+
+
 nonebot.logger.info(
-    f"[bilibili_live] 插件已加载，监控 {len(UIDS)} 个 uid，轮询间隔 {INTERVAL}s"
+    f"[bilibili_live] 插件已加载，监控 {len(UIDS)} 个 uid，轮询间隔 {INTERVAL}s，"
+    f"群聊消息含「{OPENLIVE_KEYWORD}」时回 {OPENLIVE_REPLY} 并查一遍在播"
 )
