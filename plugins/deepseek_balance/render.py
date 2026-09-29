@@ -1,21 +1,23 @@
 """deepseek_balance 的两张卡片图（Pillow，无浏览器依赖）
 
 出口函数：
-  render_multi(entries, source=...)  多供应商余额卡片（/ai余额 与定时推送共用）
-  render_error(message)              渲染失败时的提示卡片，保证任何时候都有图可发
+  render_multi(entries, source=..., baseline=...)  多供应商余额卡片（/ai余额 与定时推送共用）
+  render_error(message)                            渲染失败时的提示卡片，保证任何时候都有图可发
 
 设计要点：
   * 白色圆角卡片 + 柔和阴影 + 淡蓝渐变底，视觉上接近现代 App 的「账户卡片」
   * 顶部品牌渐变条（正常=蓝紫，异常=红橙），右上角白底胶囊显示状态
   * 按币种分组，一家一行；金额居中偏右，说明与已用/总额在下半行
   * 余额异常 → 金额转深琥珀；查询失败 → 整卡转红
+  * 与上次查询对比：金额下方一行「↑ +1.23（+5.2%）」绿升红降，分组标题右侧给该币种合计增减，
+    页脚写明对比基准时间（见 history.py；baseline 为 None 时显示「首次查询，暂无对比」）
   * 全部采用「游标 + textbbox 实测」排版，元素间距按实际墨迹计算，避免贴边/重叠
 """
 
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -92,11 +94,14 @@ FS_SEC = 18                      # 分组标题（如「人民币账户」）
 FS_MONEY = 30
 FS_ROW = 25
 FS_SMALL = 15
+FS_DELTA = 18                    # 「与上次对比」的增减文字
 
 ROW_H = 96          # 一行的高度（标题/金额在上半行，说明与明细在下半行）
 ROW_GAP = 12
 GROUP_LABEL_H = 40
 GROUP_GAP = 22
+
+DELTA_FLOOR = 0.005             # 小于半分钱视为持平，避免显示「+0.00」
 
 UNIT_LABEL = {
     "RMB": ("人民币账户", "¥"),
@@ -242,6 +247,83 @@ def _money_or_dash(value: Optional[float], symbol: str) -> str:
     return "--" if value is None else _fmt_money(value, symbol)
 
 
+# ── 「与上次查询对比」的文字与配色 ────────────────────────────────────────────
+def _delta_row_text(
+    delta: float,
+    pct: Optional[float],
+    *,
+    stale_at: Optional[datetime] = None,
+) -> Tuple[str, Tuple[int, int, int]]:
+    """单个账户增减的文案与颜色：↑变多（绿）/ ↓变少（红）/ → 持平（灰）
+
+    stale_at 给出时说明这行的基准比整卡基准旧（例如上一轮该账户查询失败），
+    此时直接把「是哪一次的数值」写进文案，避免「较上次」被误读成本轮上一次。
+    """
+    if abs(delta) < DELTA_FLOOR:
+        text, color = "→ 0.00（持平）", C_DIM
+    elif delta > 0:
+        text, color = f"↑ +{abs(delta):,.2f}", C_GREEN_BAR
+    else:
+        text, color = f"↓ -{abs(delta):,.2f}", C_RED
+
+    if stale_at is not None:
+        text += f"（较 {stale_at:%m-%d %H:%M}）"
+    elif pct is not None and abs(delta) >= DELTA_FLOOR:
+        text += f"（{pct:+.1f}%）"
+    return text, color
+
+
+def _delta_group_text(
+    delta: float, symbol: str
+) -> Tuple[str, Tuple[int, int, int]]:
+    """某币种合计增减的文案与颜色（带币种符号，因为它与金额不在同一处）"""
+    if abs(delta) < DELTA_FLOOR:
+        return "较上次 → 0.00", C_DIM
+    if delta > 0:
+        return f"较上次 ↑ {symbol} {abs(delta):,.2f}", C_GREEN_BAR
+    return f"较上次 ↓ {symbol} {abs(delta):,.2f}", C_RED
+
+
+def _row_delta(item: Dict[str, Any], baseline: Optional[datetime]) -> Tuple[str, Optional[Tuple[int, int, int]]]:
+    """取一行在卡片上要画的增减文案与颜色；没有对比基准时返回「首次查询」"""
+    extra = item.get("extra") or {}
+    delta = extra.get("delta")
+    if not isinstance(delta, (int, float)) or isinstance(delta, bool):
+        if item.get("balance") is None:
+            return "", None                     # 失败行不显示对比
+        return "首次查询", C_DIM
+    stale_at = None
+    prev_at = extra.get("prev_at")
+    if baseline is not None and isinstance(prev_at, (int, float)):
+        # 与整卡基准相差超过 1 分钟，就认定这行用的是更早的一次记录
+        if abs(float(prev_at) - baseline.timestamp()) > 60:
+            stale_at = datetime.fromtimestamp(float(prev_at))
+    pct = extra.get("delta_pct")
+    return _delta_row_text(float(delta), pct if isinstance(pct, (int, float)) else None, stale_at=stale_at)
+
+
+def _group_delta(group: dict) -> Tuple[str, Optional[Tuple[int, int, int]]]:
+    """某币种分组的总增减文案；只有组内所有有数值的行都能算出差值时才给合计，
+
+    否则（首次查询、上轮某家失败）宁可不显示，也不给一个口径不完整的合计数字。
+    """
+    rows = [
+        item
+        for item in group["items"]
+        if item.get("balance") is not None and item.get("status") != "error"
+    ]
+    if not rows:
+        return "", None
+
+    total = 0.0
+    for item in rows:
+        delta = (item.get("extra") or {}).get("delta")
+        if not isinstance(delta, (int, float)) or isinstance(delta, bool):
+            return "", None
+        total += float(delta)
+    return _delta_group_text(total, group["symbol"])
+
+
 def _human_interval(seconds: int) -> str:
     """把秒数写成「2 小时」这种可读形式（日志与页脚共用）"""
     seconds = max(int(seconds), 0)
@@ -342,8 +424,13 @@ def render_multi(
     *,
     now: Optional[datetime] = None,
     source: str = "手动查询",
+    baseline: Optional[datetime] = None,
 ) -> bytes:
-    """多供应商余额卡片：按币种分组，一家一行（错误行显示红色原因），返回图片字节"""
+    """多供应商余额卡片：按币种分组，一家一行（错误行显示红色原因），返回图片字节
+
+    baseline 是「上次查询」的时间，用于页脚写明对比基准；为 None 表示还没有历史。
+    每行的增减取自 entry["extra"] 的 delta / delta_pct / prev_at（由 history.annotate 写入）。
+    """
     now = now or datetime.now()
     entries = list(entries or [])
     probe = _probe()
@@ -355,6 +442,7 @@ def render_multi(
     font_row = _font(FS_ROW, bold=True)
     font_money = _font(FS_MONEY, bold=True)
     font_small = _font(FS_SMALL)
+    font_delta = _font(FS_DELTA, bold=True)
     font_total = _font(20, bold=True)
 
     # 分组：人民币在前、美元其次、未知币种放最后（保持传入顺序）
@@ -388,10 +476,25 @@ def render_multi(
         body_h += GROUP_LABEL_H + sum(ROW_H + ROW_GAP for _ in group["items"])
     body_h += GROUP_GAP * (len(groups) - 1) if groups else 0
 
+    # 页脚：数据来源 + 查询时间 + 对比基准（基准那截太长时自动折成两行）
+    if baseline is not None:
+        elapsed = _human_interval(max(int((now - baseline).total_seconds()), 0))
+        footer_text = (
+            f"数据来源：api.deepseek.com 及各家 API · 查询时间 {now:%H:%M:%S}"
+            f" · 对比基准 {baseline:%m-%d %H:%M}（{elapsed}前）"
+        )
+    else:
+        footer_text = (
+            f"数据来源：api.deepseek.com 及各家 API · 查询时间 {now:%H:%M:%S}"
+            f" · 首次查询，暂无对比"
+        )
+    footer_lines = _wrap(probe, footer_text, font_small, CONTENT_R - CONTENT_X, max_lines=2)
+    footer_line_h = int(probe.textbbox((0, 0), "Ag", font=font_small)[3]) + 6
+
     body_top = MARGIN + HEAD_H + 26
     total_y = body_top + body_h + 10
     footer_y = total_y + 52
-    card_h = (footer_y + 52) - MARGIN
+    card_h = int(footer_y + len(footer_lines) * footer_line_h + 31) - MARGIN
 
     canvas, draw = _new_card(card_h, head_grad)
 
@@ -414,11 +517,18 @@ def render_multi(
 
     for gi, group in enumerate(groups):
         symbol = group["symbol"]
+        head_delta_text, head_delta_color = _group_delta(group)
         _text(draw, CONTENT_X, y, group["label"], font_sec, C_DIM)
         line_y = y + GROUP_LABEL_H // 2 + 2
         label_w = probe.textlength(group["label"], font=font_sec)
+        line_end = CONTENT_R
+        if head_delta_text:
+            # 组标题右侧给该币种的合计增减，分隔线让位给它
+            _text(draw, CONTENT_R, y, head_delta_text, font_sec, head_delta_color or C_DIM, right=CONTENT_R)
+            line_end = CONTENT_R - probe.textlength(head_delta_text, font=font_sec) - 16
+            line_end = max(line_end, CONTENT_X + label_w + 30)
         draw.line(
-            [(CONTENT_X + label_w + 14, line_y), (CONTENT_R, line_y)],
+            [(CONTENT_X + label_w + 14, line_y), (line_end, line_y)],
             fill=C_LINE,
             width=1,
         )
@@ -441,14 +551,30 @@ def render_multi(
             money = _money_or_dash(item.get("balance"), symbol)
             _text(draw, CONTENT_R - 22, y + 13, money, font_money, amount_color, right=CONTENT_R - 22)
 
+            # 金额正下方：与上次查询的增减（绿升红降，数字量化）
+            delta_text, delta_color = _row_delta(item, baseline)
+            delta_w = int(probe.textlength(delta_text, font=font_delta)) if delta_text else 0
+            detail_w = detail_max_w - (delta_w + 18 if delta_w else 0)
+
             _text(
                 draw,
                 name_x,
                 y + 50,
-                _clip(probe, str(item.get("detail", "")), font_small, detail_max_w),
+                _clip(probe, str(item.get("detail", "")), font_small, max(detail_w, 90)),
                 font_small,
                 C_RED if status == "error" else C_DIM,
             )
+
+            if delta_text:
+                _text(
+                    draw,
+                    CONTENT_R - 22,
+                    y + 54,
+                    delta_text,
+                    font_delta,
+                    delta_color or C_DIM,
+                    right=CONTENT_R - 22,
+                )
 
             extra = item.get("extra") or {}
             used, total = extra.get("used"), extra.get("total")
@@ -475,14 +601,8 @@ def render_multi(
     _text(draw, CONTENT_X, total_y + 16, "合计  " + "   ·   ".join(totals), font_total, C_TEXT)
 
     draw.line([(CONTENT_X, footer_y - 24), (CONTENT_R, footer_y - 24)], fill=C_LINE, width=1)
-    _text(
-        draw,
-        CONTENT_X,
-        footer_y,
-        f"数据来源：api.deepseek.com 及各家 API · 查询时间 {now:%H:%M:%S}",
-        font_small,
-        C_DIM,
-    )
+    for index, line in enumerate(footer_lines):
+        _text(draw, CONTENT_X, footer_y + index * footer_line_h, line, font_small, C_DIM)
 
     buf = BytesIO()
     canvas.save(buf, format="PNG", optimize=True)

@@ -1,0 +1,129 @@
+# Honcho 自托管部署示例 —— 给 HERMES_HONCHO_ENABLED 提供后端
+#
+# 这份 compose 不含 Honcho 源码,它引用你自己的 Honcho checkout:
+#
+#     git clone https://github.com/plastic-labs/honcho.git /opt/honcho
+#     cp honcho/docker-compose.yml honcho/.env.example /somewhere/
+#     cd /somewhere && cp .env.example .env      # 填 key
+#     export HONCHO_SRC=/opt/honcho
+#     docker compose up -d --build
+#
+# 上游没有发布预构建镜像,api / deriver 都从源码 Dockerfile 构建(首次约 2~3G 镜像)。
+# 数据库迁移由 docker/entrypoint.sh 里的 provision_db.py 自动执行,不用手动 alembic。
+#
+# 与官方 docker-compose.yml.example 的差异,以及为什么:
+#
+#   1. 源码路径与数据目录都参数化(HONCHO_SRC / HONCHO_DATA),便于把这份文件放在
+#      Honcho 源码树之外管理。
+#   2. 数据卷从 docker 命名卷改成绑定挂载。命名卷落在 /var/lib/docker,通常和系统
+#      同盘;pgdata 会随消息量持续增长,把它显式放到你有空间的盘上更可控。
+#   3. 每个服务加 mem_limit。小机器往往没有 swap,内存打满是 OOM 杀进程而不是变慢,
+#      而这台机器上大概率还跑着 Hermes 或 bot —— 宁可让 Honcho 先撞自己的上限。
+#   4. Postgres 按小机器调参:max_connections 200 → 50(每连接都吃内存),
+#      shared_buffers 显式 256MB。大流量部署请按实际情况调回去。
+#   5. Redis 加 maxmemory + LRU 淘汰并关掉 RDB 落盘 —— 这里它只是队列/缓存。
+#   6. 数据库口令从 .env 读,不再硬编码 postgres。
+#
+# 磁盘提醒:镜像本身仍然落在 docker 的 data-root(默认 /var/lib/docker)。系统盘紧张
+# 时先改 /etc/docker/daemon.json 的 {"data-root": "..."},再 up。
+
+services:
+  api:
+    build:
+      context: ${HONCHO_SRC:?请先 export HONCHO_SRC=<honcho 源码目录>}
+      dockerfile: Dockerfile
+    entrypoint: ["sh", "docker/entrypoint.sh"]
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      # 只绑 loopback。Hermes 在别的机器上时不要直接改成 0.0.0.0 ——
+      # 先把 AUTH_USE_AUTH 打开,再走反向代理 + TLS。
+      - "127.0.0.1:8000:8000"
+    environment:
+      # 必须指向 compose 内的服务名,所以在这里显式覆盖 .env 里的同名值
+      - DB_CONNECTION_URI=postgresql+psycopg://postgres:${POSTGRES_PASSWORD:-postgres}@database:5432/postgres
+      - CACHE_URL=redis://redis:6379/0?suppress=true
+      - CACHE_ENABLED=true
+    env_file:
+      - path: .env
+        required: false
+    mem_limit: 768m
+    restart: unless-stopped
+
+  deriver:
+    build:
+      context: ${HONCHO_SRC:?请先 export HONCHO_SRC=<honcho 源码目录>}
+      dockerfile: Dockerfile
+    entrypoint: ["/app/.venv/bin/python", "-m", "src.deriver"]
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - DB_CONNECTION_URI=postgresql+psycopg://postgres:${POSTGRES_PASSWORD:-postgres}@database:5432/postgres
+      - CACHE_URL=redis://redis:6379/0?suppress=true
+      - CACHE_ENABLED=true
+    env_file:
+      - path: .env
+        required: false
+    # deriver 每条消息触发一次后台提炼,是 LLM 额度的主要消耗方。
+    # 并发靠 .env 里的 DERIVER_WORKERS 控制,小机器保持 1。
+    mem_limit: 768m
+    restart: unless-stopped
+
+  database:
+    image: pgvector/pgvector:pg15
+    restart: unless-stopped
+    ports:
+      # 仅供宿主机调试;不需要直连时整段删掉
+      - "127.0.0.1:5432:5432"
+    command:
+      - postgres
+      - -c
+      - max_connections=50
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - effective_cache_size=1GB
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ${HONCHO_SRC:?}/database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ${HONCHO_DATA:-./data}/pgdata:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    mem_limit: 1g
+
+  redis:
+    image: redis:8.2
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    command:
+      - redis-server
+      - --maxmemory
+      - 200mb
+      - --maxmemory-policy
+      - allkeys-lru
+      - --save
+      - ""
+    volumes:
+      - ${HONCHO_DATA:-./data}/redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    mem_limit: 256m

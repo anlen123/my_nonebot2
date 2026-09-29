@@ -7,6 +7,8 @@
   DEEPSEEK_BALANCE_INTERVAL=7200     # 检查间隔（秒），默认 2 小时
   DEEPSEEK_BALANCE_TARGET=1761512493 # 接收余额通知的 QQ 号
   DEEPSEEK_BALANCE_LOW=10            # 余额预警线（低于该值卡片变色），默认 10
+  DEEPSEEK_BALANCE_HISTORY=          # 余额快照文件路径，默认 <项目根>/data/deepseek_balance/balance_history.json
+                                     # （快照用于和上次查询对比，删掉即清空对比基准）
 
   # 站外供应商的余额查询密钥（/ai余额 一次性查询用）
   AIHUB_API_KEY=sk-xxx               # Aihub（https://aihub.top）
@@ -18,6 +20,12 @@ from typing import Any, Dict, Optional
 
 # 站外供应商密钥的 .env 变量名（需与 providers.PROVIDERS 里的 env 字段一致）
 BALANCE_KEY_NAMES = ["AIHUB_API_KEY"]
+
+# 机器人根目录：本文件在 <根>/plugins/deepseek_balance/ 下，往上三层就是根
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+# 余额快照的默认位置（运行数据目录，已被 .gitignore 的 /data/ 覆盖）
+_DEFAULT_HISTORY = Path("data") / "deepseek_balance" / "balance_history.json"
 
 _DEFAULT_INTERVAL = "7200"
 _DEFAULT_TARGET = "1761512493"
@@ -64,6 +72,16 @@ def load_balance_keys(raw: Optional[Dict[str, str]] = None) -> Dict[str, str]:
     }
 
 
+def load_history_path(raw: Optional[Dict[str, str]] = None, *, root: Path = _PROJECT_ROOT) -> Path:
+    """读取余额快照文件路径：DEEPSEEK_BALANCE_HISTORY 非空则以其为准（相对路径按项目根解析）"""
+    raw = raw if raw is not None else _parse_env_file(_find_env_file())
+    configured = (os.environ.get("DEEPSEEK_BALANCE_HISTORY") or raw.get("DEEPSEEK_BALANCE_HISTORY", "")).strip()
+    if not configured:
+        return root / _DEFAULT_HISTORY
+    path = Path(configured).expanduser()
+    return path if path.is_absolute() else root / path
+
+
 def load_config() -> Dict[str, Any]:
     """汇总插件需要的全部配置项，键名即调用方使用的名字"""
     raw = _parse_env_file(_find_env_file())
@@ -76,6 +94,7 @@ def load_config() -> Dict[str, Any]:
 
     return {
         "balance_keys": load_balance_keys(raw),
+        "balance_history_path": load_history_path(raw),
         "deepseek_api_key": _from_env_file(raw, "DEEPSEEK_API_KEY", ""),
         "deepseek_balance_interval": int(
             _from_env_file(raw, "DEEPSEEK_BALANCE_INTERVAL", _DEFAULT_INTERVAL)

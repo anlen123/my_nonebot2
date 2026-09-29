@@ -1,0 +1,67 @@
+[project]
+name = "nonebot-plugin-hermes"
+version = "0.5.4"
+description = "NoneBot plugin for Hermes Agent — multi-platform AI chatbot via Hermes API Server"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+dependencies = [
+    "nonebot2>=2.3.0",
+    "nonebot-plugin-alconna>=0.50.2",
+    "nonebot-plugin-apscheduler>=0.5.0",
+    "nonebot-plugin-localstore>=0.7.0",
+    "httpx>=0.27.0",
+    "fastmcp>=3.0,<5",
+    "json5>=0.9.25",
+    "pydantic>=2.0",
+    "Pillow>=10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    # 上界必须保留:uv.lock 不进 git,CI 每次重新解析,无上界会让 CI 与
+    # 本地 ruff 规则漂移。升 minor 时连带过一遍新规则再抬上界。
+    "ruff>=0.16,<0.17",
+    "nonebot-adapter-onebot>=2.4.6",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/gsskk/nonebot-plugin-hermes"
+
+[project.scripts]
+hermes-install-skill = "hermes_install_skill:main"
+hermes-optimize-state = "hermes_optimize_state:main"
+hermes-purge-media = "hermes_purge_media:main"
+hermes-repair-sessions = "hermes_repair_sessions:main"
+
+[tool.nonebot]
+plugins = ["nonebot_plugin_hermes"]
+
+[tool.ruff]
+line-length = 120
+exclude = ["references", "dist", "build"]
+
+[tool.ruff.lint]
+# BLE001/S110: 桥接层防御式风格——ack/通知/发送等旁路失败一律吞掉,
+# 绝不让辅助路径的异常炸掉消息主流程,项目内属有意为之。
+ignore = ["E402", "BLE001", "S110"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["nonebot_plugin_hermes*"]
+
+[tool.setuptools]
+py-modules = ["hermes_install_skill", "hermes_optimize_state", "hermes_purge_media", "hermes_repair_sessions"]
+
+[tool.setuptools.package-data]
+nonebot_plugin_hermes = ["skill/*.md"]

@@ -7,12 +7,12 @@
   TYPESAFE_BASE_URL  接口地址，默认 https://api.typesafe.ai/v1/systemone
   JEV_MODEL          模型名，默认 jev-latest
   JEV_PREFIX         触发前缀（后面必须跟一个空格），默认「判断」
-  JEV_INSTRUCTIONS   固定的判断陈述，默认「描述是正确的」
+  JEV_INSTRUCTIONS   默认问题（引用模式下没写问题时也用它），默认「描述是正确的」
   JEV_QUESTION_KEY   问题在请求 / 响应里的 key，默认 correct
   JEV_TIMEOUT        单次请求超时（秒），默认 30
   JEV_PROXY          请求代理，如 http://127.0.0.1:7890；留空直连
   JEV_COOLDOWN       同一用户两次调用最小间隔（秒），默认 3；0 = 不限制
-  JEV_MAX_STATE      待判断描述的最大长度，默认 500
+  JEV_MAX_STATE      待判断内容的最大长度，默认 500（引用内容超长时截取前若干字）
 """
 
 from __future__ import annotations
